@@ -5,7 +5,8 @@
             <el-main>Main</el-main>
         </el-container>
     </div>
-</template><style>
+</template>
+<style>
 
     </style>
     <script lang="ts" setup>
