@@ -2,7 +2,7 @@
   <el-table
     ref="multipleTableRef"
     :data="tableData"
-    style="width: 60%"
+    style="width: 100%"
     highlight-current-row
     @selection-change="handleSelectionChange"
     @current-change="clickCurrentChange"
