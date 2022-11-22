@@ -7,15 +7,40 @@ const routes: Array<RouteRecordRaw> = [
     component: () =>
       import("../components/Material.vue"),
   },
-  {
-    path: "/login2",
-    name: "Login2",
-    component: () =>
-      import("../components/Login.vue"),
-  },
+  
   {
     path: "/login",
     name: "Login",
+    component: () =>
+      import("../views/LoginView.vue"),
+  },
+  {
+    path: "/frame",
+    name: "Frame",
+    component: () =>
+      import("../components/Frame.vue"),
+  },
+  {
+    path: "/header",
+    name: "Header",
+    component: () =>
+      import("../components/Header.vue"),
+  },
+  {
+    path: "/menu",
+    name: "Menu",
+    component: () =>
+      import("../components/Menu.vue"),
+  },
+  {
+    path: "/order",
+    name: "Order",
+    component: () =>
+      import("../components/Order.vue"),
+  },
+  {
+    path: "/",
+    name: "Login2",
     component: () =>
       import("../views/LoginView.vue"),
   },
