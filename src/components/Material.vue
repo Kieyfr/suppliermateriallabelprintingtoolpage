@@ -61,10 +61,12 @@
 
 
 
-import { ref ,defineExpose } from 'vue'
-import { defineComponent } from "vue";
+import { ref ,defineExpose,provide } from 'vue'
+import { reactive } from "vue";
+import {defineProps,defineEmits} from 'vue'
 
 import { ElTable } from 'element-plus'
+import { pa } from 'element-plus/es/locale';
 const input = ref('')
 
 interface Materials {
@@ -87,39 +89,36 @@ const setCurrent = (row?: Materials) => {
   singleTableRef.value!.setCurrentRow(row)
 }
 
-var material=({
+const  material=reactive({
   VBILLCODE: "",
   MATERCODE: "",
   MATERNAME: "",
   MATERMATERIALSPEC: "",
   MATERMATERIALTYPE: "",
 });
+const emit=defineEmits(['clickMaterial','clear'])
+const clickMaterial=()=>{
+  let param=material
+  emit('clickMaterial',param)
+}
+const clear = () => {
+  let gb=false
+  emit('clear',gb)
 
+}
 const handleCurrentChange = (val: Materials) => {
  
- material=val;
- console.log(material)
-
+  material.VBILLCODE=val.VBILLCODE;
+  material.MATERCODE=val.MATERCODE;
+  material.MATERNAME=val.MATERNAME;
+  material.MATERMATERIALSPEC=val.MATERMATERIALSPEC;
+  material.MATERMATERIALTYPE=val.MATERMATERIALTYPE;
+  clickMaterial()
+  clear()
 }
 
-defineComponent({
- 
- 
- methods:
- {
-     changeView(msg:string)
-     {
-         console.log(msg);
-         this.$emit("updateView",msg);
-     }
- }
-})
 
 
-const clear = () => {
- 
- 
-}
 
 const tableData: Materials[] = [
   {

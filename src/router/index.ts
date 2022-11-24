@@ -39,16 +39,22 @@ const routes: Array<RouteRecordRaw> = [
       import("../components/Order.vue"),
   },
   {
+    path: "/query",
+    name: "Query",
+    component: () =>
+      import("../components/Query.vue"),
+  },
+  {
     path: "/record",
     name: "Record",
     component: () =>
       import("../components/Record.vue"),
   },
   {
-    path: "/print",
-    name: "Print",
+    path: "/word",
+    name: "Word",
     component: () =>
-      import("../components/Print.vue"),
+      import("../components/Word.vue"),
   },
   {
     path: "/",
@@ -62,6 +68,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () =>
       import("../views/HomeView.vue"),
   },
+  
   {
     path: '/:catchAll(.*)',  //找到所有没有的路由 正则表达
     name: '404',

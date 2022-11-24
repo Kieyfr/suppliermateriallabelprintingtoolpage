@@ -1,15 +1,19 @@
 <template>
     <div id="menu">
         <ul>
-            <li>
-                <button type="button">
+            <li @click="dialogNew = true">
+                <button type="button" >
                     <el-icon :size="40" class="newbuilt">
                         <Document />
                     </el-icon>
                     <br/>
                     新建
                 </button>
+                
             </li>
+                <el-dialog v-model="dialogNew" title="新建" width="800"  >
+                    <Word @close="close"></Word>
+                </el-dialog>
             <li>
                 <button type="button">
                     <el-icon :size="40" class="modify">
@@ -47,23 +51,26 @@
                 </button>
             </li>
             <li>
-                <button type="button">
-                    <el-icon :size="40" class="refresh">
+                <button type="button" @click="refresh">
+                    <el-icon :size="40" class="refresh" >
                         <Refresh />
                     </el-icon>
                     <br/>
                     刷新
                 </button>
             </li>
-            <li>
+            <li @click="dialogQuery = true">
                 <button type="button">
-                    <el-icon :size="40" class="search">
+                    <el-icon :size="40" class="search" >
                         <Search />
                     </el-icon>
                     <br/>
                     查询
                 </button>
             </li>
+                <el-dialog v-model="dialogQuery" title="查询" width="700"  >
+                    <Query @revert="revert"></Query>
+                </el-dialog>
             <li>
                 <button type="button">
                     <el-icon :size="40" class="setting">
@@ -75,7 +82,7 @@
                 </button>
             </li>
             <li>
-                <button type="button">
+                <button type="button" @click="LogOut">
                     <el-icon :size="40" class="close">
                         <Close />
                     </el-icon>
@@ -132,8 +139,25 @@
     
     
 </style>
-<script lang="ts">
+<script lang="ts" setup>
+    import Word from './Word.vue'
+    import Query from '../components/Query.vue'
+    import { reactive , ref,provide,defineProps,defineEmits,onMounted,inject,watch} from 'vue'
+    const dialogNew = ref(false)//新建窗口控制
+    const dialogQuery = ref(false)//查询窗口控制
     
-  
-  
+    const revert=(val)=>{
+        dialogQuery.value=val
+    }
+    const close=(val)=>{
+        dialogNew.value=val
+    }
+    //刷新
+    const refresh=()=>{
+        location. reload()
+        
+    }
+    const LogOut=()=>{
+        
+    }
 </script>

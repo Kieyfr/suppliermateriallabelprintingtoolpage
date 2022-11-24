@@ -11,8 +11,8 @@
 </template>
 <style>
     #main{
-        height: 800px;
         margin-top: 10px;
+        background-color: #8a8a8a;
     }
 </style>
 <script  lang="ts" setup>
