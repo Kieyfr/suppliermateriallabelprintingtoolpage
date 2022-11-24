@@ -1,100 +1,183 @@
 <template>
-  <el-table
-    ref="multipleTableRef"
-    :data="tableData"
-    style="width: 100%"
-    @selection-change="handleSelectionChange"
-  >
-    <el-table-column type="selection" width="55" />
-    <el-table-column property="date" s  ortable label="供应商简称" width="120"/>
-    <el-table-column property="name" sortable label="物料名称" width="120" />
-    <el-table-column property="address" sortable label="订单号" />
-    <el-table-column property="address" sortable label="商厂批号" />
-    <el-table-column prop="date" label="date" width="100" 
-      :filters="[
-        { text: '(全部)', value: '全部' },
-        { text: '(自定义)', value: '自定义' },
-        { text: '(空白)', value: '空白' },
-        { text: '(无空白)', value: '无空白' },
-      ]"
-      :filter-method="filterTag"
-    >
-    </el-table-column>
-  </el-table>
+  <div id="material">
+    <div id="search">
+      <input type="text" v-model="input"/>
+      <button type="button">搜索</button>
+    </div>
+    <el-divider />
+    <div class="materialtable">
+      <el-table
+        ref="singleTableRef"
+        :data="tableData"
+        highlight-current-row
+        style="width: 100%;height: 300px;"
+        @current-change="handleCurrentChange"
+      >
+        <el-table-column property="VBILLCODE" label="订单号" width="150" />
+        <el-table-column property="MATERCODE" label="新亚物料编码" width="150" />
+        <el-table-column property="MATERNAME" label="物料名称" width="150"/>
+        <el-table-column property="MATERMATERIALSPEC" label="绞距" />
+        <el-table-column property="MATERMATERIALTYPE" label="颜色"  />
+      </el-table>
+    </div>
+    <el-divider />
+    <div class="clear">
+      <button type="button" @click="clear">关闭</button>
+    </div>
+    
+  </div>
 </template>
 
+<style lang="scss">
+  #material{
+    width: 650px;
+    margin: auto;
+    #search{
+      margin-top: 10px;
+      input{
+      width: 450px;
+      margin-left: 0px;
+      }
+      button{
+        width: 80px;
+        margin-left: 10px;
+      }
+    }
+    .materialtable{
+      height: 300px;
+    }
+    .clear{
+      width: 100%;
+      padding: 0%;
+      text-align: right;
+      button{
+        width: 80px;
+        margin-right: 20px;
+      }
+    }
+  }
+</style>
 <script lang="ts" setup>
 
-import { ref } from 'vue'
 
-const multipleSelection = ref<User[]>([])
 
-interface User {
-  date: string
-  name: string
-  address: string
+import { ref ,defineExpose } from 'vue'
+import { defineComponent } from "vue";
+
+import { ElTable } from 'element-plus'
+const input = ref('')
+
+interface Materials {
+  VBILLCODE: string//订单号
+  MATERCODE: string//物料编码
+  MATERNAME: string//物料名称
+  MATERMATERIALSPEC: string//物料规格
+  MATERMATERIALTYPE: string//物料颜色
 }
 
-const handleSelectionChange = (val: User[]) => {
-  multipleSelection.value = val
+
+
+
+
+
+const currentRow = ref()
+const singleTableRef = ref<InstanceType<typeof ElTable>>()
+
+const setCurrent = (row?: Materials) => {
+  singleTableRef.value!.setCurrentRow(row)
 }
 
-const filterTag = (value: string, row: User) => {
+var material=({
+  VBILLCODE: "",
+  MATERCODE: "",
+  MATERNAME: "",
+  MATERMATERIALSPEC: "",
+  MATERMATERIALTYPE: "",
+});
 
-  console.log(value)
+const handleCurrentChange = (val: Materials) => {
+ 
+ material=val;
+ console.log(material)
 
-  // if(value == "全部"){
-  //   return row.date
-  // }
-  // else if(value == "自定义"){
-  //   return row.date
-  // }
-  // else if(value == "空白"){
-  //   if(row.date == "" || row.date == null){
-  //     return row.date
-  //   }
-  // }
-  // else if(value == "无空白"){
-  //   return row.date
-  // }
-  // return row.date.indexOf(value) != -1
 }
 
-const tableData: User[] = [
+defineComponent({
+ 
+ 
+ methods:
+ {
+     changeView(msg:string)
+     {
+         console.log(msg);
+         this.$emit("updateView",msg);
+     }
+ }
+})
+
+
+const clear = () => {
+ 
+ 
+}
+
+const tableData: Materials[] = [
   {
-    date: '2017-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    VBILLCODE: '242342342343242',
+    MATERCODE: '12423424243',
+    MATERNAME: 'MG80017U-105',
+    MATERMATERIALSPEC:'23',
+    MATERMATERIALTYPE:""
   },
   {
-    date: '2018-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    VBILLCODE: '242342342343242',
+    MATERCODE: '12423424243',
+    MATERNAME: 'MG80017U-105',
+    MATERMATERIALSPEC:'23',
+    MATERMATERIALTYPE:""
   },
   {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    VBILLCODE: '242342342343242',
+    MATERCODE: '12423424243',
+    MATERNAME: 'MG80017U-105',
+    MATERMATERIALSPEC:'23',
+    MATERMATERIALTYPE:""
   },
   {
-    date: '2016-05-01',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    VBILLCODE: '242342342343242',
+    MATERCODE: '12423424243',
+    MATERNAME: 'MG80017U-105',
+    MATERMATERIALSPEC:'23',
+    MATERMATERIALTYPE:""
   },
   {
-    date: '2016-05-08',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    VBILLCODE: '242342342343242',
+    MATERCODE: '12423424243',
+    MATERNAME: 'MG80017U-105',
+    MATERMATERIALSPEC:'23',
+    MATERMATERIALTYPE:""
   },
   {
-    date: '2016-05-06',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    VBILLCODE: '242342342343242',
+    MATERCODE: '12423424243',
+    MATERNAME: 'MG80017U-105',
+    MATERMATERIALSPEC:'23',
+    MATERMATERIALTYPE:""
   },
   {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    VBILLCODE: '242342342343242',
+    MATERCODE: '12423424243',
+    MATERNAME: 'MG80017U-105',
+    MATERMATERIALSPEC:'23',
+    MATERMATERIALTYPE:""
   },
+  {
+    VBILLCODE: '242342342343242',
+    MATERCODE: '12423424243',
+    MATERNAME: 'MG80017U-105',
+    MATERMATERIALSPEC:'23',
+    MATERMATERIALTYPE:""
+  },
+  
 ]
 </script>

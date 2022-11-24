@@ -1,21 +1,24 @@
 <template>
-  <el-table
-    ref="multipleTableRef"
-    :data="tableData"
-    style="width: 100%"
-    highlight-current-row
-    @selection-change="handleSelectionChange"
-    @current-change="clickCurrentChange"
-    max-height="280"
-  >
-    <el-table-column type="index" width="50" />
-    <el-table-column type="selection" width="55" />
-    <el-table-column property="date" s  ortable label="供应商简称" width="120"/>
-    <el-table-column property="name" sortable label="物料名称" width="120" />
-    <el-table-column property="address" sortable label="订单号" />
-    <el-table-column property="address" sortable label="商厂批号" />
-    
-  </el-table>
+  <div id="order">
+    <el-table
+      ref="multipleTableRef"
+      :data="tableData"
+      style="width: 100%"
+      highlight-current-row
+      @selection-change="handleSelectionChange"
+      @current-change="clickCurrentChange"
+      max-height="350"
+    >
+      <el-table-column type="index" width="50" />
+      <el-table-column type="selection" width="55" />
+      <el-table-column property="date" s  ortable label="供应商简称" width="120"/>
+      <el-table-column property="name" sortable label="物料名称" width="120" />
+      <el-table-column property="address" sortable label="订单号" />
+      <el-table-column property="address" sortable label="商厂批号" />
+      
+    </el-table>
+  </div>
+  
 </template>
 
 <script lang="ts" setup>

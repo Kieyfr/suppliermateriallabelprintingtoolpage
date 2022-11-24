@@ -1,7 +1,8 @@
 <template>
     
-    
-      <el-menu
+    <div id="header">
+      <div id="navigation">
+        <el-menu
         :default-active="activeIndex"
         class="el-menu-demo"
         mode="horizontal"
@@ -14,16 +15,24 @@
         
         
       </el-menu>
-      <Menu id="menu"></Menu>
+      </div>
+      
+      <Menu></Menu>
+    </div>
+      
     
 </template>
 <style>
-    .index{
-        width: 150px;
+    #navigation{
+      height: 30px;
     }
+    .index{
+      font-size: 15px;
+      line-height: 30px;
+    }
+    
     #header{
-      width: 800px;
-      height: 200px;
+      
     }
     
 </style>

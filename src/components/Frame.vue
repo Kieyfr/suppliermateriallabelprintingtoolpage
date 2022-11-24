@@ -1,15 +1,7 @@
 <template>
-    <div class="common-layout">
-        <el-container>
-            <el-header>
-                <Header id="header"></Header>
-            </el-header>
-           
-            
-            <el-main>
-                <Main id="main"></Main>
-            </el-main>
-        </el-container>
+    <div id="frame">
+        <Header></Header>
+        <Main></Main>
     </div>
 </template>
 <style>
@@ -20,10 +12,6 @@
     import Main from "../components/Main.vue";
 </script>
 <style>
-    #header{
-        height: 400px;
-    }
-    #main{
-        margin-top: 70px;
-    }
+    
+    
 </style>
