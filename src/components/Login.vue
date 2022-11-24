@@ -37,7 +37,7 @@ const getSuppName=()=>{
     }
     getSuppNameApi(param).then((res) => {
         if(res.state=='200'){
-            supplier.suppName = res.data.name;
+            supplier.suppName = res.data;
         }else if(res.state=='404'){
             supplier.suppName = "";
             ElMessage.error('供应商代码不存在')

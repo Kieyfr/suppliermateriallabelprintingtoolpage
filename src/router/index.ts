@@ -15,22 +15,10 @@ const routes: Array<RouteRecordRaw> = [
       import("../views/LoginView.vue"),
   },
   {
-    path: "/frame",
-    name: "Frame",
-    component: () =>
-      import("../components/Frame.vue"),
-  },
-  {
     path: "/header",
     name: "Header",
     component: () =>
       import("../components/Header.vue"),
-  },
-  {
-    path: "/menu",
-    name: "Menu",
-    component: () =>
-      import("../components/Menu.vue"),
   },
   {
     path: "/order",
@@ -58,24 +46,21 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/",
-    name: "Login",
+    name: "loginView",
     component: () =>
       import("../views/LoginView.vue"),
   },
   {
-    path: "/home",
-    name: "home",
+    path: "/index",
+    name: "indexView",
     component: () =>
-      import("../views/HomeView.vue"),
+      import("../views/IndexView.vue"),
   },
-  
   {
     path: '/:catchAll(.*)',  //找到所有没有的路由 正则表达
-    name: '404',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import( '../views/404.vue')
+    name: 'errorView',
+    component: () => 
+      import( '../views/ErrorView.vue')
   },
   
 ];

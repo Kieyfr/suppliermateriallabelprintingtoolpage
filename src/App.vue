@@ -10,12 +10,8 @@
   text-align: center;
   color: #2c3e50;
 }
-#app,html,body {
-		height: 100%;
-}
 body{
-	margin:0;
-	padding:0;
-	border:0;
+	padding: 0px;
+  margin: 0px;
 }
 </style>
