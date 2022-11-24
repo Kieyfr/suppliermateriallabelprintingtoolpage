@@ -23,7 +23,7 @@
 
 <script lang="ts" setup>
 
-import { ref } from 'vue'
+import { ref ,reactive} from 'vue'
 
 const multipleSelection = ref<Orders[]>([])
 const currentRow = ref()
@@ -33,11 +33,18 @@ interface Orders {
   VBILLCODE: string//订单号
   SUPPLOTNUM:string//供应商批号
 }
+var orders=[]
+const emit=defineEmits(['clickCurrentChange','handleSelectionChange'])
 
 const handleSelectionChange = (val: Orders[]) => {
   multipleSelection.value = val
-  
+  let orders=val
+  console.log(orders)
+  emit("handleSelectionChange",orders)
 }
+
+    
+
 //选中后触发事件
 const clickCurrentChange = (val: Orders | undefined) => {
   currentRow.value = val
@@ -66,6 +73,12 @@ const filterTag = (value: string, row: Orders) => {
   // return row.date.indexOf(value) != -1
 }
 const tableData: Orders[] = [
+  {
+    SHORTNAME: '帆帆',
+    MATERNAME: 'Tom',
+    VBILLCODE: '24211421421414',
+    SUPPLOTNUM:"24325325325"
+  },
   {
     SHORTNAME: '帆帆',
     MATERNAME: 'Tom',
