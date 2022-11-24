@@ -11,10 +11,10 @@
     >
       <el-table-column type="index" width="50" />
       <el-table-column type="selection" width="55" />
-      <el-table-column property="date" s  ortable label="供应商简称" width="120"/>
-      <el-table-column property="name" sortable label="物料名称" width="120" />
-      <el-table-column property="address" sortable label="订单号" />
-      <el-table-column property="address" sortable label="商厂批号" />
+      <el-table-column property="SHORTNAME" s  ortable label="供应商简称" width="200"/>
+      <el-table-column property="MATERNAME" sortable label="物料名称" width="200" />
+      <el-table-column property="VBILLCODE" sortable label="订单号" />
+      <el-table-column property="SUPPLOTNUM" sortable label="商厂批号" />
       
     </el-table>
   </div>
@@ -28,9 +28,10 @@ import { ref } from 'vue'
 const multipleSelection = ref<Orders[]>([])
 const currentRow = ref()
 interface Orders {
-  date: string
-  name: string
-  address: string
+  SHORTNAME: string//供应商简称
+  MATERNAME: string//物料名称
+  VBILLCODE: string//订单号
+  SUPPLOTNUM:string//供应商批号
 }
 
 const handleSelectionChange = (val: Orders[]) => {
@@ -66,104 +67,10 @@ const filterTag = (value: string, row: Orders) => {
 }
 const tableData: Orders[] = [
   {
-    date: '2017-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2018-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-08',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-06',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    SHORTNAME: '帆帆',
+    MATERNAME: 'Tom',
+    VBILLCODE: '24211421421414',
+    SUPPLOTNUM:"24325325325"
   },
 ]
 </script>
