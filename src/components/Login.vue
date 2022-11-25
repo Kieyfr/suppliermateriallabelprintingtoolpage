@@ -93,4 +93,8 @@ const onReset = () => {
             margin: auto;
         }
     }
+    body{
+        background-image: url("../assets/bg.webp");
+        background-size: 100%;
+    }
 </style>

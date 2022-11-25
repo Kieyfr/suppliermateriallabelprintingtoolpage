@@ -33,7 +33,14 @@ interface Orders {
   VBILLCODE: string//订单号
   SUPPLOTNUM:string//供应商批号
 }
-var orders=[]
+let orders=[];
+let order={
+  SHORTNAME: "",
+  MATERNAME: "",
+  VBILLCODE: "",
+  SUPPLOTNUM:""
+}
+orders.push(order);
 const emit=defineEmits(['clickCurrentChange','handleSelectionChange'])
 
 const handleSelectionChange = (val: Orders[]) => {

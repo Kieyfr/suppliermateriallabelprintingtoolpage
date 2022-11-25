@@ -46,11 +46,10 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/",
-<<<<<<< HEAD
-    name: "Login2",
-=======
-    name: "loginView",
->>>>>>> 2bc7f140e5e8e13736d1ec5380bdcf3a3fdffe63
+
+
+    name: "LoginView",
+  
     component: () =>
       import("../views/LoginView.vue"),
   },
