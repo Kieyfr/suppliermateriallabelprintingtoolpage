@@ -52,7 +52,7 @@
                 <tr class="Bottom">
                     <td>
                         
-                        <el-button type="primary">查询</el-button>
+                        <el-button type="primary" @click="query" >查询</el-button>
                     </td>
                     <td>
                         <el-button @click="revert">返回</el-button>
@@ -80,6 +80,7 @@
 </style>
 <script lang="ts" setup>
     import { reactive } from 'vue'
+    import {useStore,mapState} from 'vuex'
     const form=reactive({
         MATERNAME:"",//物料名称
         SUPPMATERCODE:"",//供应商料号
@@ -88,10 +89,19 @@
         STARTDATE:"",//起始日期
         CLOSINGDATE:""//截止日期
     })
+    
     const emit=defineEmits(['revert'])
-        
+    //获取公用数据
+    const store = useStore()
+    const state = store.state
     const revert=()=>{
         let gb=false
         emit('revert',gb)
     }
+
+    const query=()=>{
+        store.commit("modQueryCriteria",form)
+        revert()
+    }
+    
 </script>
