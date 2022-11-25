@@ -1,4 +1,4 @@
-<!-- 信息更改页面 -->
+<!-- 新建组件 -->
 <template>
     <div id="word">
         <el-dialog

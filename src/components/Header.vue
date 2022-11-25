@@ -78,6 +78,8 @@
         <!-- <el-dialog v-model="dialogQuery" title="查询" width="700px"  >
             <Query @revert="revert"></Query>
         </el-dialog> -->
+        <Query v-model:dialogQuery="dialogQuery"></Query>
+        
     </div>
 </template>
 <script lang="ts" setup>
@@ -85,7 +87,8 @@
     import Query from '../components/Query.vue'
     import { ref } from 'vue'
 
-    const dialogWord = ref(false)  //新建窗口是否显示
+    const dialogWord = ref(false) //新建窗口是否显示
+    const dialogQuery = ref(false) 
     // const dialogQuery = ref(false)//查询窗口控制
     
     // const revert=(val)=>{
@@ -108,6 +111,12 @@
     const handleSelect = (key: string, keyPath: string[]) => {
         if(key=="1"){
             dialogWord.value = true
+        }
+        if(key=="6"){
+            location. reload()
+        }
+        if(key=="7"){
+            dialogQuery.value = true
         }
     }
     
