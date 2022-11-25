@@ -11,6 +11,8 @@ import Login from "../components/Login.vue";
   #loginView{
     width: 100%;
     height: 100%;
+    max-width: 1920px;
+    max-height: 1080px;
     background-repeat: no-repeat;
     background-image: url("../assets/bg.webp") ;
     background-size:100%;
