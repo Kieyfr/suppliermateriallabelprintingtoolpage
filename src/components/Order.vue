@@ -23,7 +23,8 @@
 
 <script lang="ts" setup>
 
-import { ref ,reactive} from 'vue'
+import { ref ,reactive,computed} from 'vue'
+import {useStore,mapState } from 'vuex'
 
 const multipleSelection = ref<Orders[]>([])
 const currentRow = ref()
@@ -40,27 +41,28 @@ let order={
   VBILLCODE: "",
   SUPPLOTNUM:""
 }
-orders.push(order);
 const emit=defineEmits(['clickCurrentChange','handleSelectionChange'])
 
+//获取公用数据
+const store = useStore()
+const state = store.state
+
+//更改复选框事件
 const handleSelectionChange = (val: Orders[]) => {
-  multipleSelection.value = val
-  let orders=val
-  console.log(orders)
-  emit("handleSelectionChange",orders)
+  // multipleSelection.value = val
+  orders=val
+  store.commit("modOrders",orders)
 }
 
     
 
 //选中后触发事件
-const clickCurrentChange = (val: Orders | undefined) => {
-  currentRow.value = val
-  console.log(val)
-  //val是获取后行的数据
-  
+const clickCurrentChange = (val: Orders ) => {
+  // currentRow.value = val
+  order=val;
+  store.commit("modOrder",order)
 }
 const filterTag = (value: string, row: Orders) => {
-
   console.log(value)
 
   // if(value == "全部"){
@@ -87,7 +89,7 @@ const tableData: Orders[] = [
     SUPPLOTNUM:"24325325325"
   },
   {
-    SHORTNAME: '帆帆',
+    SHORTNAME: '帆帆adaa',
     MATERNAME: 'Tom',
     VBILLCODE: '24211421421414',
     SUPPLOTNUM:"24325325325"
