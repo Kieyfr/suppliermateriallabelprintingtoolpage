@@ -19,6 +19,19 @@ export default createStore({
       STARTDATE:"",//起始日期
       CLOSINGDATE:""//截止日期
     },
+    printInfo:{
+      SUPPSHORTNAME:"测试",       //供应商简称
+      MATERNAME:"测试",           //物料名称
+      SUPPMATERCODE:"测试",       //供应商料号
+      PRODUCEDATE:"测试",           //生产日期
+      VBILLCODE:"75777575",           //订单号
+      SUPPLOTNUM:"测试",          //供应商批号
+      LOTNUM:"测试",            //批号
+      MATERMATERIALSPEC:"测试",   //物料规格
+      MATERMATERIALTYPE:"测试",   //物料颜色
+      NETWEIGHT:"测试",           //净重
+      GROSSWEIGHT:"测试"         //毛重
+    }
   },
   getters: {},
   mutations: {
