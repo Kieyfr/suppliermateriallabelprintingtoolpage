@@ -39,6 +39,18 @@ const routes: Array<RouteRecordRaw> = [
       import("../components/Record.vue"),
   },
   {
+    path: "/print",
+    name: "Print",
+    component: () =>
+      import("../components/Print.vue"),
+  },
+  {
+    path: "/test",
+    name: "Test",
+    component: () =>
+      import("../components/Test.vue"),
+  },
+  {
     path: "/word",
     name: "Word",
     component: () =>
