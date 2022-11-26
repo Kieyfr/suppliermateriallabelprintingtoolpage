@@ -1,12 +1,6 @@
 <template>
     <div id="print">
-        <el-dialog
-            v-model="props.dialogPrint"
-            title="打印"
-            width="12cm"
-            :before-close="handleClose"
-            :close-on-click-modal="false"
-        >
+        
         <div id="printArea">
             <table id="printtable">
                 <tr>
@@ -48,9 +42,8 @@
                     <td>{{printInfo.GROSSWEIGHT}}</td>
                 </tr>
             </table>
-            <button  @click="outputPrint" class="no-print">打印</button>
+            <button  class="no-print">打印</button>
             </div>
-        </el-dialog>
         </div>
 </template>
 
@@ -71,21 +64,16 @@
         }
         
        
-    const props = defineProps({
-        dialogPrint: Boolean
-    })
-    const emit = defineEmits(['update:dialogPrint'])
+    
 
     //打印结束事件
     const printEnd=()=>{
         
-        handleClose
+        
         console.log("打印成功")
         console.log("打印成功了")
     }
-    const handleClose = () => {
-        emit('update:dialogPrint', false)
-    }
+    
 
     //获取公用数据
     
