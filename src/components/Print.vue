@@ -4,10 +4,11 @@
         <div id="printArea">
             <table id="printtable">
                 <tr>
-                    <td style="width:1.8cm">供应商简称</td>
+                    <td style="width:1.6cm">供应商简称</td>
                     <td colspan="2" >{{printInfo.SUPPSHORTNAME}}</td>
                     <td rowspan="3" style="padding: 0;">
-                            <vue-qr :text=printInfo.VBILLCODE  size="70"></vue-qr> 
+                            <vue-qr :text=printInfo.VBILLCODE  size="72"></vue-qr>
+                            
                     </td>
                 </tr>
                 <tr>
@@ -51,7 +52,7 @@
     import Print from 'print-js'
     import VueQr from 'vue-qr/src/packages/vue-qr.vue'
     import {useStore,mapState} from 'vuex'
-    
+   
 
     const outputPrint=()=> {
             Print({
@@ -66,6 +67,7 @@
         defineExpose({
 	        outputPrint
         })
+   
     
 
     //打印结束事件
@@ -114,7 +116,7 @@
                 td{
                     
                     border: 1px black solid;
-                    font-size: 12px;
+                    font-size: 10px;
                     
                     img{
                         
@@ -129,10 +131,8 @@
         }
     }
     }
-    @media print{
+    
         @page {
-            
+            size:10.6cm 4.6cm;
         }
-       
-    }
 </style>
