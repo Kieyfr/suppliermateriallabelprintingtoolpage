@@ -1,24 +1,16 @@
-<!-- 新建组件 -->
+<!-- 信息更改页面 -->
 <template>
     <div id="word">
-        <el-dialog
-            v-model="props.dialogWord"
-            title="新建"
-            width="800px"
-            :before-close="handleClose"
-            :close-on-click-modal="false"
-        >
+        <el-dialog v-model="props.dialogWord" title="新建" width="800px" :before-close="handleClose" :close-on-click-modal="false">
             <el-form :model="printSheet" label-width="100px" :inline="true">
                 <el-form-item label="供应商名称">
-                    <el-input v-model="printSheet.SUPPNAME" disabled/>
+                    <el-input v-model="printSheet.SUPPSHORTNAME" disabled/>
                 </el-form-item>
                 <el-form-item label="新亚物料编号">
                     <Material v-model:printSheet="printSheet"></Material>
-                    <!-- <el-input  v-model="printSheet.MATERCODE" @click="dialogTableVisible = true"/> -->
-                    <!-- <el-input  v-model="printSheet.MATERCODE"/> -->
                 </el-form-item>
                 <el-form-item label="供应商料号">
-                    <el-input v-model="printSheet.SUPPMATERCODE" />
+                    <el-input v-model="printSheet.SUPPMATERCODE"/>
                 </el-form-item>
                 <el-form-item label="物料名称">
                     <el-input v-model="printSheet.MATERNAME" disabled />
@@ -27,7 +19,7 @@
                     <el-input v-model="printSheet.VBILLCODE" disabled/>
                 </el-form-item>
                 <el-form-item label="批号">
-                    <el-input v-model="printSheet.SUPPLOTNUM" disabled />
+                    <el-input v-model="LOTNUM" disabled />
                 </el-form-item>
                 <el-form-item label="净重">
                     <el-input-number :precision="3" v-model="printSheet.NETWEIGHT"  :min="0"/>
@@ -36,15 +28,13 @@
                     <el-input-number :precision="3" v-model="printSheet.GROSSWEIGHT" :min="0" />
                 </el-form-item>
                 <el-form-item label="供应商批号">
-                    <el-input v-model="printSheet.SUPPLOTNUM" />
+                    <el-input v-model="printSheet.SUPPLOTNUM"/>
                 </el-form-item>
-                <!-- <el-form-item label="绞距" v-if="flag=='铜丝'"> -->
-                <!-- <el-form-item label="绞距">
+                <el-form-item label="绞距" v-if="printSheet.MATERCODE.substring(0,2)==='06'">
                     <el-input v-model="printSheet.MATERMATERIALSPEC" />
-                </el-form-item> -->
-                <!-- <el-form-item label="颜色" v-else-if="flag=='胶料'"> -->
-                <el-form-item label="颜色">
-                    <el-input v-model="printSheet.MATERMATERIALTYPE" />
+                </el-form-item>
+                <el-form-item label="颜色" v-else>
+                    <el-input v-model="printSheet.MATERMATERIALTYPE"/>
                 </el-form-item>
                 <el-form-item label="供应商代码">
                     <el-input v-model="printSheet.SUPPCODE" disabled />
@@ -64,8 +54,7 @@
                         type="date"
                     />
                 </el-form-item>
-                <el-button type="primary">保存</el-button>
-                <el-button type="primary">保存并打印</el-button>
+                <el-button @click="handleSubit" type="primary">打印</el-button>
                 <el-button @click="handleClose">退出</el-button>
             </el-form>
         </el-dialog>
@@ -84,24 +73,61 @@
     }
 </style>
 <script lang="ts" setup>
-//  import { el } from 'element-plus/es/locale';
-import { reactive , ref, onMounted,inject,watch} from 'vue'
+import { reactive , ref, onMounted, onUpdated} from 'vue'
 import Material from '../components/Material.vue'
+import { PrintSheet } from '../types/index'
+import { getLotNumApi } from '../api/getLotNum'
+import { getSuppUserApi } from '../api/getSuppUser'
+import { addPrintSheetApi } from '../api/addPrintSheet'
+import { ElMessage } from 'element-plus'
+
 const props = defineProps({
     dialogWord: Boolean
 })
 
 const emit = defineEmits(['update:dialogWord'])
 
+const handleSubit = () => {
+    if(printSheet.MATERCODE==''){
+        ElMessage.error('请选择新亚物料编号')
+    }
+    else if(printSheet.SUPPMATERCODE==''){
+        ElMessage.error('请填写供应商料号')
+    }
+    else if(printSheet.SUPPLOTNUM==''){
+        ElMessage.error('请填写供应商批号')
+    }
+    else if(printSheet.NETWEIGHT==0.00){
+        ElMessage.error('请设置净重')
+    }
+    else if(printSheet.GROSSWEIGHT==0.00){
+        ElMessage.error('请设置毛重')
+    }
+    else if(printSheet.GROSSWEIGHT<=printSheet.NETWEIGHT){
+        ElMessage.error('毛重需要大于等于净重')
+    }
+    else {
+        addPrintSheetApi(printSheet).then((res) => {
+            if(res.state=='200'){
+                ElMessage.success('添加成功')
+            }else if(res.state=='403'){
+                ElMessage.error('订单重复，请选择其他订单')
+                return
+            }else if(res.state=='500'){
+                ElMessage.error('添加失败')
+            }
+        }) 
+        handleClose()
+    }
+}
+
 const handleClose = () => {
     emit('update:dialogWord', false)
 }
 
-    // const dialogTableVisible = ref(false)
-
 const dialogMaterial = ref(false)
 
-const printSheet=reactive({
+const printSheet: PrintSheet=reactive({
     PK_ORDER:'',            //采购订单主键
     PK_ORDER_B:'',          //采购订单明细主键
     SUPPCODE:'',            //供应商代码
@@ -114,50 +140,38 @@ const printSheet=reactive({
     MATERNAME:'',           //物料名称
     MATERMATERIALSPEC:'',   //物料规格
     MATERMATERIALTYPE:'',   //物料颜色
-    PRODUCEDATE:'',         //生产日期
+    PRODUCEDATE: new Date,         //生产日期
     NETWEIGHT:0.000,        //净重
     GROSSWEIGHT:0.000,      //毛重
-    PRINT:false             //是否打印
+    NUM: 0.00,
+    PRINT:true             //是否可以打印
 })
+
+const LOTNUM = ref(0)
 const PRINTQUANTITY = ref(1)//打印数量
 const PRINTDATE = ref(new Date)//打印日期
 
+onMounted(()=>{
+    getSuppUserApi().then((res) => {
+        if(res.state=='200'){
+            printSheet.SUPPCODE = res.data.code
+            printSheet.SUPPNAME = res.data.name
+            printSheet.SUPPSHORTNAME = res.data.shortname
+        }
+    });
+})
 
-
-    // const  material=reactive({
-    //     VBILLCODE: "",
-    //     MATERCODE: "",
-    //     MATERNAME: "",
-    //     MATERMATERIALSPEC: "",
-    //     MATERMATERIALTYPE: "",
-    //     });
-    // var result = ref(material);
-    // const clickMaterial=(val)=>{
-    //     result.value=val
-    //     printSheet.VBILLCODE=result.value.VBILLCODE
-    //     printSheet.MATERCODE=result.value.MATERCODE
-    //     printSheet.MATERNAME=result.value.MATERNAME
-    //     printSheet.MATERMATERIALSPEC=result.value.MATERMATERIALSPEC
-    //     printSheet.MATERMATERIALTYPE=result.value.MATERMATERIALTYPE
-    // }
-    // const clear=(val)=>{
-    //     dialogTableVisible.value=val
-    // }
-   
+onUpdated(() => {
+    if(props.dialogWord==true){
+        getLotNumApi().then((res) => {
+        if(res.state=='200'){
+            LOTNUM.value = res.data
+        }else if(res.state=='500'){
+            ElMessage.error('获取失败')
+        }
+    }) ;
+    }
     
-    // const pd=()=>{
-    //     var code=printSheet.SUPPCODE;
-    //     var type='';
-    //     let tsreg=/^06([0-9]|[a-z]|[A-Z]){7}$/;
-    //     let jlreg=/^10([0-9]|[a-z]|[A-Z]){7}$/;
-    //     if(tsreg.test(code)){
-    //         type='铜丝'
-    //     }else if(jlreg.test(code)){
-    //         type='胶料'
-    //     }else{
-            
-    //     }
-    //     return type
-    // }
-    // const flag=pd()
+
+})
 </script>

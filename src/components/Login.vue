@@ -58,7 +58,7 @@ const onSubmit = () => {
     loginApi(param).then((res) => {
         if(res.state=='200'){
             localStorage.setItem("accessToken", res.data)
-            router.push('/frame')
+            router.push('/index')
         }else if(res.state=='401'){
             ElMessage.error('密码错误')
         }else if(res.state=='404'){
@@ -92,9 +92,5 @@ const onReset = () => {
             width: 300px;
             margin: auto;
         }
-    }
-    body{
-        background-image: url("../assets/bg.webp");
-        background-size: 100%;
     }
 </style>
