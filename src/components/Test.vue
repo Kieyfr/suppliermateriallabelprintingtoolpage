@@ -14,6 +14,6 @@
 </script>
 <style lang="scss">
     .print{
-        // display: none;
+        display: none;
     }
 </style>

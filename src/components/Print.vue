@@ -114,7 +114,7 @@
                 td{
                     
                     border: 1px black solid;
-                    font-size: 8px;
+                    font-size: 12px;
                     
                     img{
                         
