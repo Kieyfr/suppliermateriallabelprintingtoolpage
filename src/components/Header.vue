@@ -1,12 +1,10 @@
 <template>
     <div id="header">
         <el-menu
-            :default-active="activeIndex"
             class="el-menu-demo"
             mode="horizontal"
             @select="handleSelect"
         >
-            <!-- <el-menu-item index="1" @click="dialogNew = true"> -->
             <el-menu-item index="1">
                 <el-icon>
                     <Document />
@@ -23,50 +21,19 @@
             </el-menu-item>
             <el-menu-item index="3">
                 <el-icon>
-                    <Delete />
-                    <icon-menu />
-                </el-icon>
-                <template #title>删除</template>
-            </el-menu-item>
-            <el-menu-item index="4">
-                <el-icon>
-                    <Back />
-                    <icon-menu />
-                </el-icon>
-                <template #title>取消</template>
-            </el-menu-item>
-            <el-menu-item index="5">
-                <el-icon>
                     <RefreshRight />
                     <icon-menu />
                 </el-icon>
                 <template #title>导入</template>
             </el-menu-item>
-            <!-- <el-menu-item index="6" @click="refresh"> -->
-            <el-menu-item index="6">
-                <el-icon>
-                    <Refresh />
-                    <icon-menu />
-                </el-icon>
-                <template #title>刷新</template>
-            </el-menu-item>
-            <!-- <el-menu-item index="7" @click="dialogQuery = true"> -->
-            <el-menu-item index="7">
+            <el-menu-item index="4">
                 <el-icon>
                     <Search />
                     <icon-menu />
                 </el-icon>
                 <template #title>查询</template>
             </el-menu-item>
-            <el-menu-item index="8">
-                <el-icon>
-                    <Setting />
-                    <icon-menu />
-                </el-icon>
-                <template #title>设置</template>
-            </el-menu-item>
-            <!-- <el-menu-item index="9" @click="LogOut"> -->
-            <el-menu-item index="9">
+            <el-menu-item index="5">
                 <el-icon>
                     <Close />
                     <icon-menu />
@@ -75,48 +42,38 @@
             </el-menu-item>
         </el-menu>
         <Word v-model:dialogWord="dialogWord"></Word>
-        <!-- <el-dialog v-model="dialogQuery" title="查询" width="700px"  >
-            <Query @revert="revert"></Query>
-        </el-dialog> -->
         <Query v-model:dialogQuery="dialogQuery"></Query>
-        
+        <Order></Order>
     </div>
 </template>
 <script lang="ts" setup>
     import Word from '../components/Word.vue'
     import Query from '../components/Query.vue'
+    import Order from "../components/Order.vue"
     import { ref } from 'vue'
+    import { useRouter } from 'vue-router';
 
     const dialogWord = ref(false) //新建窗口是否显示
     const dialogQuery = ref(false) 
-    // const dialogQuery = ref(false)//查询窗口控制
-    
-    // const revert=(val)=>{
-    //     dialogQuery.value=val
-    // }
-    // const close=(val)=>{
-    //     dialogNew.value=val
-    // }
-    //刷新
-    // const refresh=()=>{
-    //     location. reload()
-        
-    // }
-    // const LogOut=()=>{
-        
-    // }
-    
-    const activeIndex = ref('1');
+
+    const router = useRouter();
 
     const handleSelect = (key: string, keyPath: string[]) => {
         if(key=="1"){
             dialogWord.value = true
         }
-        if(key=="6"){
-            location. reload()
+        if(key=="2"){
+            
         }
-        if(key=="7"){
+        if(key=="3"){
+            
+        }
+        if(key=="4"){
             dialogQuery.value = true
+        }
+        if(key=="5"){
+            localStorage.removeItem("accessToken")
+            router.push('/')
         }
     }
     

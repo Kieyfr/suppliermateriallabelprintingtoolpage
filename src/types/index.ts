@@ -48,3 +48,25 @@ export interface  Materiels {
     matermaterialtype: string,
     num: number
 }
+
+export interface supplier{
+    suppCode: string,
+    suppName: string,
+    suppShortname: string,
+    password: string
+}
+
+export interface ShowPrintHistory {
+    PK_ORDER: string,            //采购订单主键
+    PK_ORDER_B: string,          //采购订单明细主键
+    MATERCODE: string,            //物料编码
+    SUPPMATERCODE: string,        //供应商料号
+    PRODUCEDATE: Date,          //生产日期
+    LOTNUM:string,              //批号
+    NETWEIGHT: number,        //净重
+    GROSSWEIGHT: number,      //毛重
+    SUPPLOTNUM: string,           //供应商批号
+    MATERMATERIALSPEC: string,    //物料规格
+    MATERMATERIALTYPE: string,    //物料颜色
+    PRINTDATE:Date                  //打印日期
+}

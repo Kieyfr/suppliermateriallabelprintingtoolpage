@@ -1,6 +1,6 @@
 <template>
   <div id="material">
-    <el-popover placement="bottom" width="auto" trigger="hover" :visible="visible">
+    <el-popover placement="bottom" width="auto" trigger="hover" >
         <template #reference>
           <el-input v-model="props.printSheet.MATERCODE" placeholder="请选择" readonly @click="openPopover"/>
         </template>
@@ -20,8 +20,6 @@ import { ElMessage } from 'element-plus'
 import { onMounted ,ref} from 'vue'
 import { Materiels } from '../types/index'
 
-let visible = ref(false)
-
 var materiels : Materiels[]=[];
 
 const props = defineProps({
@@ -34,10 +32,6 @@ const handleClose = () => {
   emit('update:printSheet', props.printSheet)
 }
 
-const openPopover = () => {
-  visible.value = true;
-}
-
 const getMaterial = (row:Materiels) => {
   props.printSheet.PK_ORDER=row.pk_ORDER
   props.printSheet.PK_ORDER_B=row.pk_ORDER_B
@@ -47,7 +41,6 @@ const getMaterial = (row:Materiels) => {
   props.printSheet.MATERMATERIALSPEC=row.matermaterialspec
   props.printSheet.MATERMATERIALTYPE=row.matermaterialtype
   props.printSheet.NUM=row.num
-  visible.value = false;
 }
 
 onMounted(() => {

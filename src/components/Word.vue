@@ -81,6 +81,10 @@ import { getSuppUserApi } from '../api/getSuppUser'
 import { addPrintSheetApi } from '../api/addPrintSheet'
 import { ElMessage } from 'element-plus'
 
+import {  inject } from 'vue'
+
+const reload = inject('reload')
+
 const props = defineProps({
     dialogWord: Boolean
 })
@@ -91,6 +95,11 @@ const handleSubit = () => {
     if(printSheet.MATERCODE==''){
         ElMessage.error('请选择新亚物料编号')
     }
+    // else if(printSheet.PRODUCEDATE.toString==new Date('01/01/01').toString){
+    //     console.log(printSheet.PRODUCEDATE.toString)
+    //     console.log(new Date('01/01/01').toString)
+    //     ElMessage.error('请选择正确的生产日期')
+    // }
     else if(printSheet.SUPPMATERCODE==''){
         ElMessage.error('请填写供应商料号')
     }
@@ -110,6 +119,7 @@ const handleSubit = () => {
         addPrintSheetApi(printSheet).then((res) => {
             if(res.state=='200'){
                 ElMessage.success('添加成功')
+                reload()
             }else if(res.state=='403'){
                 ElMessage.error('订单重复，请选择其他订单')
                 return
@@ -140,7 +150,7 @@ const printSheet: PrintSheet=reactive({
     MATERNAME:'',           //物料名称
     MATERMATERIALSPEC:'',   //物料规格
     MATERMATERIALTYPE:'',   //物料颜色
-    PRODUCEDATE: new Date,         //生产日期
+    PRODUCEDATE: new Date(),         //生产日期
     NETWEIGHT:0.000,        //净重
     GROSSWEIGHT:0.000,      //毛重
     NUM: 0.00,

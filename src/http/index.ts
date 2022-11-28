@@ -7,7 +7,6 @@ const service = axios.create({
     headers: {
         // 设置后端需要的传参类型
         'Content-Type': 'application/x-www-form-urlencoded',
-        'accessToken': localStorage.getItem("accessToken"),
         'X-Requested-With': 'XMLHttpRequest',
     },
 })
@@ -25,6 +24,7 @@ declare module "axios" {
 service.interceptors.request.use(
     function (config) {
         // 在发送请求之前做些什么
+        config.headers!['accessToken'] = localStorage.getItem('accessToken')
         return config
     },
     function (error) {
