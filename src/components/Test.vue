@@ -1,12 +1,19 @@
 <template>
-    <button @click="dialogPrint=true">点击</button>
-    <Print v-model:dialogPrint="dialogPrint"></Print>
+    <button @click="outputPrint">点击</button>
+    <Print ref="printRef" class="print"></Print>
 </template>
 <script lang="ts" setup>
     import Print from "../components/Print.vue"
-    import {ref} from "vue"
-    const dialogPrint = ref(false) 
+    import {ref,reactive} from "vue"
+    const printRef =ref()
+    const outputPrint = () => {
+    
+    
+        printRef.value.outputPrint()
+    };
 </script>
-<style>
-
+<style lang="scss">
+    .print{
+        // display: none;
+    }
 </style>

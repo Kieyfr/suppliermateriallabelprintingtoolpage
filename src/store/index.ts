@@ -24,7 +24,7 @@ export default createStore({
       MATERNAME:"测试",           //物料名称
       SUPPMATERCODE:"测试",       //供应商料号
       PRODUCEDATE:"测试",           //生产日期
-      VBILLCODE:"75777575",           //订单号
+      VBILLCODE:"123456789012345",           //订单号
       SUPPLOTNUM:"测试",          //供应商批号
       LOTNUM:"测试",            //批号
       MATERMATERIALSPEC:"测试",   //物料规格

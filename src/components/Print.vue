@@ -5,9 +5,9 @@
             <table id="printtable">
                 <tr>
                     <td style="width:1.8cm">供应商简称</td>
-                    <td colspan="2" style="width:5.6cm">{{printInfo.SUPPSHORTNAME}}</td>
+                    <td colspan="2" >{{printInfo.SUPPSHORTNAME}}</td>
                     <td rowspan="3" style="padding: 0;">
-                            <vue-qr :text=printInfo.VBILLCODE  size="74"></vue-qr> 
+                            <vue-qr :text=printInfo.VBILLCODE  size="70"></vue-qr> 
                     </td>
                 </tr>
                 <tr>
@@ -20,13 +20,13 @@
                 </tr>
                 <tr>
                     <td>生产日期</td>
-                    <td style="width:5.3cm">{{printInfo.PRODUCEDATE}}</td>
+                    <td style="width:4cm">{{printInfo.PRODUCEDATE}}</td>
                     <td >订单号</td>
                     <td >{{printInfo.VBILLCODE}}</td>
                 </tr>
                 <tr>
                     <td>供应商批号</td>
-                    <td>{{printInfo.SUPPSHORTNAME}}</td>
+                    <td style="width:4cm">{{printInfo.SUPPSHORTNAME}}</td>
                     <td>胶距</td>
                     <td>{{printInfo.MATERMATERIALSPEC}}</td>
                 </tr>
@@ -37,12 +37,12 @@
                 </tr>
                 <tr >
                     <td>净重</td>
-                    <td>{{printInfo.NETWEIGHT}}</td>
+                    <td style="width:4cm">{{printInfo.NETWEIGHT}}</td>
                     <td>毛重</td>
-                    <td>{{printInfo.GROSSWEIGHT}}</td>
+                    <td>{{printInfo.GROSSWEIGHT}}<span class="unit">KG</span></td>
                 </tr>
             </table>
-            <button  class="no-print">打印</button>
+            
             </div>
         </div>
 </template>
@@ -63,7 +63,9 @@
             
         }
         
-       
+        defineExpose({
+	        outputPrint
+        })
     
 
     //打印结束事件
@@ -102,20 +104,25 @@
             
         }
         table{
-            table-layout: fixed;
+            // table-layout: fixed;
             width: 10.4cm;
             
             border: 2px black solid;
             padding: 0%;
-            font-size: 10px;
             tr{
                 padding: 0%;
                 td{
                     
-                    border: 0.5px black solid; 
-                    height: 0.5px;
+                    border: 1px black solid;
+                    font-size: 8px;
+                    
                     img{
-                        padding: 0;
+                        
+                        padding: 1px;
+                    }
+                    .unit{
+                        font-weight: bold;
+                        text-align: right;
                     }
                 }
             }
