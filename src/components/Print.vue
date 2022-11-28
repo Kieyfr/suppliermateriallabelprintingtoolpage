@@ -37,7 +37,7 @@
                 </tr>
                 <tr >
                     <td>净重</td>
-                    <td style="width:4cm">{{printInfo.NETWEIGHT}}</td>
+                    <td>{{printInfo.NETWEIGHT}}<span class="unit">KG</span></td>
                     <td>毛重</td>
                     <td>{{printInfo.GROSSWEIGHT}}<span class="unit">KG</span></td>
                 </tr>
