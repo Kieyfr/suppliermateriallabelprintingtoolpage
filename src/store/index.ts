@@ -22,6 +22,7 @@ export default createStore({
     printInfo:{
       SUPPSHORTNAME:"",       //供应商简称
       MATERNAME:"",           //物料名称
+      MATERCODE:"",           //物料编码
       SUPPMATERCODE:"",       //供应商料号
       PRODUCEDATE:"",           //生产日期
       VBILLCODE:"",           //订单号

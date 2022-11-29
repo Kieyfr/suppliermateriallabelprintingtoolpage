@@ -59,6 +59,7 @@
             </el-form>
         </el-dialog>
     </div>
+    <Print ref="printRef" class="print"></Print>
 </template>
 <style lang="scss">
     #word{
@@ -71,6 +72,9 @@
             }
         }
     }
+    .print{
+        display: none;
+    }
 </style>
 <script lang="ts" setup>
 import { reactive , ref, onMounted, onUpdated} from 'vue'
@@ -80,8 +84,9 @@ import { getSuppUserApi } from '../api/getSuppUser'
 import { addPrintSheetApi } from '../api/addPrintSheet'
 import { addPrintHistoryApi } from '../api/addPrintHistory'
 import { ElMessage } from 'element-plus'
-
+import {useStore,mapState} from 'vuex'
 import {  inject } from 'vue'
+import Print from '../components/Print.vue'
 
 const reload = inject('reload')
 
@@ -116,9 +121,12 @@ const handleSubit = () => {
         ElMessage.error('毛重需要大于等于净重')
     }
     else {
+        modprintInfo()
+        CreateOneFormPage()
         addPrintSheetApi(printSheet).then((res) => {
             if(res.state=='200'){
                 ElMessage.success('添加成功')
+                
                 addPrintHistory()
                 reload()
             }else if(res.state=='403'){
@@ -131,6 +139,26 @@ const handleSubit = () => {
         handleClose()
     }
 }
+
+//获取公用数据
+const store = useStore()
+const state = store.state
+
+let printInfo2={
+      SUPPSHORTNAME:"",       //供应商简称
+      MATERNAME:"",           //物料名称
+      MATERCODE:"",           //物料代码
+      SUPPMATERCODE:"",       //供应商料号
+      PRODUCEDATE:"",           //生产日期
+      VBILLCODE:"",           //订单号
+      SUPPLOTNUM:"",          //供应商批号
+      LOTNUM:"",            //批号
+      MATERMATERIALSPEC:"",   //物料规格
+      MATERMATERIALTYPE:"",   //物料颜色
+      NETWEIGHT:"",           //净重
+      GROSSWEIGHT:""         //毛重
+    }
+
 
 const addPrintHistory=()=>{
     const param={
@@ -169,9 +197,38 @@ const printSheet: PrintSheet=reactive({
     PRINT:true             //是否可以打印
 })
 
+
+
 let LOTNUM = ref(0)
 const PRINTQUANTITY = ref(1)//打印数量
 const PRINTDATE = ref(new Date)//打印日期
+
+
+const printRef =ref()
+
+//打开打印方法
+const CreateOneFormPage = () => {
+    printRef.value.CreateOneFormPage()
+};
+
+//更改全局信息方法
+const modprintInfo=()=>{
+    printInfo2.SUPPSHORTNAME=printSheet.SUPPSHORTNAME
+    printInfo2.MATERCODE=printSheet.MATERCODE
+    printInfo2.MATERNAME=printSheet.MATERNAME
+    printInfo2.SUPPMATERCODE=printSheet.SUPPMATERCODE
+    printInfo2.PRODUCEDATE=printSheet.PRODUCEDATE
+    printInfo2.SUPPLOTNUM=printSheet.SUPPLOTNUM
+    printInfo2.VBILLCODE=printSheet.VBILLCODE
+    printInfo2.LOTNUM=LOTNUM
+    printInfo2.MATERMATERIALSPEC=printSheet.MATERMATERIALSPEC
+    printInfo2.MATERMATERIALTYPE=printSheet.MATERMATERIALTYPE
+    printInfo2.NETWEIGHT=printSheet.NETWEIGHT
+    printInfo2.GROSSWEIGHT=printSheet.GROSSWEIGHT
+    console.log(state.printInfo.MATERMATERIALTYPE)
+    store.commit("modPrintInfo",printInfo2)
+
+}
 
 onMounted(()=>{
     getSuppUserApi().then((res) => {

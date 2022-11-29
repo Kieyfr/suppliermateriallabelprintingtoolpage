@@ -28,8 +28,10 @@
                 <tr>
                     <td>供应商批号</td>
                     <td style="width:4cm">{{printInfo.SUPPLOTNUM}}</td>
-                    <td>绞距</td>
-                    <td>{{printInfo.MATERMATERIALSPEC}}</td>
+                    <td v-if="printInfo.MATERCODE.substring(0,2)==='06'">绞距</td>
+                    <td v-else>颜色</td>
+                    <td v-if="printInfo.MATERCODE.substring(0,2)==='06'">{{printInfo.MATERMATERIALSPEC}}</td>
+                    <td v-else>{{printInfo.MATERMATERIALTYPE}}</td>
                 </tr>
                 <tr>
                     <td>批号</td>
