@@ -57,16 +57,16 @@ export interface supplier{
 }
 
 export interface ShowPrintHistory {
-    PK_ORDER: string,            //采购订单主键
-    PK_ORDER_B: string,          //采购订单明细主键
-    MATERCODE: string,            //物料编码
-    SUPPMATERCODE: string,        //供应商料号
-    PRODUCEDATE: Date,          //生产日期
-    LOTNUM:string,              //批号
-    NETWEIGHT: number,        //净重
-    GROSSWEIGHT: number,      //毛重
-    SUPPLOTNUM: string,           //供应商批号
-    MATERMATERIALSPEC: string,    //物料规格
-    MATERMATERIALTYPE: string,    //物料颜色
-    PRINTDATE:Date                  //打印日期
+    pk_ORDER: string,            //采购订单主键
+    pk_ORDER_B: string,          //采购订单明细主键
+    matername: string,            //物料编码
+    suppmatercode: string,        //供应商料号
+    producedate: Date,          //生产日期
+    lotnum:string,              //批号
+    netweight: number,        //净重
+    grossweight: number,      //毛重
+    supplotnum: string,           //供应商批号
+    matermaterialspec: string,    //物料规格
+    matermaterialtype: string,    //物料颜色
+    printdate:Date                  //打印日期
 }

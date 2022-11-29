@@ -7,7 +7,7 @@
                     <el-input v-model="printSheet.SUPPSHORTNAME" disabled/>
                 </el-form-item>
                 <el-form-item label="新亚物料编号">
-                    <Material v-model:printSheet="printSheet"></Material>
+                    <Material v-model:printSheet="printSheet" v-model:LOTNUM="LOTNUM"></Material>
                 </el-form-item>
                 <el-form-item label="供应商料号">
                     <el-input v-model="printSheet.SUPPMATERCODE"/>
@@ -28,7 +28,7 @@
                     <el-input-number :precision="3" v-model="printSheet.GROSSWEIGHT" :min="0" />
                 </el-form-item>
                 <el-form-item label="供应商批号">
-                    <el-input v-model="printSheet.SUPPLOTNUM"/>
+                    <el-input v-model="printSheet.SUPPLOTNUM" />
                 </el-form-item>
                 <el-form-item label="绞距" v-if="printSheet.MATERCODE.substring(0,2)==='06'">
                     <el-input v-model="printSheet.MATERMATERIALSPEC" />
@@ -76,9 +76,9 @@
 import { reactive , ref, onMounted, onUpdated} from 'vue'
 import Material from '../components/Material.vue'
 import { PrintSheet } from '../types/index'
-import { getLotNumApi } from '../api/getLotNum'
 import { getSuppUserApi } from '../api/getSuppUser'
 import { addPrintSheetApi } from '../api/addPrintSheet'
+import { addPrintHistoryApi } from '../api/addPrintHistory'
 import { ElMessage } from 'element-plus'
 
 import {  inject } from 'vue'
@@ -119,6 +119,7 @@ const handleSubit = () => {
         addPrintSheetApi(printSheet).then((res) => {
             if(res.state=='200'){
                 ElMessage.success('添加成功')
+                addPrintHistory()
                 reload()
             }else if(res.state=='403'){
                 ElMessage.error('订单重复，请选择其他订单')
@@ -129,6 +130,17 @@ const handleSubit = () => {
         }) 
         handleClose()
     }
+}
+
+const addPrintHistory=()=>{
+    const param={
+      PK_ORDER: printSheet.PK_ORDER,            //采购订单主键
+      PK_ORDER_B: printSheet.PK_ORDER_B         //采购订单明细主键
+    }
+    addPrintHistoryApi(param).then((res) => {
+        
+    }) ;
+
 }
 
 const handleClose = () => {
@@ -157,7 +169,7 @@ const printSheet: PrintSheet=reactive({
     PRINT:true             //是否可以打印
 })
 
-const LOTNUM = ref(0)
+let LOTNUM = ref(0)
 const PRINTQUANTITY = ref(1)//打印数量
 const PRINTDATE = ref(new Date)//打印日期
 
@@ -169,19 +181,5 @@ onMounted(()=>{
             printSheet.SUPPSHORTNAME = res.data.shortname
         }
     });
-})
-
-onUpdated(() => {
-    if(props.dialogWord==true){
-        getLotNumApi().then((res) => {
-        if(res.state=='200'){
-            LOTNUM.value = res.data
-        }else if(res.state=='500'){
-            ElMessage.error('获取失败')
-        }
-    }) ;
-    }
-    
-
 })
 </script>

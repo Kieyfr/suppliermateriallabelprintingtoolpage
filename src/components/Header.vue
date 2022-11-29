@@ -14,26 +14,12 @@
             </el-menu-item>
             <el-menu-item index="2">
                 <el-icon>
-                    <EditPen />
-                    <icon-menu />
-                </el-icon>
-                <template #title>修改</template>
-            </el-menu-item>
-            <el-menu-item index="3">
-                <el-icon>
-                    <RefreshRight />
-                    <icon-menu />
-                </el-icon>
-                <template #title>导入</template>
-            </el-menu-item>
-            <el-menu-item index="4">
-                <el-icon>
                     <Search />
                     <icon-menu />
                 </el-icon>
                 <template #title>查询</template>
             </el-menu-item>
-            <el-menu-item index="5">
+            <el-menu-item index="3">
                 <el-icon>
                     <Close />
                     <icon-menu />
@@ -63,15 +49,9 @@
             dialogWord.value = true
         }
         if(key=="2"){
-            
-        }
-        if(key=="3"){
-            
-        }
-        if(key=="4"){
             dialogQuery.value = true
         }
-        if(key=="5"){
+        if(key=="3"){
             localStorage.removeItem("accessToken")
             router.push('/')
         }

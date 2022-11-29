@@ -8,33 +8,36 @@
             :before-close="handleClose"
             :close-on-click-modal="false"
         >
-            <el-form :model="queryInfo" label-width="120px" :inline="true">
-                        <el-form-item label="新亚物料名称">
-                            <el-input v-model="queryInfo.MATERNAME"/>
+            <el-form :model="selInfo" label-width="100px" :inline="true">
+                        <el-form-item label="供应商料号">
+                            <el-input v-model="selInfo.SUPPMATERCODE"/>
+                        </el-form-item>
+                        <el-form-item label="供应商批号">
+                            <el-input v-model="selInfo.SUPPLOTNUM"/>
+                        </el-form-item>
+                        <el-form-item label="订单号">
+                            <el-input v-model="selInfo.VBILLCODE"/>
+                        </el-form-item>
+                        <el-form-item label="是否打印完成">
+                            <el-radio-group v-model="selInfo.COMPLETION">
+                                <el-radio label="全部" />
+                                <el-radio label="未完成" />
+                                <el-radio label="已完成" />
+                            </el-radio-group>
                         </el-form-item>
                         <el-form-item label="查询日期">
                             <el-date-picker
-                                v-model="queryInfo.STARTDATE"
+                                v-model="selInfo.STARTDATE"
                                 type="date"
                                 :size="10"
                             />
                         </el-form-item>
-                        <el-form-item label="供应商料号">
-                            <el-input v-model="queryInfo.SUPPMATERCODE"/>
-                        </el-form-item>
-                    
                         <el-form-item label="截止日期">
                             <el-date-picker
-                                v-model="queryInfo.CLOSINGDATE"
+                                v-model="selInfo.ENDDATE"
                                 type="date"
                                 :size="10"
                             />
-                        </el-form-item>
-                        <el-form-item label="订单号">
-                            <el-input v-model="queryInfo.VBILLCODE"/>
-                        </el-form-item>
-                        <el-form-item label="批号">
-                            <el-input v-model="queryInfo.SUPPLOTNUM"/>
                         </el-form-item>
                         <el-button type="primary" @click="query" >查询</el-button>
                         <el-button @click="handleClose">返回</el-button>
@@ -42,34 +45,17 @@
         </el-dialog>
     </div>
 </template>
-<style lang="scss">
-    #query{
-        width: 600px;
-        .el-form-item{
-            width: 120x;
-            .el-button{
-                margin-right: 30px;
-            }
-            .el-form-item__label{
-                // justify-content: flex-start;
-                widows: 120px;
-            }
-            .el-form-item__content{
-                width: 220px;
-            }
-        }
-    }
-</style>
 <script lang="ts" setup>
     import { reactive } from 'vue'
-    import {useStore,mapState} from 'vuex'
-    const queryInfo=reactive({
-        MATERNAME:"",//物料名称
-        SUPPMATERCODE:"",//供应商料号
-        VBILLCODE:"",//订单号
-        SUPPLOTNUM:"",//供应商批号
-        STARTDATE:"",//起始日期
-        CLOSINGDATE:""//截止日期
+    import { ElMessage } from 'element-plus'
+    import { getIfPrintSheetsApi } from '../api/getIfPrintSheets'
+    const selInfo=reactive({
+        SUPPMATERCODE:" ",//供应商料号
+        VBILLCODE:" ",//订单号
+        SUPPLOTNUM:" ",//供应商批号
+        COMPLETION:"全部",//是否完成
+        STARTDATE:"2022-11-29",//起始日期
+        ENDDATE:"2022-11-29"//截止日期
     })
     const props = defineProps({
         dialogQuery: Boolean
@@ -79,15 +65,44 @@
     const handleClose = () => {
         emit('update:dialogQuery', false)
     }
-    
-    //获取公用数据
-    const store = useStore()
-    const state = store.state
-    
 
     const query=()=>{
-        store.commit("modQueryCriteria",queryInfo)
+        const param = {
+            SUPPMATERCODE:selInfo.SUPPMATERCODE,//供应商料号
+            VBILLCODE:selInfo.VBILLCODE,//订单号
+            SUPPLOTNUM:selInfo.SUPPLOTNUM,//供应商批号
+            COMPLETION:selInfo.COMPLETION,//是否完成
+            STARTDATE:selInfo.STARTDATE,//起始日期
+            ENDDATE:selInfo.ENDDATE//截止日期
+        }
+        console.log(param)
+        getIfPrintSheetsApi(param).then((res) => {
+            if(res.state=='200'){  
+                console.log(res.data)
+            }else if(res.state=='500'){
+                ElMessage.error(res.msg)
+            }
+        }) 
         handleClose()
     }
     
 </script>
+
+<style lang="scss">
+    #query{
+        .el-form-item{
+            width: 350px;
+            margin-right: 5px;
+            margin-left: 5px;
+            .el-form-item__label{
+                justify-content: flex-start;
+            }
+            .el-form-item__content{
+                min-width: 250px;
+                .el-input{
+                    width:220px
+                }
+            }
+        }
+    }
+</style>
