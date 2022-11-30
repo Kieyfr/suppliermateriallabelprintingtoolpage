@@ -2,41 +2,10 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/material",
-    name: "Material",
-    component: () =>
-      import("../components/Material.vue"),
-  },
-  
-  {
     path: "/login",
     name: "Login",
     component: () =>
       import("../views/LoginView.vue"),
-  },
-  {
-    path: "/header",
-    name: "Header",
-    component: () =>
-      import("../components/Header.vue"),
-  },
-  {
-    path: "/order",
-    name: "Order",
-    component: () =>
-      import("../components/Order.vue"),
-  },
-  {
-    path: "/query",
-    name: "Query",
-    component: () =>
-      import("../components/Query.vue"),
-  },
-  {
-    path: "/record",
-    name: "Record",
-    component: () =>
-      import("../components/Record.vue"),
   },
   {
     path: "/print",
@@ -51,17 +20,8 @@ const routes: Array<RouteRecordRaw> = [
       import("../components/Test.vue"),
   },
   {
-    path: "/word",
-    name: "Word",
-    component: () =>
-      import("../components/Word.vue"),
-  },
-  {
     path: "/",
-
-
     name: "LoginView",
-  
     component: () =>
       import("../views/LoginView.vue"),
   },
@@ -70,14 +30,7 @@ const routes: Array<RouteRecordRaw> = [
     name: "indexView",
     component: () =>
       import("../views/IndexView.vue"),
-  },
-  {
-    path: '/:catchAll(.*)',  //找到所有没有的路由 正则表达
-    name: 'errorView',
-    component: () => 
-      import( '../views/ErrorView.vue')
-  },
-  
+  }
 ];
 
 const router = createRouter({

@@ -2,7 +2,7 @@
 import http from '@/http/index'
 
 interface getIfPrintSheetsParam  {
-    SUPPMATERCODE:"",//供应商料号
+    SUPPMATERCODE:string,//供应商料号
     VBILLCODE: string,//订单号
     SUPPLOTNUM: string,//供应商批号
     COMPLETION: string,//是否完成
