@@ -48,20 +48,30 @@
         <el-table
             :data="showPrintHistorys"
             highlight-current-row
-            style="width: 100%"
-            max-height="280"
+            style="width: 1240px;font-size:12px"
+            height="280px"
             >
             <el-table-column type="index" width="50" />
-            <el-table-column property="matername" sortable label="物料名称" />
-            <el-table-column property="suppmatercode" sortable label="供应商料号" />
-            <el-table-column property="producedate" sortable label="生产日期" />
-            <el-table-column property="lotnum" sortable label="批号" />
-            <el-table-column property="netweight" sortable label="净重" />
-            <el-table-column property="grossweight" sortable label="毛重" />
-            <el-table-column property="supplotnum" sortable label="供应商批号" />
-            <el-table-column property="matermaterialspec" sortable label="物料规格" />
-            <el-table-column property="matermaterialtype" sortable label="物料颜色" />
-            <el-table-column property="printdate" sortable label="打印日期" />
+            <el-table-column property="matername" sortable label="物料名称" show-overflow-tooltip width="110"/>
+            <el-table-column property="suppmatercode" sortable label="供应商料号" show-overflow-tooltip width="120"/>
+            <el-table-column property="producedate" sortable label="生产日期" show-overflow-tooltip width="110"/>
+            <el-table-column property="lotnum" sortable label="批号" show-overflow-tooltip width="110"/>
+            <el-table-column property="netweight" sortable label="净重" show-overflow-tooltip width="80"/>
+            <el-table-column property="grossweight" sortable label="毛重" show-overflow-tooltip width="80"/>
+            <el-table-column property="supplotnum" sortable label="供应商批号" show-overflow-tooltip width="120"/>
+            <el-table-column property="matermaterialspec" sortable label="物料规格" show-overflow-tooltip width="110"/>
+            <el-table-column property="matermaterialtype" sortable label="物料颜色" show-overflow-tooltip width="110"/>
+            <el-table-column property="printdate" sortable label="打印日期" show-overflow-tooltip width="110"/>
+            <el-table-column label="操作" show-overflow-tooltip width="160">
+                <template #default="scope">
+                    <el-button size="small" @click="handleReprint(scope.row)">
+                        重打
+                    </el-button>
+                    <el-button size="small" type="danger" @click="handleDelete(scope.row)">
+                        删除
+                    </el-button>
+                </template>
+            </el-table-column>
         </el-table> 
     </div>
     <div id="word">
@@ -81,13 +91,22 @@
                             <template #reference>
                             <el-input v-model="printSheet.MATERCODE" placeholder="请选择" readonly @click="openPopover" />
                             </template>
-                                <el-table :data="materiels" style="width: 100%" height="240px" @row-click="getMaterial" v-click-outside= "onClickOutside">
-                                    <el-table-column prop="vbillcode" label="订单号" width="180" />
-                                    <el-table-column prop="matercode" label="物料编码" width="180" />
-                                    <el-table-column prop="matername" label="物料名称" width="150" />
-                                    <el-table-column prop="matermaterialspec" label="物料规格" width="150" />
-                                    <el-table-column prop="matermaterialtype" label="物料颜色" width="150"/>
-                                </el-table>
+                                <div v-click-outside= "onClickOutside">
+                                    <el-input
+                                        v-model="search"
+                                        class="w-50 m-2"
+                                        size="large"
+                                        style="width:200px;height: 32px;"
+                                    />
+                                    <el-button :icon="Search" @click="searchMateriels"/>
+                                    <el-table :data="materiels" style="width: 100%" height="240px" @row-click="getMaterial">
+                                        <el-table-column prop="vbillcode" label="订单号" width="180" />
+                                        <el-table-column prop="matercode" label="物料编码" width="180" />
+                                        <el-table-column prop="matername" label="物料名称" width="150" />
+                                        <el-table-column prop="matermaterialspec" label="物料规格" width="150" />
+                                        <el-table-column prop="matermaterialtype" label="物料颜色" width="150"/>
+                                    </el-table>
+                                </div>
                         </el-popover>
                     </div>
                 </el-form-item>
@@ -113,16 +132,16 @@
                     <el-input v-model="printSheet.SUPPLOTNUM"/>
                 </el-form-item>
                 <el-form-item label="绞距" v-if="printSheet.MATERCODE.substring(0,2)==='06'">
-                    <el-input v-model="printSheet.MATERMATERIALSPEC" />
+                    <el-input v-model="printSheet.MATERMATERIALSPEC" disabled/>
                 </el-form-item>
                 <el-form-item label="颜色" v-else>
-                    <el-input v-model="printSheet.MATERMATERIALTYPE"/>
+                    <el-input v-model="printSheet.MATERMATERIALTYPE" disabled/>
                 </el-form-item>
                 <el-form-item label="供应商代码">
                     <el-input v-model="printSheet.SUPPCODE" disabled />
                 </el-form-item>
                 <el-form-item label="打印数量" >
-                    <el-input-number :precision="0" v-model="PRINTQUANTITY" :min="1" />
+                    <el-input-number :precision="0" v-model="PRINTQUANTITY" :min="1" :max="printSheet.NUM"/>
                 </el-form-item>
                 <el-form-item label="生产日期">
                     <el-date-picker
@@ -190,7 +209,7 @@
                     <el-input v-model="printSheet.SUPPCODE" disabled />
                 </el-form-item>
                 <el-form-item label="打印数量" >
-                    <el-input-number :precision="0" v-model="PRINTQUANTITY" :min="1"/>
+                    <el-input-number :precision="0" v-model="PRINTQUANTITY" :min="1" :max="printSheet.NUM"/>
                 </el-form-item>
                 <el-form-item label="生产日期">
                     <el-date-picker
@@ -237,7 +256,7 @@
                                 <el-radio label="已完成" />
                             </el-radio-group>
                         </el-form-item>
-                        <el-form-item label="查询日期">
+                        <!-- <el-form-item label="查询日期">
                             <el-date-picker
                                 v-model="selInfo.STARTDATE"
                                 type="date"
@@ -250,7 +269,7 @@
                                 type="date"
                                 :size="10"
                             />
-                        </el-form-item>
+                        </el-form-item> -->
                         <el-button type="primary" @click="getIfPrintSheets" >查询</el-button>
                         <el-button @click="dialogQuery=false">返回</el-button>
             </el-form>
@@ -264,8 +283,9 @@
 <script lang="ts" setup>
 import { reactive , ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
-import { PrintSheet ,GetPrintSheet,Materiels ,ShowPrintHistory} from '../types/index'
+import { GetPrintSheet,Materiels ,ShowPrintHistory} from '../types/index'
 import { ElMessage ,ClickOutside as vClickOutside} from 'element-plus'
+import { Search } from '@element-plus/icons-vue'
 import { getSuppUserApi } from '../api/getSuppUser'
 import { addPrintSheetApi } from '../api/addPrintSheet'
 import { addPrintHistoryApi } from '../api/addPrintHistory'
@@ -274,6 +294,9 @@ import { getLotNumApi } from '../api/getLotNum'
 import { getPrintSheetsApi } from '../api/getPrintSheets'
 import { selPrintHistoryApi } from '../api/selPrintHistory'
 import { getIfPrintSheetsApi } from '../api/getIfPrintSheets'
+import { selPrintHistoryNumApi } from '../api/selPrintHistoryNum'
+import { searchMaterielsApi } from '../api/searchMateriels'
+import { delPrintHistoryApi } from '../api/delPrintHistory'
 
 const router = useRouter();
 
@@ -281,13 +304,15 @@ const dialogWord = ref(false)   //新建窗口是否显示
 const dialogQuery = ref(false)  //查询窗口是否显示
 const dialogModify = ref(false) //修改窗口是否显示
 
+const search = ref('') //修改窗口是否显示
+
 var visible = ref(false)    //气泡表格是否显示
 
 let LOTNUM = ref(0) //批号
 const PRINTQUANTITY = ref(1)//打印数量
 const PRINTDATE = ref(new Date)//打印日期
 
-var materiels : Materiels[]=[]; //物料信息表格
+var materiels : Materiels[]=reactive([]); //物料信息表格
 var getPrintSheet: GetPrintSheet[] = reactive([]);   //供应商打印类别
 var showPrintHistorys : ShowPrintHistory[]=reactive([]);
 
@@ -307,7 +332,7 @@ const printSheet = reactive({
     PRODUCEDATE: null,         //生产日期
     NETWEIGHT:0.000,        //净重
     GROSSWEIGHT:0.000,      //毛重
-    NUM: 0.00,
+    NUM: 1,
     PRINT:true             //是否可以打印
 })
 
@@ -323,9 +348,11 @@ const selInfo=reactive({
 //设置菜单选中触发
 const handleSelect = (key: string) => {
     if(key=="1"){
+        printSheetClear()
         dialogWord.value = true
     }
     if(key=="2"){
+        printSheetClear()
         dialogQuery.value = true
     }
     if(key=="3"){
@@ -375,7 +402,9 @@ const modhandleSubit = () => {
         ElMessage.error('毛重需要大于等于净重')
     }
     else {
-        addPrintHistory()
+        for(var i:number=0;i<PRINTQUANTITY.value;i++){
+                addPrintHistory()
+            }
         dialogModify.value=false
     }
 }
@@ -386,6 +415,7 @@ const openPopover = () => {
 }
 //隐藏气泡表格
 const onClickOutside = () => {
+    search.value=''
   visible.value=false
 }
 
@@ -407,7 +437,9 @@ const getMaterial = (row:Materiels) => {
 const addPrintSheet=()=>{
     addPrintSheetApi(printSheet).then((res) => {
         if(res.state=='200'){
-            addPrintHistory()
+            for(var i:number=0;i<PRINTQUANTITY.value;i++){
+                addPrintHistory()
+            }
             getPrintSheets()
             getMateriels()
         }else if(res.state=='403'){
@@ -430,13 +462,13 @@ const addPrintHistory=()=>{
       PRINTDATE: PRINTDATE.value,            //打印日期
     }
     addPrintHistoryApi(param).then((res) => {
+        getLotNum(printSheet.PK_ORDER_B)
         initselPrintHistory(printSheet.PK_ORDER_B)
         if(res.state=='201'){
             ElMessage.success("订单完成")
             getPrintSheets()
             showPrintHistorys.length = 0
         }
-        printSheetClear()
     }) ;
 }
 
@@ -444,7 +476,24 @@ const addPrintHistory=()=>{
 const getMateriels = () => {
     getMaterielsApi().then((res) => {
         if(res.state=='200'){
-          materiels = res.data
+            materiels.length=0
+            materiels.push(...res.data) 
+        }else if(res.state=='404'){
+            ElMessage.error('物料列表为空')
+        }
+    }) 
+}
+
+//查询物料列表
+const searchMateriels = () => {
+    const param = {
+        search: search.value
+    }
+    searchMaterielsApi(param).then((res) => {
+        if(res.state=='200'){
+            console.log(res.data)
+            materiels.length=0
+            materiels.push(...res.data) 
         }else if(res.state=='404'){
             ElMessage.error('物料列表为空')
         }
@@ -494,6 +543,7 @@ onMounted(()=>{
     getPrintSheets();
 })
 
+//双击打开修改页面
 const openModify=(row:GetPrintSheet)=>{
   printSheet.PK_ORDER=row.pk_ORDER
   printSheet.PK_ORDER_B=row.pk_ORDER_B
@@ -510,24 +560,53 @@ const openModify=(row:GetPrintSheet)=>{
   printSheet.PRODUCEDATE=row.producedate
   printSheet.NETWEIGHT=row.netweight
   printSheet.GROSSWEIGHT=row.grossweight
-  printSheet.NUM=row.num
+//   printSheet.NUM=row.num
   printSheet.PRINT=row.print
   getLotNum(printSheet.PK_ORDER_B) //批号
   PRINTQUANTITY.value = 1//打印数量
+  selPrintHistoryNum(row)
   dialogModify.value = true
 }
 
+//查询对应的打印历史数量
+const selPrintHistoryNum=(row:GetPrintSheet)=>{
+    const param={
+        PK_ORDER_B: row.pk_ORDER_B         //采购订单明细主键
+    }
+    selPrintHistoryNumApi(param).then((res) => {
+        if(res.state=='200'){
+            printSheet.NUM = res.data.num-res.data.historyNum
+        }
+    }) ;
+}
+
+//查询对应的打印历史
 const selPrintHistory=(row:GetPrintSheet)=>{
     const param={
         PK_ORDER_B: row.pk_ORDER_B         //采购订单明细主键
     }
     selPrintHistoryApi(param).then((res) => {
         if(res.state=='200'){
-        showPrintHistorys.length = 0
-        showPrintHistorys.push(...res.data)
+            showPrintHistorys.length = 0
+            showPrintHistorys.push(...res.data)
         }
     }) ;
 }
+
+//行查询对应的打印历史
+const hangselPrintHistory=(PK_ORDER_B:string)=>{
+    const param={
+        PK_ORDER_B: PK_ORDER_B         //采购订单明细主键
+    }
+    selPrintHistoryApi(param).then((res) => {
+        if(res.state=='200'){
+            showPrintHistorys.length = 0
+            showPrintHistorys.push(...res.data)
+        }
+    }) ;
+}
+
+//初始化历史记录
 const initselPrintHistory=(PK_ORDER_B:string)=>{
     const param={
         PK_ORDER_B: PK_ORDER_B         //采购订单明细主键
@@ -551,7 +630,7 @@ const printSheetClear = () => {
   printSheet.MATERNAME=''
   printSheet.MATERMATERIALSPEC=''
   printSheet.MATERMATERIALTYPE=''
-  printSheet.PRODUCEDATE=new Date(2000,0,1)
+  printSheet.PRODUCEDATE=null
   printSheet.NETWEIGHT=0.000
   printSheet.GROSSWEIGHT=0.000
   printSheet.NUM=0.00
@@ -560,6 +639,7 @@ const printSheetClear = () => {
   PRINTQUANTITY.value = 0
 }
 
+//查询对应的打印订单
 const getIfPrintSheets=()=>{
     const param = {
         SUPPMATERCODE:selInfo.SUPPMATERCODE,//供应商料号
@@ -581,8 +661,28 @@ const getIfPrintSheets=()=>{
         }
     }) 
 }
+
+const handleReprint=(row:ShowPrintHistory)=>{
+    console.log(row)
+}
+
+const handleDelete=(row:ShowPrintHistory)=>{
+    const param = {
+        PK_ORDER_B: row.pk_ORDER_B,
+        LOTNUM: row.lotnum
+    }
+    delPrintHistoryApi(param).then((res) => {
+        if(res.state=='200'){
+            hangselPrintHistory(row.pk_ORDER_B)
+        }else if(res.state=='404'){
+            ElMessage.error('物料列表为空')
+        }
+    }) 
+}
+
 </script>
 <style lang="scss">
+#indexView{
     #word{
         .el-form-item{
             width: 360px;
@@ -619,4 +719,5 @@ const getIfPrintSheets=()=>{
             }
         }
     }
+}
 </style>
