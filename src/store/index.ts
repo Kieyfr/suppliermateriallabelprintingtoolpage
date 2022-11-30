@@ -25,7 +25,7 @@ export default createStore({
       MATERCODE:"",           //物料编码
       SUPPMATERCODE:"",       //供应商料号
       PRODUCEDATE:"",           //生产日期
-      VBILLCODE:"",           //订单号
+      VBILLCODE:"123456789012345",           //订单号
       SUPPLOTNUM:"",          //供应商批号
       LOTNUM:"",            //批号
       MATERMATERIALSPEC:"",   //物料规格

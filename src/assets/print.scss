@@ -1,0 +1,46 @@
+
+
+#print{
+    margin: 0 auto;
+    
+    
+    #printArea{
+        width: 10.6cm;
+        
+        padding: 0;
+        
+        margin-top: 0;
+        table,tr，td{
+            border-collapse:collapse
+            
+        }
+        table{
+            
+            width: 10.4cm;
+            
+            border: 2px black solid;
+            padding: 0%;
+            tr{
+                padding: 0%;
+                td{
+                    
+                    border: 1px black solid;
+                    font-size: 10px;
+                    
+                    img{
+                        
+                        padding: 1px;
+                    }
+                    .unit{
+                        font-weight: bold;
+                        text-align: right;
+                    }
+                }
+            }
+        }
+    }
+    }
+    
+        @page {
+            size:10.6cm 4.6cm;
+        }
