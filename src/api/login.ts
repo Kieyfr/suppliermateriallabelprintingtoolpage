@@ -10,7 +10,7 @@ interface loginParam {
 // 获取供应商名称
 export function loginApi(param: loginParam) {
     return http({
-        url: 'http://192.168.1.106:8081/login',
+        url: '/login',
         method: 'post',
         data: param,
     })

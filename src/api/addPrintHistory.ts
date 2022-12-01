@@ -14,7 +14,7 @@ interface addPrintHistoryParam  {
 // 添加打印历史记录
 export function addPrintHistoryApi(param: addPrintHistoryParam) {
     return http({
-        url: 'http://192.168.1.106:8081/addPrintHistory',
+        url: '/addPrintHistory',
         method: 'post',
         data: param
     })

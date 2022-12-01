@@ -9,7 +9,7 @@ interface getSuppNameParam {
 // 获取供应商名称
 export function getSuppNameApi(param: getSuppNameParam) {
     return http({
-        url: 'http://192.168.1.106:8081/getSuppName',
+        url: '/getSuppName',
         method: 'post',
         data: param,
     })

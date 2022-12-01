@@ -328,7 +328,6 @@ let printInfo={
     const outputPrint=()=> {
         var json = {};	
         json.action = "print";
-        json.copies=printInfo.PRINTQUANTITY;	
 
         if(printInfo.MATERCODE.substring(0,2)==='06'){
             json.template = ToAbsoluteURL("print.fmx");	
@@ -490,7 +489,6 @@ const handleSubit = () => {
         ElMessage.error('毛重需要大于等于净重')
     }
     else {
-        CreateOneFormPage()
         addPrintSheet()
         dialogWord.value=false
     }
@@ -509,7 +507,7 @@ const modhandleSubit = () => {
     }
     else {
         for(var i:number=0;i<PRINTQUANTITY.value;i++){
-                CreateOneFormPage()
+                
                 addPrintHistory()
             }
         dialogModify.value=false
@@ -571,6 +569,8 @@ const addPrintHistory=()=>{
     addPrintHistoryApi(param).then((res) => {
         getLotNum(printSheet.PK_ORDER_B)
         initselPrintHistory(printSheet.PK_ORDER_B)
+        LOTNUM.value=res.data
+        CreateOneFormPage()
         if(res.state=='201'){
             ElMessage.success("订单完成")
             getPrintSheets()

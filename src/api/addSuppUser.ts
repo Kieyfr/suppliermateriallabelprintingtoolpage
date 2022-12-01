@@ -11,7 +11,7 @@ interface addSuppUserParam  {
 // 获取批号
 export function addSuppUserApi(param: addSuppUserParam) {
     return http({
-        url: 'http://192.168.1.106:8081/addSuppUser',
+        url: '/addSuppUser',
         method: 'post',
         data: param
     })

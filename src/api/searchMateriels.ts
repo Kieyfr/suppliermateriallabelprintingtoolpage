@@ -8,7 +8,7 @@ interface searchMaterielsParam  {
 // 添加打印历史记录
 export function searchMaterielsApi(param: searchMaterielsParam) {
     return http({
-        url: 'http://192.168.1.106:8081/searchMateriels',
+        url: '/searchMateriels',
         method: 'post',
         data: param
     })

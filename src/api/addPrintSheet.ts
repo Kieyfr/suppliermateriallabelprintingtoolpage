@@ -24,7 +24,7 @@ interface addPrintSheetParam  {
 // 获取批号
 export function addPrintSheetApi(param: addPrintSheetParam) {
     return http({
-        url: 'http://192.168.1.106:8081/addPrintSheet',
+        url: '/addPrintSheet',
         method: 'post',
         data: param
     })

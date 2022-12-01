@@ -13,7 +13,7 @@ interface getIfPrintSheetsParam  {
 // 添加打印历史记录
 export function getIfPrintSheetsApi(param: getIfPrintSheetsParam) {
     return http({
-        url: 'http://192.168.1.106:8081/getIfPrintSheets',
+        url: '/getIfPrintSheets',
         method: 'post',
         data: param
     })
