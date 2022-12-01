@@ -385,6 +385,8 @@ const modprintInfo2=()=>{
     printInfo.GROSSWEIGHT=printSheet.GROSSWEIGHT+"KG"
     printInfo.PRINTQUANTITY=printSheet.PRINTQUANTITY
 }
+
+//日期格式化
 const dateFormat=(time)=> {
                 var date=new Date(time);
                 var year=date.getFullYear();
