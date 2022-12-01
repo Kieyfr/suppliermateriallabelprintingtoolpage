@@ -35,7 +35,7 @@
       style="width: 850px" 
       height="240px" 
       highlight-current-row
-      @row-click="selPrintHistory" 
+      @row-click="selPrintHistory"
       @row-dblclick="openModify">  
         <el-table-column type="index" width="50" />
         <el-table-column prop="suppshortname" sortable label="供应商简称" width="200"/>
@@ -276,9 +276,12 @@
         </el-dialog>
     </div>
   </div>
+  <Print ref="printRef" class="print"></Print>
 </template>
 <style>
-
+    .print{
+        display: none;
+    }
 </style>
 <script lang="ts" setup>
 import { reactive , ref, onMounted } from 'vue'
@@ -297,6 +300,103 @@ import { getIfPrintSheetsApi } from '../api/getIfPrintSheets'
 import { selPrintHistoryNumApi } from '../api/selPrintHistoryNum'
 import { searchMaterielsApi } from '../api/searchMateriels'
 import { delPrintHistoryApi } from '../api/delPrintHistory'
+
+
+import {GetPrintWorld,ToAbsoluteURL} from "../assets/PrintWorld.js"
+
+
+
+let printInfo={
+      SUPPSHORTNAME:"",       //供应商简称
+      MATERNAME:"",           //物料名称
+      MATERCODE:"",           //物料编码
+      SUPPMATERCODE:"",       //供应商料号
+      PRODUCEDATE:"",           //生产日期
+      VBILLCODE:"",           //订单号
+      SUPPLOTNUM:"",          //供应商批号
+      LOTNUM:"",            //批号
+      MATERMATERIALSPEC:"",   //物料规格
+      MATERMATERIALTYPE:"",   //物料颜色
+      NETWEIGHT:"",           //净重
+      GROSSWEIGHT:"",         //毛重
+      PRINTQUANTITY:1         //打印数量
+    }
+
+    const printworld = GetPrintWorld()
+    const outputPrint=()=> {
+        var json = {};	
+        json.action = "print";
+        json.copies=printInfo.PRINTQUANTITY;	
+
+        if(printInfo.MATERCODE.substring(0,2)==='06'){
+            json.template = ToAbsoluteURL("print.fmx");	
+        }else{
+            json.template = ToAbsoluteURL("print2.fmx");	
+        }
+        
+        json.data = printInfo
+        printworld.Act(json)
+    }
+
+//打开打印方法
+const CreateOneFormPage = () => {
+    modprintInfo()
+    setTimeout(()=>{
+    outputPrint()
+    },0)
+};
+const CreateOneFormPage2 = () => {
+    modprintInfo2()
+    setTimeout(()=>{
+    outputPrint()
+    },0)
+};
+
+//更改json信息方法
+const modprintInfo=()=>{
+    printInfo.SUPPSHORTNAME=printSheet.SUPPSHORTNAME
+    printInfo.MATERNAME=printSheet.MATERNAME
+    printInfo.MATERCODE=printSheet.MATERCODE
+    printInfo.SUPPMATERCODE=printSheet.SUPPMATERCODE
+    printInfo.PRODUCEDATE=dateFormat(printSheet.PRODUCEDATE)
+    printInfo.SUPPLOTNUM=printSheet.SUPPLOTNUM
+    printInfo.VBILLCODE=printSheet.VBILLCODE
+    printInfo.LOTNUM=LOTNUM.value
+    printInfo.MATERMATERIALSPEC=printSheet.MATERMATERIALSPEC
+    printInfo.MATERMATERIALTYPE=printSheet.MATERMATERIALTYPE
+    printInfo.NETWEIGHT=printSheet.NETWEIGHT+"KG"
+    printInfo.GROSSWEIGHT=printSheet.GROSSWEIGHT+"KG"
+    printInfo.PRINTQUANTITY=printSheet.PRINTQUANTITY
+}
+const modprintInfo2=()=>{
+    printInfo.SUPPSHORTNAME=printSheet.SUPPSHORTNAME
+    printInfo.MATERNAME=printSheet.MATERNAME
+    printInfo.MATERCODE=printSheet.MATERCODE
+    printInfo.SUPPMATERCODE=printSheet.SUPPMATERCODE
+    printInfo.PRODUCEDATE=dateFormat(printSheet.PRODUCEDATE)
+    printInfo.SUPPLOTNUM=printSheet.SUPPLOTNUM
+    printInfo.VBILLCODE=printSheet.VBILLCODE
+    printInfo.LOTNUM=printSheet.LOTNUM
+    printInfo.MATERMATERIALSPEC=printSheet.MATERMATERIALSPEC
+    printInfo.MATERMATERIALTYPE=printSheet.MATERMATERIALTYPE
+    printInfo.NETWEIGHT=printSheet.NETWEIGHT+"KG"
+    printInfo.GROSSWEIGHT=printSheet.GROSSWEIGHT+"KG"
+    printInfo.PRINTQUANTITY=printSheet.PRINTQUANTITY
+}
+const dateFormat=(time)=> {
+                var date=new Date(time);
+                var year=date.getFullYear();
+                /* 在日期格式中，月份是从0开始的，因此要加0
+                 * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+                 * */
+                var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+                var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+                var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+                var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+                var seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+                // 拼接
+                return year+"-"+month+"-"+day
+            }
 
 const router = useRouter();
 
@@ -324,12 +424,13 @@ const printSheet = reactive({
     SUPPSHORTNAME:'',       //供应商简称
     SUPPMATERCODE:'',       //供应商料号
     SUPPLOTNUM:'',          //供应商批号
+    LOTNUM:'',              //批号
     VBILLCODE:'',           //订单号
     MATERCODE:'',           //物料编码
     MATERNAME:'',           //物料名称
     MATERMATERIALSPEC:'',   //物料规格
     MATERMATERIALTYPE:'',   //物料颜色
-    PRODUCEDATE: null,         //生产日期
+    PRODUCEDATE: new Date(),         //生产日期
     NETWEIGHT:0.000,        //净重
     GROSSWEIGHT:0.000,      //毛重
     NUM: 1,
@@ -385,6 +486,7 @@ const handleSubit = () => {
         ElMessage.error('毛重需要大于等于净重')
     }
     else {
+        CreateOneFormPage()
         addPrintSheet()
         dialogWord.value=false
     }
@@ -403,6 +505,7 @@ const modhandleSubit = () => {
     }
     else {
         for(var i:number=0;i<PRINTQUANTITY.value;i++){
+                CreateOneFormPage()
                 addPrintHistory()
             }
         dialogModify.value=false
@@ -582,6 +685,10 @@ const selPrintHistoryNum=(row:GetPrintSheet)=>{
 
 //查询对应的打印历史
 const selPrintHistory=(row:GetPrintSheet)=>{
+    //console.log(row.vbillcode)
+    console.log(row.matercode)
+    printSheet.VBILLCODE=row.vbillcode
+    printSheet.MATERCODE=row.matercode
     const param={
         PK_ORDER_B: row.pk_ORDER_B         //采购订单明细主键
     }
@@ -663,7 +770,20 @@ const getIfPrintSheets=()=>{
 }
 
 const handleReprint=(row:ShowPrintHistory)=>{
-    console.log(row)
+    // PrintSheet.SUPPCODE=row.suppcode
+    console.log(row.lotnum)
+    printSheet.SUPPMATERCODE=row.suppmatercode
+    printSheet.SUPPLOTNUM=row.supplotnum
+    printSheet.MATERNAME=row.matername
+    printSheet.LOTNUM=row.lotnum
+    printSheet.MATERMATERIALSPEC=row.matermaterialspec
+    printSheet.MATERMATERIALTYPE=row.matermaterialtype
+    printSheet.PRODUCEDATE=row.producedate
+    printSheet.NETWEIGHT=row.netweight
+    printSheet.GROSSWEIGHT=row.grossweight
+    CreateOneFormPage2()
+    
+
 }
 
 const handleDelete=(row:ShowPrintHistory)=>{

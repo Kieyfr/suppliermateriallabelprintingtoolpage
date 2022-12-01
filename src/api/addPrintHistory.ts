@@ -10,7 +10,7 @@ interface addPrintHistoryParam  {
     SUPPLOTNUM:string,
     PRINTDATE:Date
 }
- 
+
 // 添加打印历史记录
 export function addPrintHistoryApi(param: addPrintHistoryParam) {
     return http({
