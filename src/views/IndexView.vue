@@ -570,6 +570,7 @@ const addPrintHistory=()=>{
         getLotNum(printSheet.PK_ORDER_B)
         initselPrintHistory(printSheet.PK_ORDER_B)
         LOTNUM.value=res.data
+        console.log(LOTNUM.value)
         CreateOneFormPage()
         if(res.state=='201'){
             ElMessage.success("订单完成")
