@@ -305,7 +305,7 @@ import { delPrintHistoryApi } from '../api/delPrintHistory'
 import {GetPrintWorld,ToAbsoluteURL} from "../assets/PrintWorld.js"
 
 
-
+//打印信息
 let printInfo={
       SUPPSHORTNAME:"",       //供应商简称
       MATERNAME:"",           //物料名称
@@ -321,8 +321,10 @@ let printInfo={
       GROSSWEIGHT:"",         //毛重
       PRINTQUANTITY:1         //打印数量
     }
-
+    //获取打天下
     const printworld = GetPrintWorld()
+
+    //打印
     const outputPrint=()=> {
         var json = {};	
         json.action = "print";
