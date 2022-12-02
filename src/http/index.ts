@@ -1,7 +1,7 @@
 import axios from 'axios'
 // 创建一个 axios 实例
 const service = axios.create({
-    baseURL: 'http://192.168.1.100:8081', // 所有的请求地址前缀部分，可以放域名
+    baseURL: 'http://192.168.1.108:8081', // 所有的请求地址前缀部分，可以放域名
     timeout: 60000, // 请求超时时间毫秒
     withCredentials: false, // 异步请求携带cookie
     headers: {

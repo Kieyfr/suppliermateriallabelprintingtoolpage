@@ -176,7 +176,7 @@
                     <el-input v-model="printSheet.SUPPSHORTNAME" disabled/>
                 </el-form-item>
                 <el-form-item label="新亚物料编号">
-                    <el-input v-model="printSheet.SUPPMATERCODE" disabled/>
+                    <el-input v-model="printSheet.MATERCODE" disabled/>
                 </el-form-item>
                 <el-form-item label="供应商料号">
                     <el-input v-model="printSheet.SUPPMATERCODE" disabled/>
@@ -319,7 +319,8 @@ let printInfo={
       MATERMATERIALTYPE:"",   //物料颜色
       NETWEIGHT:"",           //净重
       GROSSWEIGHT:"",         //毛重
-      PRINTQUANTITY:1         //打印数量
+      PRINTQUANTITY:1,        //打印数量
+      BARCODE:""              //条码
     }
     //获取打天下
     const printworld = GetPrintWorld()
@@ -336,7 +337,9 @@ let printInfo={
         }
         
         json.data = printInfo
-        printworld.Act(json)
+        if (!printworld.Act(json)) {                    //数据发送失败
+            alert(printworld.GetLastError());
+        }
     }
 
 //打开打印方法
@@ -368,6 +371,7 @@ const modprintInfo=()=>{
     printInfo.NETWEIGHT=printSheet.NETWEIGHT+"KG"
     printInfo.GROSSWEIGHT=printSheet.GROSSWEIGHT+"KG"
     printInfo.PRINTQUANTITY=printSheet.PRINTQUANTITY
+    printInfo.BARCODE=barCode(printInfo.MATERCODE,printSheet.NETWEIGHT+"",printSheet.SUPPCODE,printInfo.VBILLCODE,printInfo.LOTNUM)
 }
 const modprintInfo2=()=>{
     printInfo.SUPPSHORTNAME=printSheet.SUPPSHORTNAME
@@ -383,8 +387,35 @@ const modprintInfo2=()=>{
     printInfo.NETWEIGHT=printSheet.NETWEIGHT+"KG"
     printInfo.GROSSWEIGHT=printSheet.GROSSWEIGHT+"KG"
     printInfo.PRINTQUANTITY=printSheet.PRINTQUANTITY
+    printInfo.BARCODE=barCode(printInfo.MATERCODE,printSheet.NETWEIGHT+"",printSheet.SUPPCODE,printInfo.VBILLCODE,printInfo.LOTNUM)
 }
-
+//生成条码
+const barCode=(matercode,netweight,suppcode,vbillcode,lotnum)=>{
+    let barcode=""
+    let pd=netweight.indexOf(".");
+    let netweight1=""
+    let netweight2=""
+    let netweight3=""
+    if(pd!=-1){
+        netweight1=netweight.substr(0,pd);
+        netweight2=netweight.substr(pd,netweight.length-1)
+        while(netweight1.length<4){
+            netweight1="0"+netweight1
+        }
+        while(netweight2.length<4){
+            netweight2=netweight1+"0"
+        }
+    }else{
+        netweight1=netweight;
+        netweight2=".000";
+        while(netweight1.length<4){
+            netweight1="0"+netweight1
+        }
+    }
+    netweight3=netweight1+netweight2+"";
+    barcode="W"+matercode+netweight3+suppcode+vbillcode+lotnum;
+    return barcode
+}
 //日期格式化
 const dateFormat=(time)=> {
                 var date=new Date(time);
