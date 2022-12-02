@@ -630,7 +630,7 @@ const searchMateriels = () => {
     }
     searchMaterielsApi(param).then((res) => {
         if(res.state=='200'){
-            console.log(res.data)
+            //console.log(res.data)
             materiels.length=0
             materiels.push(...res.data) 
         }else if(res.state=='404'){
@@ -722,7 +722,7 @@ const selPrintHistoryNum=(row:GetPrintSheet)=>{
 //查询对应的打印历史
 const selPrintHistory=(row:GetPrintSheet)=>{
     //console.log(row.vbillcode)
-    console.log(row.matercode)
+    //console.log(row.matercode)
     printSheet.VBILLCODE=row.vbillcode
     printSheet.MATERCODE=row.matercode
     const param={
@@ -792,7 +792,7 @@ const getIfPrintSheets=()=>{
         STARTDATE:selInfo.STARTDATE,//起始日期
         ENDDATE:selInfo.ENDDATE//截止日期
     }
-    console.log(param)
+    //console.log(param)
     getIfPrintSheetsApi(param).then((res) => {
         if(res.state=='200'){  
             getPrintSheet.length=0
@@ -807,7 +807,7 @@ const getIfPrintSheets=()=>{
 
 const handleReprint=(row:ShowPrintHistory)=>{
     // PrintSheet.SUPPCODE=row.suppcode
-    console.log(row.lotnum)
+    //console.log(row.lotnum)
     printSheet.SUPPMATERCODE=row.suppmatercode
     printSheet.SUPPLOTNUM=row.supplotnum
     printSheet.MATERNAME=row.matername
