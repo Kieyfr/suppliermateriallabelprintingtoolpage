@@ -1,5 +1,5 @@
 <template>
-  <router-view v-if="isRouterActive"></router-view>
+  <router-view v-if="isRouterActive" v-wechat-title='$route.meta.title'></router-view>
 </template>
 <script lang="ts" setup>
 import { ref, provide, nextTick } from 'vue'

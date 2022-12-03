@@ -4,11 +4,9 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/login",
     name: "Login",
+    meta: {title: '登录'},
     component: () =>
       import("../views/LoginView.vue"),
-      meta: {
-        title: '登录',
-      }
       
   },
   
@@ -16,14 +14,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "LoginView",
+    meta: {title: '登录'},
     component: () =>
       import("../views/LoginView.vue"),
+      
   },
   {
     path: "/index",
     name: "indexView",
+    meta: {title: '首页'},
     component: () =>
       import("../views/IndexView.vue"),
+      
   }
 ];
 

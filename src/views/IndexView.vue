@@ -1,4 +1,4 @@
-<template>
+<template >
   <div id="indexView">
     <div id="header">
         <el-menu

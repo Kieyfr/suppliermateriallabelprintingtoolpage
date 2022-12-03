@@ -7,14 +7,14 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
-
+import VueWechatTitle from 'vue-wechat-title'
 
 import Print from 'print-js'
 
 const app = createApp(App)
 app.use(store)
 app.use(router)
-
+app.use(VueWechatTitle)
 app.use(ElementPlus, {
     locale: zhCn,
   })
