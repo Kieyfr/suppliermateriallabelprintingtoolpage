@@ -27,7 +27,14 @@
                 </el-icon>
                 <template #title>退出</template>
             </el-menu-item>
+            
+            
+            <a href="打天下1.6.zip" class="download">打印服务下载</a>
+            
+                
+            
         </el-menu>
+        
     </div>   
     <div id="order">
       <el-table 
@@ -494,6 +501,7 @@ const handleSelect = (key: string) => {
         localStorage.removeItem("accessToken")
         router.push('/')
     }
+    
 }
 
 //设置新建表单验证
@@ -838,42 +846,49 @@ const handleDelete=(row:ShowPrintHistory)=>{
 
 </script>
 <style lang="scss">
-#indexView{
-    #word{
-        .el-form-item{
-            width: 360px;
-            margin-right: 10px;
-            margin-left: 10px;
-            .el-form-item__label{
-                justify-content: flex-start;
-            }
-        }
+    
+    .download{
+        text-decoration: none;
+        line-height: 55px;
+        position: absolute;
+        right: 20px;
     }
-    #modify{
-        .el-form-item{
-            width: 360px;
-            margin-right: 10px;
-            margin-left: 10px;
-            .el-form-item__label{
-                justify-content: flex-start;
-            }
-        }
-    }
-    #query{
-        .el-form-item{
-            width: 350px;
-            margin-right: 5px;
-            margin-left: 5px;
-            .el-form-item__label{
-                justify-content: flex-start;
-            }
-            .el-form-item__content{
-                min-width: 250px;
-                .el-input{
-                    width:220px
+    #indexView{
+        #word{
+            .el-form-item{
+                width: 360px;
+                margin-right: 10px;
+                margin-left: 10px;
+                .el-form-item__label{
+                    justify-content: flex-start;
                 }
             }
         }
-    }
+        #modify{
+            .el-form-item{
+                width: 360px;
+                margin-right: 10px;
+                margin-left: 10px;
+                .el-form-item__label{
+                    justify-content: flex-start;
+                }
+            }
+        }
+        #query{
+            .el-form-item{
+                width: 350px;
+                margin-right: 5px;
+                margin-left: 5px;
+                .el-form-item__label{
+                    justify-content: flex-start;
+                }
+                .el-form-item__content{
+                    min-width: 250px;
+                    .el-input{
+                        width:220px
+                    }
+                }
+            }
+        }
 }
 </style>

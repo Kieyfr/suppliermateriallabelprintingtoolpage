@@ -6,7 +6,12 @@ const routes: Array<RouteRecordRaw> = [
     name: "Login",
     component: () =>
       import("../views/LoginView.vue"),
+      meta: {
+        title: '登录',
+      }
+      
   },
+  
   
   {
     path: "/",
@@ -28,6 +33,7 @@ const router = createRouter({
 });
 
 router.beforeEach( (to,from,next)=>{                          //每次请求前都执行如下操作
+  
   if (to.path =='/'){
    return next()                                              //判断要去往的链接是否是/login路径，是的话往下执行
   }                                        
