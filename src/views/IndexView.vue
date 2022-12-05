@@ -29,7 +29,7 @@
             </el-menu-item>
             
             
-            <a href="打天下1.6.zip" class="download">打印服务下载</a>
+           
             
                 
             
@@ -342,11 +342,11 @@ let printInfo={
         }else{
             json.template = ToAbsoluteURL("print2.fmx");	
         }
-        
+        var downloadUrl = "打天下1.6.zip";
+        printworld.DownloadUrlForTemplatePrint(downloadUrl)
         json.data = printInfo
-        if (!printworld.Act(json)) {                    //数据发送失败
-            alert(printworld.GetLastError());
-        }
+        printworld.Act(json)
+        
     }
 
 //打开打印方法
@@ -847,12 +847,7 @@ const handleDelete=(row:ShowPrintHistory)=>{
 </script>
 <style lang="scss">
     
-    .download{
-        text-decoration: none;
-        line-height: 55px;
-        position: absolute;
-        right: 20px;
-    }
+    
     #indexView{
         #word{
             .el-form-item{

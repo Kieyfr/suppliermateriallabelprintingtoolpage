@@ -836,6 +836,7 @@ function CheckInstallationPrompt(downloadURL, version,checkpdf) {
             bContinue = false;
             if(checkpdf) {
                 prompt = "友情提示：尚未安装/启动打天下综合打印服务！\n请单击确定，下载安装。";
+                
             } else {
                 prompt = "友情提示：尚未安装/启动打天下打印服务！\n请单击确定，下载安装。";
             }
@@ -902,8 +903,10 @@ classPrintWorld.prototype.DefaultAsyncCallbackForAct = function () {//异步调�
             if((this.PrintWorld.downloadUrlForTemplatePrint!="" || this.PrintWorld.downloadUrlForPdfPrint!="")) {
                 if(this.PrintWorld.downloadUrlForTemplatePrint!="") {
                     InstallationPrompt(this.PrintWorld.downloadUrlForTemplatePrint,"友情提示：尚未安装/启动打天下打印服务！\n请单击确定，下载安装。");
+                    
                 } else {
                     InstallationPrompt(this.PrintWorld.downloadUrlForPdfPrint,"友情提示：尚未安装/启动打天下综合打印服务！\n请单击确定，下载安装。");
+                    
                 }
             } else {
                 if(this.PrintWorld.IsToGiliCloud()) {//gilicloud) {
@@ -2210,7 +2213,8 @@ function PWD_OnKeyDown(e) {
 export {
     GetPrintWorld,
     pw_g_arrayWebsocket,
-    ToAbsoluteURL
+    ToAbsoluteURL,
+    
 }
 ////////////////////////////////////////////////////////////////////////////
 //                          print dialog with preview: end                                    //
