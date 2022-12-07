@@ -9,6 +9,13 @@ const routes: Array<RouteRecordRaw> = [
       import("../views/LoginView.vue"),
       
   },
+  {
+    path: "/loginAdmin",
+    name: "LoginAdmin",
+    meta: {title: '登录'},
+    component: () =>
+      import("../views/LoginAdminView.vue"),
+  },
   
   
   {
@@ -36,7 +43,7 @@ const router = createRouter({
 
 router.beforeEach( (to,from,next)=>{                          //每次请求前都执行如下操作
   
-  if (to.path =='/'){
+  if (to.path =='/' || to.path =='/loginAdmin' ){
    return next()                                              //判断要去往的链接是否是/login路径，是的话往下执行
   }                                        
   const accessToken = localStorage.getItem("accessToken")    //不是去/login路径，则先到浏览器的存储里面查找存储的’token‘的值，

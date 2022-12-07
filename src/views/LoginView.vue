@@ -13,6 +13,7 @@
                 <el-input v-model="supplier.password" type="password" placeholder="请输入密码" maxlength="20" show-password/> 
             </el-form-item>
             <el-button size="100px" @click="onSubmit" type="primary" >登录</el-button>
+            <el-button size="100px" @click="onSkipAdmin"  >管理员登录</el-button>
             <el-button size="100px" @click="onReset" >重置</el-button>
         </el-form>
     </div>
@@ -136,6 +137,10 @@ const onSubmit = () => {
             }
         }) 
     }
+}
+
+const onSkipAdmin=()=>{
+    router.push('/loginAdmin')
 }
 
 const onReset = () => {

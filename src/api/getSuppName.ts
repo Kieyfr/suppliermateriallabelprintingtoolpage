@@ -14,3 +14,11 @@ export function getSuppNameApi(param: getSuppNameParam) {
         data: param,
     })
 }
+
+// 获取全部供应商名称
+export function adminGetSuppNamesApi() {
+    return http({
+        url: '/adminGetSuppNames',
+        method: 'post'
+    })
+}
