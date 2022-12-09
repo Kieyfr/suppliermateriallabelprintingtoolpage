@@ -4,12 +4,14 @@ import http from '@/http/index'
 // 定义接口的传参
 interface loginParam {
     suppCode: string,
-    password: string
+    password: string,
+    state:number
 }
 
 interface loginAdminParam {
     admin: string,
-    password: string
+    password: string,
+    state:number
 }
 
 

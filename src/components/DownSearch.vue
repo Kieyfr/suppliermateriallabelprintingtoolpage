@@ -2,14 +2,14 @@
 	
 		<el-form-item label="供应商名称">
 			<!-- 下拉框 -->
-			<el-select v-model="form.value" style="width: 312px;" ref="valSelect" filterable @blur="valSelectBlur" @focus="valSelectFocus"
+			<el-select v-model="form.value" style="width: 252px;" ref="valSelect" filterable @blur="valSelectBlur" @focus="valSelectFocus"
 			 @change="valSelectChange">
 				<el-option v-for="item in options" :key="item" :label="item" :value="item">
 				</el-option>
 			</el-select>
 			<!-- 输入框 使用position: absolute;left: 0px;将输入框定位到下拉框上方 -->
-			<el-input v-model="form.name" style="width: 280px;position: absolute;left: 0px;" @blur="valInputBlur()" ref="valInput"
-			 @focus="valInputFocus"></el-input>
+			<el-input v-model="form.name" style="width: 220px;position: absolute;left: 0px;" @blur="valInputBlur()" ref="valInput"
+			 @focus="valInputFocus" @change="valInputChange"></el-input>
 		</el-form-item>
 	
 </template>
@@ -35,14 +35,16 @@
     const valInput=ref()
     const supplier={
         SUPPSHORTNAME:"",
-        SUPPCODE:""
+        SUPPCODES:[]
     }
     defineExpose(supplier)
     const setsupplier=(name)=>{
+		supplier.SUPPCODES=[]
+		supplier.SUPPSHORTNAME=name
         for(var i=0;i<supplierAll.length;i++){
-            if(supplierAll[i].name.indexOf(name)>=0){
-                 supplier.SUPPSHORTNAME=name
-                supplier.SUPPCODE=supplierAll[i].code;
+            if(supplierAll[i].name==name){
+                 
+                supplier.SUPPCODES.push(supplierAll[i].code);
                 
             }
         }
@@ -76,18 +78,10 @@
 		//---其他操作---可以去后台查询相关数据
 	}
     
-    const setoptions=()=>{
-        var data = [];
-				// 从全部中筛选和输入框匹配的下拉框
-				for (var i = 0; i < optionsAll.length; i++) {
-					if (optionsAll[i].indexOf(form.name) >= 0  ) {
-                        
-						data.push(optionsAll[i]);
-					}
-				}
-				//将匹配的下拉项给下拉框
-				options = data;
-    }
+	const valInputChange=()=>{
+		setsupplier(form.name)
+		props.updatesupplier()
+	}
     
 
     const getSupps = () => {
@@ -100,7 +94,6 @@
             ElMessage.error(res.msg)
         }
         Setoptionss()
-        setoptions()
         })
     }
     const Setoptionss = () => {
@@ -125,6 +118,7 @@
 		
     //输入框失去焦点后
     const valInputBlur=()=>{
+		console.log(options.length)
         valInputFocusVal = false;
 				if (optionsAll.indexOf(form.name) >= 0) {
 					setTimeout(() => {

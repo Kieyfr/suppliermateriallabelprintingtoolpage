@@ -2,7 +2,8 @@
 import http from '@/http/index'
 
 interface adminsupplier  {
-    suppCode: string,          //采购订单明细主键
+    suppCode: string,
+    state:number        
 }
  
 // 管理员直接登录

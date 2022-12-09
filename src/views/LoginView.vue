@@ -52,7 +52,7 @@ const router = useRouter();
 
 const dialogVisible = ref(false)
 
-const password = ref("")
+const password = ref('')
 
 let supplier = reactive({
     suppCode: '',
@@ -86,6 +86,7 @@ const getSuppName=()=>{
 }
 
 const addSuppUser=()=>{
+    
     const param = {
         CODE: supplier.suppCode,
         NAME: supplier.suppName,
@@ -96,7 +97,8 @@ const addSuppUser=()=>{
         if(res.state=='200'){
             const param2 = {
                 suppCode: supplier.suppCode,
-                password: password.value
+                password: password.value,
+                state:1
             }
             loginApi(param2).then((res) => {
                 if(res.state=='200'){
@@ -123,7 +125,8 @@ const onSubmit = () => {
     }else{
         const param = {
             suppCode: supplier.suppCode,
-            password: supplier.password
+            password: supplier.password,
+            state:1
         }
         loginApi(param).then((res) => {
             if(res.state=='200'){
@@ -155,8 +158,13 @@ const handleClose = (done: () => void) => {
 }
 
 const confirmTrue = () => {
-    dialogVisible.value=false
-    addSuppUser()
+    if(password.value!=""){
+        dialogVisible.value=false
+        addSuppUser()
+    }else{
+        ElMessage.error('密码不能为空')
+    }
+    
 }
 </script>
 <style lang="scss">

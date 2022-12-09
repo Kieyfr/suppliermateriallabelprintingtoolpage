@@ -29,11 +29,14 @@
             </el-menu-item>
             
             
+            
+            
            
             
                 
             
         </el-menu>
+        
         
     </div>   
     <div id="order">
@@ -105,7 +108,7 @@
                                         size="large"
                                         style="width:200px;height: 32px;"
                                     />
-                                    <el-button :icon="Search" @click="searchMateriels"/>
+                                    <el-button :icon="Search" @click="searchMateriels(printSheet.SUPPCODE)"/>
                                     <el-table :data="materiels" style="width: 100%" height="240px" @row-click="getMaterial">
                                         <el-table-column prop="vbillcode" label="订单号" width="180" />
                                         <el-table-column prop="matercode" label="物料编码" width="180" />
@@ -247,6 +250,18 @@
             :close-on-click-modal="false"
         >
             <el-form :model="selInfo" label-width="100px" :inline="true">
+                        <DownSearch ref="supp" v-if="state=='0'" :updatesupplier="updatesupplier" :SUPPNAME="printSheet.SUPPNAME"></DownSearch>
+                        <el-form-item label="供应商代码" v-if="state=='0'">
+                            <el-select v-model="supplier.SUPPCODE">
+                              <el-option
+                                v-for="item in SUPPCODES"
+                                :key="item"
+                                :label="item"
+                                :value="item"
+                              >
+                              </el-option>
+                            </el-select>
+                          </el-form-item>
                         <el-form-item label="供应商料号">
                             <el-input v-model="selInfo.SUPPMATERCODE"/>
                         </el-form-item>
@@ -277,13 +292,16 @@
                                 :size="10"
                             />
                         </el-form-item> -->
-                        <el-button type="primary" @click="getIfPrintSheets" >查询</el-button>
+                        <el-button v-if="state=='0'" type="primary" @click="getSuppIfPrintSheets" >查询</el-button>
+                        <el-button v-else type="primary" @click="getIfPrintSheets" >查询</el-button>
                         <el-button @click="dialogQuery=false">返回</el-button>
             </el-form>
         </el-dialog>
+        
     </div>
   </div>
   <Print ref="printRef" class="print"></Print>
+  
 </template>
 <style>
     .print{
@@ -291,7 +309,7 @@
     }
 </style>
 <script lang="ts" setup>
-import { reactive , ref, onMounted } from 'vue'
+import { reactive , ref, onMounted} from 'vue'
 import { useRouter } from 'vue-router';
 import { GetPrintSheet,Materiels ,ShowPrintHistory} from '../types/index'
 import { ElMessage ,ClickOutside as vClickOutside} from 'element-plus'
@@ -300,17 +318,22 @@ import { getSuppUserApi } from '../api/getSuppUser'
 import { addPrintSheetApi } from '../api/addPrintSheet'
 import { addPrintHistoryApi } from '../api/addPrintHistory'
 import { getMaterielsApi } from '@/api/getMateriels'
+import { getMaterielsByCodeApi } from '@/api/getMateriels'
 import { getLotNumApi } from '../api/getLotNum'
 import { getPrintSheetsApi } from '../api/getPrintSheets'
+import { getPrintSheetsByCodeApi } from '../api/getPrintSheets'
 import { selPrintHistoryApi } from '../api/selPrintHistory'
 import { getIfPrintSheetsApi } from '../api/getIfPrintSheets'
+import { getIfPrintSheetsByCodeApi } from '../api/getIfPrintSheets'
 import { selPrintHistoryNumApi } from '../api/selPrintHistoryNum'
 import { searchMaterielsApi } from '../api/searchMateriels'
 import { delPrintHistoryApi } from '../api/delPrintHistory'
-
+import { getStateApi } from '../api/getState'
+import { loginAdminsupplier } from '@/api/loginAdmin'
+import { getSupplierApi } from '@/api/getSupplier'
 
 import {GetPrintWorld,ToAbsoluteURL} from "../assets/PrintWorld.js"
-
+import DownSearch from "../components/DownSearch.vue"
 
 //打印信息
 let printInfo={
@@ -447,11 +470,42 @@ const dialogModify = ref(false) //修改窗口是否显示
 
 const search = ref('') //修改窗口是否显示
 
+const dialogSupplierVisible=ref('')//管理员切换供应商窗口是否显示
+
 var visible = ref(false)    //气泡表格是否显示
 
 let LOTNUM = ref(0) //批号
 const PRINTQUANTITY = ref(1)//打印数量
 const PRINTDATE = ref(new Date)//打印日期
+
+const state=ref('');
+
+//获取登录状态
+const getState=()=>{
+    
+    getStateApi().then((res) => {
+        if(res.state=='200'){
+            state.value=res.data
+            console.log(state.value===0)
+        }else if(res.state=='404'){
+            
+            ElMessage.error(res.msg)
+        }
+        console.log(state.value)
+})
+}
+
+
+
+//管理员查询
+const getSuppIfPrintSheets=()=>{
+    showPrintHistorys.length = 0
+    setSupplier(supplier.SUPPCODE)
+    getPrintSheetsByCode(supplier.SUPPCODE)
+    getMaterielsByCode(supplier.SUPPCODE)
+    getIfPrintSheetsByCode(supplier.SUPPCODE)
+    dialogQuery.value=false
+}
 
 var materiels : Materiels[]=reactive([]); //物料信息表格
 var getPrintSheet: GetPrintSheet[] = reactive([]);   //供应商打印类别
@@ -478,6 +532,8 @@ const printSheet = reactive({
     PRINT:true             //是否可以打印
 })
 
+
+//查询信息
 const selInfo=reactive({
     SUPPMATERCODE:"",//供应商料号
     VBILLCODE:"",//订单号
@@ -584,8 +640,16 @@ const addPrintSheet=()=>{
             for(var i:number=0;i<PRINTQUANTITY.value;i++){
                 addPrintHistory()
             }
-            getPrintSheets()
-            getMateriels()
+            
+            
+            if(state.value=="0"){
+                getPrintSheetsByCode(supplier.SUPPCODE)
+                getMaterielsByCode(supplier.SUPPCODE)
+            }else{
+                getPrintSheets()
+                getMateriels()
+            }
+            
         }else if(res.state=='403'){
             ElMessage.error('订单重复，请选择其他订单')
         }else if(res.state=='500'){
@@ -631,14 +695,30 @@ const getMateriels = () => {
     }) 
 }
 
-//查询物料列表
-const searchMateriels = () => {
+//根据供应商代码获取物料列表
+const getMaterielsByCode = (code) => {
     const param = {
-        search: search.value
+        suppCode: code
+    }
+    getMaterielsByCodeApi(param).then((res) => {
+        if(res.state=='200'){
+            materiels.length=0
+            materiels.push(...res.data) 
+        }else if(res.state=='404'){
+            ElMessage.error('物料列表为空')
+        }
+    }) 
+}
+
+//查询物料列表
+const searchMateriels = (code) => {
+    const param = {
+        search: search.value,
+        suppCode:code
     }
     searchMaterielsApi(param).then((res) => {
         if(res.state=='200'){
-            //console.log(res.data)
+            console.log(res.data)
             materiels.length=0
             materiels.push(...res.data) 
         }else if(res.state=='404'){
@@ -683,11 +763,27 @@ const getPrintSheets = () => {
         }
     }) ;
 }
-
+//根据供应商代码获取打印列表
+const getPrintSheetsByCode = (code) => {
+    const param = {
+        suppCode: code
+    }
+    getPrintSheetsByCodeApi(param).then((res) => {
+        if(res.state=='200'){
+            getPrintSheet.length = 0
+            getPrintSheet.push(...res.data)
+        }else if(res.state=='500'){
+            ElMessage.error('获取失败')
+        }
+    }) ;
+}
+//渲染后运行
 onMounted(()=>{
+    getState();
     getSuppUser();
     getMateriels();
     getPrintSheets();
+    
 })
 
 //双击打开修改页面
@@ -713,6 +809,11 @@ const openModify=(row:GetPrintSheet)=>{
   PRINTQUANTITY.value = 1//打印数量
   selPrintHistoryNum(row)
   dialogModify.value = true
+  if(state.value=="0"){
+    console.log("aaa")
+    getMaterielsByCode(supplier.SUPPCODE)
+  }
+  
 }
 
 //查询对应的打印历史数量
@@ -755,6 +856,27 @@ const hangselPrintHistory=(PK_ORDER_B:string)=>{
             showPrintHistorys.push(...res.data)
         }
     }) ;
+}
+
+//根据供应商代码更改供应商信息
+const setSupplier=(code)=>{
+    const param={
+        suppCode: code
+    }
+    getSupplierApi(param).then((res) => {
+        if(res.state=='200'){
+            if(res.data!=null){
+                printSheet.SUPPCODE = res.data.code
+                printSheet.SUPPNAME = res.data.name
+                printSheet.SUPPSHORTNAME = res.data.shortname
+            }else{
+                printSheet.SUPPCODE = ""
+                printSheet.SUPPNAME = ""
+                printSheet.SUPPSHORTNAME = ""
+            }
+            
+        }
+    });
 }
 
 //初始化历史记录
@@ -813,6 +935,30 @@ const getIfPrintSheets=()=>{
     }) 
 }
 
+//管理员查询对应的打印订单
+const getIfPrintSheetsByCode=(code)=>{
+    const param = {
+        SUPPCODE:code,//供应商代码
+        SUPPMATERCODE:selInfo.SUPPMATERCODE,//供应商料号
+        VBILLCODE:selInfo.VBILLCODE,//订单号
+        SUPPLOTNUM:selInfo.SUPPLOTNUM,//供应商批号
+        COMPLETION:selInfo.COMPLETION,//是否完成
+        STARTDATE:selInfo.STARTDATE,//起始日期
+        ENDDATE:selInfo.ENDDATE//截止日期
+    }
+    //console.log(param)
+    getIfPrintSheetsByCodeApi(param).then((res) => {
+        if(res.state=='200'){  
+            getPrintSheet.length=0
+            getPrintSheet.push(...res.data)
+            
+            dialogQuery.value=false
+        }else if(res.state=='500'){
+            ElMessage.error(res.msg)
+        }
+    }) 
+}
+
 const handleReprint=(row:ShowPrintHistory)=>{
     // PrintSheet.SUPPCODE=row.suppcode
     //console.log(row.lotnum)
@@ -844,6 +990,44 @@ const handleDelete=(row:ShowPrintHistory)=>{
     }) 
 }
 
+//获取供应商名称下拉框
+const supp=ref()
+
+    const supplier=reactive({
+      SUPPSHORTNAME:"",
+      
+      SUPPCODE:""
+    })
+    let SUPPCODES=['']
+    //供应商名称更改时更新代码
+    const  updatesupplier=()=>{
+      supplier.SUPPSHORTNAME=supp.value.SUPPSHORTNAME
+      SUPPCODES=['']
+      SUPPCODES=supp.value.SUPPCODES
+      supplier.SUPPCODE=SUPPCODES[0]
+    }
+
+    // const qrclick=()=>{
+    //   if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE==""){
+    //     ElMessage.error("供应商信息错误")
+    //   }else{
+    //     const param = {
+    //       suppCode:supplier.SUPPCODE,
+    //       state:0
+    //       }
+    //       loginAdminsupplier(param).then((res) => {
+    //           if(res.state=='200'){
+                
+    //             localStorage.setItem("accessToken", res.data)
+    //             location.reload()
+    //             console.log("更换成功")
+    //           }else if(res.state=='404'){
+    //               ElMessage.error(res.msg)
+    //           }
+    //       })
+    //   }
+    // console.log(SUPPNAME)
+    // }
 </script>
 <style lang="scss">
     
@@ -886,4 +1070,5 @@ const handleDelete=(row:ShowPrintHistory)=>{
             }
         }
 }
+
 </style>

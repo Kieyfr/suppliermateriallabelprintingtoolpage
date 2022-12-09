@@ -3,6 +3,7 @@ import http from '@/http/index'
 
 interface searchMaterielsParam  {
     search: string,          //采购订单明细主键
+    suppCode: string
 }
  
 // 添加打印历史记录

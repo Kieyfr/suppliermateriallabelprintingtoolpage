@@ -21,7 +21,7 @@
     <el-dialog
         v-model="dialogVisible" 
         title="请选择供应商"
-        width="500px"
+        width="400px"
         height="100px"
         :close-on-press-escape="false"
         :show-close="false"
@@ -31,7 +31,15 @@
     
     <DownSearch ref="supp" :updatesupplier="updatesupplier"></DownSearch>
     <el-form-item label="供应商代码">
-      <el-input v-model="supplier.SUPPCODE" disabled style="width: 312px;"/>
+      <el-select v-model="supplier.SUPPCODE">
+        <el-option
+          v-for="item in SUPPCODES"
+          :key="item"
+          :label="item"
+          :value="item"
+        >
+        </el-option>
+      </el-select>
     </el-form-item>
    
       <el-button @click="qrclick">确认</el-button>
@@ -39,6 +47,7 @@
     
       
     </el-dialog>
+    
     
   </template>
   
@@ -67,32 +76,37 @@
 
     const supplier=reactive({
       SUPPSHORTNAME:"",
+      
       SUPPCODE:""
     })
-    
+    let SUPPCODES=['']
     const  updatesupplier=()=>{
       supplier.SUPPSHORTNAME=supp.value.SUPPSHORTNAME
-      supplier.SUPPCODE=supp.value.SUPPCODE
+      SUPPCODES=['']
+      SUPPCODES=supp.value.SUPPCODES
+      supplier.SUPPCODE=SUPPCODES[0]
     }
 
-    const qrclick=()=>{
-      if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE==""){
-        ElMessage.error("供应商信息错误")
-      }else{
-        const param = {
-          suppCode:supplier.SUPPCODE
-          }
-          loginAdminsupplier(param).then((res) => {
-              if(res.state=='200'){
-                dialogVisible.value=false
-                localStorage.setItem("accessToken", res.data)
-                router.push('/index')
-              }else if(res.state=='404'){
-                  ElMessage.error(res.msg)
-              }
-          }) 
-      }
-    }
+    // const qrclick=()=>{
+    //   if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE==""){
+    //     ElMessage.error("供应商信息错误")
+    //   }else{
+    //     const param = {
+    //       suppCode:supplier.SUPPCODE,
+    //       state:0
+    //       }
+    //       loginAdminsupplier(param).then((res) => {
+    //           if(res.state=='200'){
+    //             dialogVisible.value=false
+    //             localStorage.setItem("accessToken", res.data)
+    //             router.push('/index')
+    //           }else if(res.state=='404'){
+    //               ElMessage.error(res.msg)
+    //           }
+    //       })
+    //   }
+    // console.log(SUPPCODES)
+    //  }
     
     const onSubmit = () => {
         if(admin.admin==""){
@@ -102,11 +116,13 @@
         }else{
           const param = {
               admin: admin.admin,
-              password: admin.password
+              password: admin.password,
+              state:0
           }
           loginAdminApi(param).then((res) => {
               if(res.state=='200'){
-                dialogVisible.value=true
+                localStorage.setItem("accessToken", res.data)
+                router.push('/index')
               }else{
                   ElMessage.error(res.msg)
                   admin.admin=""
