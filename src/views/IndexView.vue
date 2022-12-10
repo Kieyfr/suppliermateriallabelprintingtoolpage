@@ -58,6 +58,7 @@
             :row-class-name="tableRowClassName"
             selection-mode="multiple"
             >
+                                                                                    <!-- 禁用托盘码打印的复选框 -->
             <el-table-column type="selection" width="50" :selectable="row => !(row.pallet!=null&&row.pallet!='')"/>
             <el-table-column type="index" width="50" />
             <el-table-column property="matername" sortable label="物料名称" show-overflow-tooltip width="110"/>
