@@ -8,7 +8,8 @@ interface addPrintHistoryParam  {
     NETWEIGHT:number,
     GROSSWEIGHT:number,
     SUPPLOTNUM:string,
-    PRINTDATE:Date
+    PRINTDATE:Date,
+    PALLET:String               //托盘码信息
 }
 
 // 添加打印历史记录

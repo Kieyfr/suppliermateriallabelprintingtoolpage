@@ -68,5 +68,6 @@ export interface ShowPrintHistory {
     supplotnum: string,           //供应商批号
     matermaterialspec: string,    //物料规格
     matermaterialtype: string,    //物料颜色
-    printdate:Date                  //打印日期
+    printdate:Date,                  //打印日期
+    PALLET:String               //托盘码信息
 }

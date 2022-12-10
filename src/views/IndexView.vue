@@ -42,33 +42,36 @@
     <div id="order">
       <el-table 
       :data="getPrintSheet" 
-      style="width: 850px" 
-      height="240px" 
+      style="width: 1100px" 
+      max-height="250px" 
       highlight-current-row
       @row-click="selPrintHistory"
       @row-dblclick="openModify">  
-        <el-table-column type="index" width="50" />
-        <el-table-column prop="suppshortname" sortable label="供应商简称" width="200"/>
-        <el-table-column prop="matername" sortable label="物料名称" width="200" />
-        <el-table-column prop="vbillcode" sortable label="订单号" width="200"/>
-        <el-table-column prop="supplotnum" sortable label="商厂批号" width="200"/>
+        <el-table-column type="index" width="100" />
+        <el-table-column prop="suppshortname" sortable label="供应商简称" width="250"/>
+        <el-table-column prop="matername" sortable label="物料名称" width="205" />
+        <el-table-column prop="vbillcode" sortable label="订单号" width="250"/>
+        <el-table-column prop="supplotnum" sortable label="商厂批号" width="250"/>
       </el-table>
     </div>
-    <div id="record">
+    <div id="record" @contextmenu.prevent="openMenu($event)">
         <el-table
             :data="showPrintHistorys"
             highlight-current-row
-            style="width: 1240px;font-size:12px"
-            height="280px"
+            style="width: 1300px;font-size:12px"
+            height="400px"
+            @selection-change="handleSelectionChange"
+            :row-class-name="tableRowClassName"
             >
+            <el-table-column type="selection" width="50" />
             <el-table-column type="index" width="50" />
             <el-table-column property="matername" sortable label="物料名称" show-overflow-tooltip width="110"/>
-            <el-table-column property="suppmatercode" sortable label="供应商料号" show-overflow-tooltip width="120"/>
+            <el-table-column property="suppmatercode" sortable label="供应商料号" show-overflow-tooltip width="110"/>
             <el-table-column property="producedate" sortable label="生产日期" show-overflow-tooltip width="110"/>
             <el-table-column property="lotnum" sortable label="批号" show-overflow-tooltip width="110"/>
             <el-table-column property="netweight" sortable label="净重" show-overflow-tooltip width="80"/>
             <el-table-column property="grossweight" sortable label="毛重" show-overflow-tooltip width="80"/>
-            <el-table-column property="supplotnum" sortable label="供应商批号" show-overflow-tooltip width="120"/>
+            <el-table-column property="supplotnum" sortable label="供应商批号" show-overflow-tooltip width="110"/>
             <el-table-column property="matermaterialspec" sortable label="物料规格" show-overflow-tooltip width="110"/>
             <el-table-column property="matermaterialtype" sortable label="物料颜色" show-overflow-tooltip width="110"/>
             <el-table-column property="printdate" sortable label="打印日期" show-overflow-tooltip width="110"/>
@@ -241,6 +244,7 @@
                 <el-button @click="dialogModify=false">退出</el-button>
             </el-form>
         </el-dialog>
+
     </div>
     <div id="query">
         <el-dialog
@@ -299,15 +303,83 @@
         </el-dialog>
         
     </div>
+    <div id="pallet">
+        <el-dialog 
+        v-model="dialogPallet" 
+        title="打印托盘码" 
+        width="800px"
+        :close-on-click-modal="false"
+        >
+            <el-form :model="printSheet" label-width="100px" :inline="true">
+                <el-form-item label="供应商名称">
+                    <el-input v-model="printSheet.SUPPSHORTNAME" disabled/>
+                </el-form-item>
+                <el-form-item label="新亚物料编号">
+                    <el-input v-model="printSheet.MATERCODE" disabled/>
+                </el-form-item>
+                <el-form-item label="供应商料号">
+                    <el-input v-model="printSheet.SUPPMATERCODE" disabled/>
+                </el-form-item>
+                <el-form-item label="物料名称">
+                    <el-input v-model="printSheet.MATERNAME" disabled />
+                </el-form-item>
+                <el-form-item label="订单号">
+                    <el-input v-model="printSheet.VBILLCODE" disabled/>
+                </el-form-item>
+                <el-form-item label="批号">
+                    <el-input v-model="LOTNUM" disabled />
+                </el-form-item>
+                <el-form-item label="净重">
+                    <el-input-number :precision="3" v-model="printSheet.NETWEIGHT"  :min="0"  disabled/>
+                </el-form-item>
+                <el-form-item label="毛重">
+                    <el-input-number :precision="3" v-model="printSheet.GROSSWEIGHT" :min="0" disabled />
+                </el-form-item>
+                <el-form-item label="供应商批号">
+                    <el-input v-model="printSheet.SUPPLOTNUM" disabled/>
+                </el-form-item>
+                <el-form-item label="绞距" v-if="printSheet.MATERCODE.substring(0,2)==='06'" >
+                    <el-input v-model="printSheet.MATERMATERIALSPEC" disabled/>
+                </el-form-item>
+                <el-form-item label="颜色" v-else>
+                    <el-input v-model="printSheet.MATERMATERIALTYPE" disabled/>
+                </el-form-item>
+                <el-form-item label="供应商代码">
+                    <el-input v-model="printSheet.SUPPCODE" disabled />
+                </el-form-item>
+                <el-form-item label="打印数量" >
+                    <el-input-number :precision="0" v-model="PRINTQUANTITY" :min="1" />
+                </el-form-item>
+                <el-form-item label="生产日期">
+                    <el-date-picker
+                        v-model="printSheet.PRODUCEDATE"
+                        type="date"
+                        format="YYYY/MM/DD"
+                    />
+                </el-form-item>
+                <el-form-item label="打印日期">
+                    <el-date-picker
+                        v-model="PRINTDATE"
+                        type="date"
+                        format="YYYY/MM/DD"
+                        :default-time="new Date(2000, 1, 1, 0, 0, 0)"
+                        readonly
+                    />
+                </el-form-item>
+                <el-button @click="addPallet" type="primary">打印</el-button>
+                <el-button @click="dialogPallet=false,printSheet.PALLET=''">退出</el-button>
+            </el-form>
+        </el-dialog>
+
+    </div>
+    <ul class="custom-contextmenu" ref="customContextMenu" style="">
+        <li @click="PalletClick()">打印托盘码</li>
+      </ul>
   </div>
-  <Print ref="printRef" class="print"></Print>
+  
   
 </template>
-<style>
-    .print{
-        display: none;
-    }
-</style>
+
 <script lang="ts" setup>
 import { reactive , ref, onMounted} from 'vue'
 import { useRouter } from 'vue-router';
@@ -467,6 +539,7 @@ const router = useRouter();
 const dialogWord = ref(false)   //新建窗口是否显示
 const dialogQuery = ref(false)  //查询窗口是否显示
 const dialogModify = ref(false) //修改窗口是否显示
+const dialogPallet = ref(false) //打印托盘码窗口是否显示
 
 const search = ref('') //修改窗口是否显示
 
@@ -529,7 +602,8 @@ const printSheet = reactive({
     NETWEIGHT:0.000,        //净重
     GROSSWEIGHT:0.000,      //毛重
     NUM: 1,
-    PRINT:true             //是否可以打印
+    PRINT:true,            //是否可以打印
+    PALLET:""               //托盘码信息
 })
 
 
@@ -547,6 +621,7 @@ const selInfo=reactive({
 const handleSelect = (key: string) => {
     if(key=="1"){
         printSheetClear()
+        printSheet.PALLET=""
         dialogWord.value = true
     }
     if(key=="2"){
@@ -667,7 +742,8 @@ const addPrintHistory=()=>{
       NETWEIGHT: printSheet.NETWEIGHT,         //净重
       GROSSWEIGHT: printSheet.GROSSWEIGHT,            //毛重
       SUPPLOTNUM: printSheet.SUPPLOTNUM,         //供应商批号
-      PRINTDATE: PRINTDATE.value,            //打印日期
+      PRINTDATE: PRINTDATE.value,           //打印日期
+      PALLET:printSheet.PALLET              //托盘码记录
     }
     addPrintHistoryApi(param).then((res) => {
         getLotNum(printSheet.PK_ORDER_B)
@@ -788,6 +864,7 @@ onMounted(()=>{
 
 //双击打开修改页面
 const openModify=(row:GetPrintSheet)=>{
+  printSheet.PALLET=""
   printSheet.PK_ORDER=row.pk_ORDER
   printSheet.PK_ORDER_B=row.pk_ORDER_B
   printSheet.SUPPCODE=row.suppcode
@@ -834,6 +911,7 @@ const selPrintHistory=(row:GetPrintSheet)=>{
     //console.log(row.matercode)
     printSheet.VBILLCODE=row.vbillcode
     printSheet.MATERCODE=row.matercode
+    printSheet.PK_ORDER_B=row.pk_ORDER_B
     const param={
         PK_ORDER_B: row.pk_ORDER_B         //采购订单明细主键
     }
@@ -959,6 +1037,7 @@ const getIfPrintSheetsByCode=(code)=>{
     }) 
 }
 
+//重打事件
 const handleReprint=(row:ShowPrintHistory)=>{
     // PrintSheet.SUPPCODE=row.suppcode
     //console.log(row.lotnum)
@@ -975,7 +1054,26 @@ const handleReprint=(row:ShowPrintHistory)=>{
     
 
 }
+//选中的数据
+let selectionPrint: ShowPrintHistory[]=reactive([])
 
+//点击选框事件
+const handleSelectionChange=(row:ShowPrintHistory)=>{
+    selectionPrint=row
+    
+}
+
+//打印托盘码
+const addPallet=()=>{
+    for(var i:number=0;i<PRINTQUANTITY.value;i++){
+                
+                addPrintHistory()
+            }
+            printSheet.PALLET=""
+            dialogPallet.value=false
+}
+
+//删除打印事件
 const handleDelete=(row:ShowPrintHistory)=>{
     const param = {
         PK_ORDER_B: row.pk_ORDER_B,
@@ -1007,27 +1105,62 @@ const supp=ref()
       supplier.SUPPCODE=SUPPCODES[0]
     }
 
-    // const qrclick=()=>{
-    //   if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE==""){
-    //     ElMessage.error("供应商信息错误")
-    //   }else{
-    //     const param = {
-    //       suppCode:supplier.SUPPCODE,
-    //       state:0
-    //       }
-    //       loginAdminsupplier(param).then((res) => {
-    //           if(res.state=='200'){
-                
-    //             localStorage.setItem("accessToken", res.data)
-    //             location.reload()
-    //             console.log("更换成功")
-    //           }else if(res.state=='404'){
-    //               ElMessage.error(res.msg)
-    //           }
-    //       })
-    //   }
-    // console.log(SUPPNAME)
-    // }
+    //重写右键事件
+    let customContextMenu = ref();
+    const openMenu = (e) => {
+    let top = e.pageY;
+    let left = e.pageX;
+    let ele = customContextMenu.value;
+    ele.style.top = top + 'px';
+    ele.style.left = left + 'px';
+    ele.style.display = 'block';
+    };
+    window.addEventListener('click', () => {
+    let menuElement = customContextMenu.value;
+    menuElement.style.display = 'none';
+    });
+
+    //打开托盘码窗口事件
+    const PalletClick=()=>{
+        
+        if(selectionPrint.length>0){
+            printSheet.SUPPMATERCODE=selectionPrint[0].suppmatercode
+            printSheet.SUPPLOTNUM=selectionPrint[0].supplotnum
+            printSheet.MATERNAME=selectionPrint[0].matername
+            
+            printSheet.MATERMATERIALSPEC=selectionPrint[0].matermaterialspec
+            printSheet.MATERMATERIALTYPE=selectionPrint[0].matermaterialtype
+            
+            let NETWEIGHT=0.0
+            let GROSSWEIGHT=0.0
+            printSheet.PALLET="";
+            for(var i=0;i<selectionPrint.length;i++){
+                NETWEIGHT+= parseInt(selectionPrint[i].netweight)
+                GROSSWEIGHT+= parseInt(selectionPrint[i].grossweight)
+                printSheet.PALLET+=selectionPrint[i].lotnum+","
+            }
+            printSheet.NETWEIGHT=NETWEIGHT
+            printSheet.GROSSWEIGHT=GROSSWEIGHT
+            getLotNum(printSheet.PK_ORDER_B)
+            
+            dialogPallet.value=true;
+        }else{
+            ElMessage.error('没有选中的数据')
+        }   
+    }
+    //给托盘码添加的打印记录标识
+    const tableRowClassName = ({
+        row,
+        }: {
+            row: ShowPrintHistory
+    }) => {
+    
+        if(row.pallet!=null&&row.pallet!=""){
+            return 'warning-row'
+        }else{
+            return ""
+        }
+    }
 </script>
 <style lang="scss">
     
@@ -1043,7 +1176,7 @@ const supp=ref()
                 }
             }
         }
-        #modify{
+        #modify,#pallet{
             .el-form-item{
                 width: 360px;
                 margin-right: 10px;
@@ -1070,5 +1203,29 @@ const supp=ref()
             }
         }
 }
-
+    .custom-contextmenu {
+        z-index: 10000;
+        border: 1px solid #ccc;
+        width: 100px;
+        padding: 0;
+        list-style: none;
+        border-bottom: none;
+        position: fixed;
+        display: none;
+        background-color: #fff;
+        li {
+            width: 100px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            &:hover {
+            background-color: skyblue;
+            }
+        }
+    }
+    .el-table .warning-row {
+        --el-table-tr-bg-color: var(--el-color-warning-light-9);
+        }
 </style>

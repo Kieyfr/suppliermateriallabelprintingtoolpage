@@ -11,7 +11,7 @@
                   <el-input v-model="admin.password" type="password" placeholder="请输入密码" maxlength="20" show-password/> 
               </el-form-item>
               <el-button size="100px" @click="onSubmit" type="primary" >登录</el-button>
-              <el-button size="100px" @click="onSkipLogin" >供应商登录</el-button>
+              <el-button size="100px" @click="onSkipLogin" >切换</el-button>
               
               <el-button size="100px" @click="onReset" >重置</el-button>
           </el-form>
