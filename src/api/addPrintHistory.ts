@@ -4,6 +4,7 @@ import http from '@/http/index'
 interface addPrintHistoryParam  {
     PK_ORDER: string,            //采购订单主键
     PK_ORDER_B: string,          //采购订单明细主键
+    SUPPCODE: string,             //供应商代码
     PRODUCEDATE: Date,
     NETWEIGHT:number,
     GROSSWEIGHT:number,

@@ -27,13 +27,7 @@
                 </el-icon>
                 <template #title>退出</template>
             </el-menu-item>
-            
-            
-            
-            
-           
-            
-                
+
             
         </el-menu>
         
@@ -160,7 +154,10 @@
                     <el-date-picker
                         v-model="printSheet.PRODUCEDATE"
                         type="date"
+                        
                         format="YYYY/MM/DD"
+                        value-format="YYYY/MM/DD"
+                        timezone="GMT+8"
                     />
                 </el-form-item>
                 <el-form-item label="打印日期" >
@@ -168,6 +165,7 @@
                         v-model="PRINTDATE"
                         type="date"
                         format="YYYY/MM/DD"
+                        timezone="GMT+8"
                         :default-time="new Date(2000, 1, 1, 0, 0, 0)"
                         readonly
                     />
@@ -236,6 +234,7 @@
                         v-model="PRINTDATE"
                         type="date"
                         format="YYYY/MM/DD"
+                        timezone="GMT+8"
                         :default-time="new Date(2000, 1, 1, 0, 0, 0)"
                         readonly
                     />
@@ -354,7 +353,10 @@
                     <el-date-picker
                         v-model="printSheet.PRODUCEDATE"
                         type="date"
+                        
                         format="YYYY/MM/DD"
+                        value-format="YYYY/MM/DD"
+                        timezone="GMT+8"
                     />
                 </el-form-item>
                 <el-form-item label="打印日期">
@@ -362,6 +364,7 @@
                         v-model="PRINTDATE"
                         type="date"
                         format="YYYY/MM/DD"
+                        timezone="GMT+8"
                         :default-time="new Date(2000, 1, 1, 0, 0, 0)"
                         readonly
                     />
@@ -406,7 +409,7 @@ import { getSupplierApi } from '@/api/getSupplier'
 
 import {GetPrintWorld,ToAbsoluteURL} from "../assets/PrintWorld.js"
 import DownSearch from "../components/DownSearch.vue"
-
+import { format } from 'date-fns'
 //打印信息
 let printInfo={
       SUPPSHORTNAME:"",       //供应商简称
@@ -443,6 +446,9 @@ let printInfo={
         printworld.Act(json)
         
     }
+
+    
+    
 
 //打开打印方法
 const CreateOneFormPage = () => {
@@ -622,6 +628,7 @@ const handleSelect = (key: string) => {
     if(key=="1"){
         printSheetClear()
         printSheet.PALLET=""
+        printSheet.PRODUCEDATE=format(new Date(),'yyyy/MM/dd')
         dialogWord.value = true
     }
     if(key=="2"){
@@ -659,6 +666,7 @@ const handleSubit = () => {
         ElMessage.error('毛重需要大于等于净重')
     }
     else {
+        printSheet.PRODUCEDATE=dateFormat(printSheet.PRODUCEDATE)
         addPrintSheet()
         dialogWord.value=false
     }
@@ -738,7 +746,8 @@ const addPrintHistory=()=>{
     const param={
       PK_ORDER: printSheet.PK_ORDER,            //采购订单主键
       PK_ORDER_B: printSheet.PK_ORDER_B,         //采购订单明细主键
-      PRODUCEDATE: printSheet.PRODUCEDATE,            //生产日期
+      SUPPCODE:printSheet.SUPPCODE,
+      PRODUCEDATE: dateFormat(printSheet.PRODUCEDATE.toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'})),            //生产日期
       NETWEIGHT: printSheet.NETWEIGHT,         //净重
       GROSSWEIGHT: printSheet.GROSSWEIGHT,            //毛重
       SUPPLOTNUM: printSheet.SUPPLOTNUM,         //供应商批号
@@ -909,6 +918,12 @@ const selPrintHistoryNum=(row:GetPrintSheet)=>{
 const selPrintHistory=(row:GetPrintSheet)=>{
     //console.log(row.vbillcode)
     //console.log(row.matercode)
+
+    printSheet.SUPPCODE=row.suppcode
+    printSheet.SUPPNAME=row.suppname
+    printSheet.SUPPSHORTNAME=row.suppshortname
+    console.log(printSheet.SUPPCODE)
+    getMaterielsByCode(printSheet.SUPPCODE)
     printSheet.VBILLCODE=row.vbillcode
     printSheet.MATERCODE=row.matercode
     printSheet.PK_ORDER_B=row.pk_ORDER_B
@@ -1066,6 +1081,7 @@ const handleSelectionChange=(row:ShowPrintHistory)=>{
 
 //打印托盘码
 const addPallet=()=>{
+    console.log(printSheet.PRODUCEDATE)
     for(var i:number=0;i<PRINTQUANTITY.value;i++){
                 
                 addPrintHistory()
@@ -1128,10 +1144,10 @@ const supp=ref()
             printSheet.SUPPMATERCODE=selectionPrint[0].suppmatercode
             printSheet.SUPPLOTNUM=selectionPrint[0].supplotnum
             printSheet.MATERNAME=selectionPrint[0].matername
-            
+            printSheet.PRODUCEDATE=format(new Date(),'yyyy/MM/dd')
             printSheet.MATERMATERIALSPEC=selectionPrint[0].matermaterialspec
             printSheet.MATERMATERIALTYPE=selectionPrint[0].matermaterialtype
-            
+            PRINTQUANTITY.value=1
             let NETWEIGHT=0.0
             let GROSSWEIGHT=0.0
             printSheet.PALLET="";
@@ -1141,6 +1157,8 @@ const supp=ref()
                 printSheet.PALLET+=selectionPrint[i].lotnum+","
             }
             printSheet.NETWEIGHT=NETWEIGHT
+            
+            console.log(printSheet.PRODUCEDATE)
             printSheet.GROSSWEIGHT=GROSSWEIGHT
             getLotNum(printSheet.PK_ORDER_B)
             
@@ -1227,6 +1245,7 @@ const supp=ref()
         }
     }
     .el-table .warning-row {
-        --el-table-tr-bg-color: var(--el-color-warning-light-9);
+        color: rgb(0, 17, 255);
+        font-weight: bold;
         }
 </style>
