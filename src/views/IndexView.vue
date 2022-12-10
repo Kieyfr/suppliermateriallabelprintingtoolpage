@@ -992,6 +992,7 @@ const printSheetClear = () => {
 
 //查询对应的打印订单
 const getIfPrintSheets=()=>{
+    showPrintHistorys.length = 0
     const param = {
         SUPPMATERCODE:selInfo.SUPPMATERCODE,//供应商料号
         VBILLCODE:selInfo.VBILLCODE,//订单号
