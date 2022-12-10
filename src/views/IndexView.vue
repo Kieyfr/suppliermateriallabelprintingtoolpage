@@ -56,8 +56,9 @@
             height="400px"
             @selection-change="handleSelectionChange"
             :row-class-name="tableRowClassName"
+            selection-mode="multiple"
             >
-            <el-table-column type="selection" width="50" />
+            <el-table-column type="selection" width="50" :selectable="row => !(row.pallet!=null&&row.pallet!='')"/>
             <el-table-column type="index" width="50" />
             <el-table-column property="matername" sortable label="物料名称" show-overflow-tooltip width="110"/>
             <el-table-column property="suppmatercode" sortable label="供应商料号" show-overflow-tooltip width="110"/>
@@ -69,6 +70,7 @@
             <el-table-column property="matermaterialspec" sortable label="物料规格" show-overflow-tooltip width="110"/>
             <el-table-column property="matermaterialtype" sortable label="物料颜色" show-overflow-tooltip width="110"/>
             <el-table-column property="printdate" sortable label="打印日期" show-overflow-tooltip width="110"/>
+            
             <el-table-column label="操作" show-overflow-tooltip width="160">
                 <template #default="scope">
                     <el-button size="small" @click="handleReprint(scope.row)">
@@ -578,12 +580,17 @@ const getState=()=>{
 
 //管理员查询
 const getSuppIfPrintSheets=()=>{
+    
     showPrintHistorys.length = 0
-    setSupplier(supplier.SUPPCODE)
-    getPrintSheetsByCode(supplier.SUPPCODE)
-    getMaterielsByCode(supplier.SUPPCODE)
-    getIfPrintSheetsByCode(supplier.SUPPCODE)
-    dialogQuery.value=false
+    getPrintSheet.length=0
+    if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE!=null){
+        setSupplier(supplier.SUPPCODE)
+        getPrintSheetsByCode(supplier.SUPPCODE)
+        getMaterielsByCode(supplier.SUPPCODE)
+        getIfPrintSheetsByCode(supplier.SUPPCODE)
+    }
+        dialogQuery.value=false
+    
 }
 
 var materiels : Materiels[]=reactive([]); //物料信息表格
@@ -1140,7 +1147,9 @@ const supp=ref()
     //打开托盘码窗口事件
     const PalletClick=()=>{
         
+        
         if(selectionPrint.length>0){
+            
             printSheet.SUPPMATERCODE=selectionPrint[0].suppmatercode
             printSheet.SUPPLOTNUM=selectionPrint[0].supplotnum
             printSheet.MATERNAME=selectionPrint[0].matername
