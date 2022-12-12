@@ -151,7 +151,7 @@
                     <el-input v-model="printSheet.SUPPCODE" disabled />
                 </el-form-item>
                 <el-form-item label="打印数量" >
-                    <el-input-number :precision="0" v-model="PRINTQUANTITY" :min="1" :max="printSheet.NUM"/>
+                    <el-input-number :precision="0" v-model="PRINTQUANTITY" :min="0" :max="printSheet.NUM"/>
                 </el-form-item>
                 <el-form-item label="生产日期">
                     <el-date-picker
