@@ -598,6 +598,7 @@ var materiels : Materiels[]=reactive([]); //物料信息表格
 var getPrintSheet: GetPrintSheet[] = reactive([]);   //供应商打印类别
 var showPrintHistorys : ShowPrintHistory[]=reactive([]);
 
+//对象初始化
 const printSheet = reactive({
     PK_ORDER: '',            //采购订单主键
     PK_ORDER_B:'',          //采购订单明细主键
@@ -612,7 +613,7 @@ const printSheet = reactive({
     MATERNAME:'',           //物料名称
     MATERMATERIALSPEC:'',   //物料规格
     MATERMATERIALTYPE:'',   //物料颜色
-    PRODUCEDATE: new Date(),         //生产日期
+    PRODUCEDATE: "",         //生产日期
     NETWEIGHT:0.000,        //净重
     GROSSWEIGHT:0.000,      //毛重
     NUM: 1,
@@ -634,9 +635,9 @@ const selInfo=reactive({
 //设置菜单选中触发
 const handleSelect = (key: string) => {
     if(key=="1"){
-        printSheetClear()
-        printSheet.PALLET=""
-        printSheet.PRODUCEDATE=format(new Date(),'yyyy/MM/dd')
+         printSheetClear()
+         printSheet.PALLET=""
+         printSheet.PRODUCEDATE=format(new Date(),'yyyy/MM/dd')
         dialogWord.value = true
     }
     if(key=="2"){
@@ -993,7 +994,7 @@ const initselPrintHistory=(PK_ORDER_B:string)=>{
     }) ;
 }
 
-//对象初始化
+//对象重置
 const printSheetClear = () => {
   printSheet.PK_ORDER=''
   printSheet.PK_ORDER_B=''
@@ -1004,10 +1005,10 @@ const printSheetClear = () => {
   printSheet.MATERNAME=''
   printSheet.MATERMATERIALSPEC=''
   printSheet.MATERMATERIALTYPE=''
-  printSheet.PRODUCEDATE=null
+  printSheet.PRODUCEDATE=""
   printSheet.NETWEIGHT=0.000
   printSheet.GROSSWEIGHT=0.000
-  printSheet.NUM=0.00
+  printSheet.NUM=1
   printSheet.PRINT=true
   LOTNUM.value = 0 
   PRINTQUANTITY.value = 0
