@@ -26,16 +26,27 @@
             :close-on-click-modal="false"
             :before-close="handleClose"
         >
+        <el-form  label-width="100px" >
+            <el-form-item label="密码">
+                <el-input v-model="password" type="password" placeholder="请输入密码" show-password/>
+            </el-form-item>
+            <el-form-item label="确认密码">
+                <el-input v-model="confirmpassword" type="password" placeholder="请再一次输入您的密码" show-password/>
+            </el-form-item>
+            
+                <span class="dialog-footer">
+                    <el-button type="primary" @click="confirmTrue">
+                        确认
+                    </el-button>
+                </span>
+            
+        </el-form>
         <span>
-            <el-input v-model="password" type="password" placeholder="请输入密码" show-password/>
+
+            
+            
         </span>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button type="primary" @click="confirmTrue">
-                    确认
-                </el-button>
-            </span>
-        </template>
+        
     </el-dialog>
   </div>
 </template>
@@ -53,6 +64,7 @@ const router = useRouter();
 const dialogVisible = ref(false)
 
 const password = ref('')
+const confirmpassword = ref('')
 
 let supplier = reactive({
     suppCode: '',
@@ -158,9 +170,15 @@ const handleClose = (done: () => void) => {
 }
 
 const confirmTrue = () => {
-    if(password.value!=""){
-        dialogVisible.value=false
-        addSuppUser()
+    
+    if(password.value!=""&&confirmpassword.value!=""){
+        if(password.value!=confirmpassword.value){
+            ElMessage.error('两次密码不一样')
+        }else{
+            dialogVisible.value=false
+            addSuppUser()
+        }
+        
     }else{
         ElMessage.error('密码不能为空')
     }
