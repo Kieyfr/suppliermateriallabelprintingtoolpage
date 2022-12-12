@@ -568,12 +568,12 @@ const getState=()=>{
     getStateApi().then((res) => {
         if(res.state=='200'){
             state.value=res.data
-            console.log(state.value===0)
+            
         }else if(res.state=='404'){
             
             ElMessage.error(res.msg)
         }
-        console.log(state.value)
+        
 })
 }
 
