@@ -14,4 +14,6 @@ declare module '' {
  */
   export = content
 }
-
+declare interface Window {
+  PLATFROM_CONFIG: any
+}

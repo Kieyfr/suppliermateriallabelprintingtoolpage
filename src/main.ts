@@ -8,10 +8,11 @@ import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 import VueWechatTitle from 'vue-wechat-title'
+import axios from 'axios'
 
-import Print from 'print-js'
 
 const app = createApp(App)
+
 app.use(store)
 app.use(router)
 app.use(VueWechatTitle)
