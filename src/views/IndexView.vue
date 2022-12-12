@@ -378,7 +378,7 @@
         </el-dialog>
 
     </div>
-    <ul class="custom-contextmenu" ref="customContextMenu" style="">
+    <ul class="custom-contextmenu" ref="customContextMenu" style="display: none;">
         <li @click="PalletClick()">打印托盘码</li>
       </ul>
   </div>
@@ -930,7 +930,7 @@ const selPrintHistory=(row:GetPrintSheet)=>{
     printSheet.SUPPCODE=row.suppcode
     printSheet.SUPPNAME=row.suppname
     printSheet.SUPPSHORTNAME=row.suppshortname
-    console.log(printSheet.SUPPCODE)
+    //console.log(printSheet.SUPPCODE)
     getMaterielsByCode(printSheet.SUPPCODE)
     printSheet.VBILLCODE=row.vbillcode
     printSheet.MATERCODE=row.matercode
@@ -1142,7 +1142,10 @@ const supp=ref()
     };
     window.addEventListener('click', () => {
     let menuElement = customContextMenu.value;
-    menuElement.style.display = 'none';
+    if(menuElement!=null&&menuElement!=""){
+        menuElement.style.display = 'none';
+    }
+    
     });
 
     //打开托盘码窗口事件
@@ -1168,7 +1171,7 @@ const supp=ref()
             }
             printSheet.NETWEIGHT=NETWEIGHT
             
-            console.log(printSheet.PRODUCEDATE)
+            
             printSheet.GROSSWEIGHT=GROSSWEIGHT
             getLotNum(printSheet.PK_ORDER_B)
             
