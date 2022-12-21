@@ -32,7 +32,7 @@
     <div id="order">
       <el-table
       :data="getPrintSheet"
-      style="width: 1100px"
+      style="width: 1055px"
       max-height="250px"
       highlight-current-row
       @row-click="selPrintHistory"
@@ -48,7 +48,7 @@
         <el-table
             :data="showPrintHistorys"
             highlight-current-row
-            style="width: 1300px;font-size:12px"
+            style="font-size:12px;width: 1470px;"
             height="400px"
             @selection-change="handleSelectionChange"
             :row-class-name="tableRowClassName"
@@ -57,13 +57,13 @@
                                                                                     <!-- 禁用托盘码打印的复选框 -->
             <el-table-column type="selection" width="50" :selectable="row => !(row.pallet!=null&&row.pallet!='')"/>
             <el-table-column type="index" width="50" />
-            <el-table-column property="matername" sortable label="物料名称" show-overflow-tooltip width="110"/>
-            <el-table-column property="suppmatercode" sortable label="供应商料号" show-overflow-tooltip width="110"/>
+            <el-table-column property="matername" sortable label="物料名称" show-overflow-tooltip width="200"/>
+            <el-table-column property="suppmatercode" sortable label="供应商料号" show-overflow-tooltip width="150"/>
             <el-table-column property="producedate" sortable label="生产日期" show-overflow-tooltip width="110"/>
             <el-table-column property="lotnum" sortable label="批号" show-overflow-tooltip width="110"/>
             <el-table-column property="netweight" sortable label="净重" show-overflow-tooltip width="80"/>
             <el-table-column property="grossweight" sortable label="毛重" show-overflow-tooltip width="80"/>
-            <el-table-column property="supplotnum" sortable label="供应商批号" show-overflow-tooltip width="110"/>
+            <el-table-column property="supplotnum" sortable label="供应商批号" show-overflow-tooltip width="150"/>
             <el-table-column property="matermaterialspec" sortable label="物料规格" show-overflow-tooltip width="110"/>
             <el-table-column property="matermaterialtype" sortable label="物料颜色" show-overflow-tooltip width="110"/>
             <el-table-column property="printdate" sortable label="打印日期" show-overflow-tooltip width="110"/>
