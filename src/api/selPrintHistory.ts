@@ -3,6 +3,7 @@ import http from '@/http/index'
 
 interface selPrintHistoryParam  {
     PK_ORDER_B: string,          //采购订单明细主键
+    SUPPLOTNUM:string           //供应商批号
 }
  
  

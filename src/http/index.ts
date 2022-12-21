@@ -1,7 +1,7 @@
 import axios from 'axios'
 // 创建一个 axios 实例
 const service = axios.create({
-    baseURL: window.PLATFROM_CONFIG.baseURL, // 所有的请求地址前缀部分，可以放域名
+    baseURL: '/api/', // 所有的请求地址前缀部分，可以放域名
     timeout: 60000, // 请求超时时间毫秒
     withCredentials: false, // 异步请求携带cookie
     headers: {
@@ -19,7 +19,6 @@ declare module "axios" {
     }
     export function create(config?: AxiosRequestConfig): AxiosInstance;
   }
- 
 // 添加请求拦截器
 service.interceptors.request.use(
     function (config) {
@@ -33,7 +32,6 @@ service.interceptors.request.use(
         return Promise.reject(error)
     }
 )
- 
 // 添加响应拦截器
 service.interceptors.response.use(
     function (response) {

@@ -27,20 +27,16 @@
                 </el-icon>
                 <template #title>退出</template>
             </el-menu-item>
-
-            
         </el-menu>
-        
-        
-    </div>   
+    </div>
     <div id="order">
-      <el-table 
-      :data="getPrintSheet" 
-      style="width: 1100px" 
-      max-height="250px" 
+      <el-table
+      :data="getPrintSheet"
+      style="width: 1100px"
+      max-height="250px"
       highlight-current-row
       @row-click="selPrintHistory"
-      @row-dblclick="openModify">  
+      @row-dblclick="openModify">
         <el-table-column type="index" width="100" />
         <el-table-column prop="suppshortname" sortable label="供应商简称" width="250"/>
         <el-table-column prop="matername" sortable label="物料名称" width="205" />
@@ -71,7 +67,6 @@
             <el-table-column property="matermaterialspec" sortable label="物料规格" show-overflow-tooltip width="110"/>
             <el-table-column property="matermaterialtype" sortable label="物料颜色" show-overflow-tooltip width="110"/>
             <el-table-column property="printdate" sortable label="打印日期" show-overflow-tooltip width="110"/>
-            
             <el-table-column label="操作" show-overflow-tooltip width="160">
                 <template #default="scope">
                     <el-button size="small" @click="handleReprint(scope.row)">
@@ -82,13 +77,13 @@
                     </el-button>
                 </template>
             </el-table-column>
-        </el-table> 
+        </el-table>
     </div>
     <div id="word">
-        <el-dialog 
-        v-model="dialogWord" 
-        title="新建" 
-        width="800px" 
+        <el-dialog
+        v-model="dialogWord"
+        title="新建"
+        width="800px"
         :close-on-click-modal="false"
         >
             <el-form :model="printSheet" label-width="100px" :inline="true">
@@ -157,7 +152,6 @@
                     <el-date-picker
                         v-model="printSheet.PRODUCEDATE"
                         type="date"
-                        
                         format="YYYY/MM/DD"
                         value-format="YYYY/MM/DD"
                         timezone="GMT+8"
@@ -179,8 +173,8 @@
         </el-dialog>
     </div>
     <div id="modify">
-        <el-dialog 
-        v-model="dialogModify" 
+        <el-dialog
+        v-model="dialogModify"
         title="打印" 
         width="800px"
         :close-on-click-modal="false"
@@ -303,12 +297,11 @@
                         <el-button @click="dialogQuery=false">返回</el-button>
             </el-form>
         </el-dialog>
-        
     </div>
     <div id="pallet">
-        <el-dialog 
-        v-model="dialogPallet" 
-        title="打印托盘码" 
+        <el-dialog
+        v-model="dialogPallet"
+        title="打印托盘码"
         width="800px"
         :close-on-click-modal="false"
         >
@@ -356,7 +349,6 @@
                     <el-date-picker
                         v-model="printSheet.PRODUCEDATE"
                         type="date"
-                        
                         format="YYYY/MM/DD"
                         value-format="YYYY/MM/DD"
                         timezone="GMT+8"
@@ -382,8 +374,6 @@
         <li @click="PalletClick()">打印托盘码</li>
       </ul>
   </div>
-  
-  
 </template>
 
 <script lang="ts" setup>
@@ -435,23 +425,21 @@ let printInfo={
 
     //打印
     const outputPrint=()=> {
-        var json = {};	
+        var json = {};
         json.action = "print";
 
         if(printInfo.MATERCODE.substring(0,2)==='06'){
-            json.template = ToAbsoluteURL("print.fmx");	
+            json.template = ToAbsoluteURL("print.fmx");
         }else{
-            json.template = ToAbsoluteURL("print2.fmx");	
+            json.template = ToAbsoluteURL("print2.fmx");
         }
         var downloadUrl = "打天下1.6.zip";
         printworld.DownloadUrlForTemplatePrint(downloadUrl)
         json.data = printInfo
         printworld.Act(json)
-        
     }
 
-    
-    
+
 
 //打开打印方法
 const CreateOneFormPage = () => {
@@ -564,24 +552,17 @@ const state=ref('');
 
 //获取登录状态
 const getState=()=>{
-    
     getStateApi().then((res) => {
         if(res.state=='200'){
             state.value=res.data
-            
         }else if(res.state=='404'){
-            
             ElMessage.error(res.msg)
         }
-        
 })
 }
 
-
-
 //管理员查询
 const getSuppIfPrintSheets=()=>{
-    
     showPrintHistorys.length = 0
     getPrintSheet.length=0
     if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE!=null){
@@ -591,7 +572,6 @@ const getSuppIfPrintSheets=()=>{
         getIfPrintSheetsByCode(supplier.SUPPCODE)
     }
         dialogQuery.value=false
-    
 }
 
 var materiels : Materiels[]=reactive([]); //物料信息表格
@@ -648,7 +628,6 @@ const handleSelect = (key: string) => {
         localStorage.removeItem("accessToken")
         router.push('/')
     }
-    
 }
 
 //设置新建表单验证
@@ -694,7 +673,6 @@ const modhandleSubit = () => {
     }
     else {
         for(var i:number=0;i<PRINTQUANTITY.value;i++){
-                
                 addPrintHistory()
             }
         dialogModify.value=false
@@ -732,8 +710,6 @@ const addPrintSheet=()=>{
             for(var i:number=0;i<PRINTQUANTITY.value;i++){
                 addPrintHistory()
             }
-            
-            
             if(state.value=="0"){
                 getPrintSheetsByCode(supplier.SUPPCODE)
                 getMaterielsByCode(supplier.SUPPCODE)
@@ -741,13 +717,12 @@ const addPrintSheet=()=>{
                 getPrintSheets()
                 getMateriels()
             }
-            
         }else if(res.state=='403'){
             ElMessage.error('订单重复，请选择其他订单')
         }else if(res.state=='500'){
             ElMessage.error('添加失败')
         }
-    }) 
+    })
 }
 
 //添加打印单历史记录
@@ -767,11 +742,13 @@ const addPrintHistory=()=>{
         getLotNum(printSheet.PK_ORDER_B)
         initselPrintHistory(printSheet.PK_ORDER_B)
         LOTNUM.value=res.data
-        
         CreateOneFormPage()
         if(res.state=='201'){
             ElMessage.success("订单完成")
             getPrintSheets()
+            showPrintHistorys.length = 0
+        }
+        if(res.state=='200'){
             showPrintHistorys.length = 0
         }
     }) ;
@@ -782,11 +759,11 @@ const getMateriels = () => {
     getMaterielsApi().then((res) => {
         if(res.state=='200'){
             materiels.length=0
-            materiels.push(...res.data) 
+            materiels.push(...res.data)
         }else if(res.state=='404'){
             ElMessage.error('物料列表为空')
         }
-    }) 
+    })
 }
 
 //根据供应商代码获取物料列表
@@ -797,11 +774,11 @@ const getMaterielsByCode = (code) => {
     getMaterielsByCodeApi(param).then((res) => {
         if(res.state=='200'){
             materiels.length=0
-            materiels.push(...res.data) 
+            materiels.push(...res.data)
         }else if(res.state=='404'){
             ElMessage.error('物料列表为空')
         }
-    }) 
+    })
 }
 
 //查询物料列表
@@ -814,7 +791,7 @@ const searchMateriels = (code) => {
         if(res.state=='200'){
             console.log(res.data)
             materiels.length=0
-            materiels.push(...res.data) 
+            materiels.push(...res.data)
         }else if(res.state=='404'){
             ElMessage.error('物料列表为空')
         }
@@ -877,7 +854,6 @@ onMounted(()=>{
     getSuppUser();
     getMateriels();
     getPrintSheets();
-    
 })
 
 //双击打开修改页面
@@ -908,13 +884,13 @@ const openModify=(row:GetPrintSheet)=>{
     console.log("aaa")
     getMaterielsByCode(supplier.SUPPCODE)
   }
-  
 }
 
 //查询对应的打印历史数量
 const selPrintHistoryNum=(row:GetPrintSheet)=>{
     const param={
-        PK_ORDER_B: row.pk_ORDER_B         //采购订单明细主键
+        PK_ORDER_B: row.pk_ORDER_B,         //采购订单明细主键
+        SUPPLOTNUM:row.supplotnum           //供应商批号
     }
     selPrintHistoryNumApi(param).then((res) => {
         if(res.state=='200'){
@@ -937,7 +913,8 @@ const selPrintHistory=(row:GetPrintSheet)=>{
     printSheet.MATERCODE=row.matercode
     printSheet.PK_ORDER_B=row.pk_ORDER_B
     const param={
-        PK_ORDER_B: row.pk_ORDER_B         //采购订单明细主键
+        PK_ORDER_B: row.pk_ORDER_B,         //采购订单明细主键
+        SUPPLOTNUM:row.supplotnum
     }
     selPrintHistoryApi(param).then((res) => {
         if(res.state=='200'){
@@ -948,9 +925,10 @@ const selPrintHistory=(row:GetPrintSheet)=>{
 }
 
 //行查询对应的打印历史
-const hangselPrintHistory=(PK_ORDER_B:string)=>{
+const hangselPrintHistory=(PK_ORDER_B:string,SUPPLOTNUM:string)=>{
     const param={
-        PK_ORDER_B: PK_ORDER_B         //采购订单明细主键
+        PK_ORDER_B: PK_ORDER_B,         //采购订单明细主键
+        SUPPLOTNUM:SUPPLOTNUM
     }
     selPrintHistoryApi(param).then((res) => {
         if(res.state=='200'){
@@ -976,7 +954,6 @@ const setSupplier=(code)=>{
                 printSheet.SUPPNAME = ""
                 printSheet.SUPPSHORTNAME = ""
             }
-            
         }
     });
 }
@@ -1010,7 +987,7 @@ const printSheetClear = () => {
   printSheet.GROSSWEIGHT=0.000
   printSheet.NUM=1
   printSheet.PRINT=true
-  LOTNUM.value = 0 
+  LOTNUM.value = 0
   PRINTQUANTITY.value = 0
 }
 
@@ -1027,15 +1004,14 @@ const getIfPrintSheets=()=>{
     }
     //console.log(param)
     getIfPrintSheetsApi(param).then((res) => {
-        if(res.state=='200'){  
+        if(res.state=='200'){
             getPrintSheet.length=0
             getPrintSheet.push(...res.data)
-            
             dialogQuery.value=false
         }else if(res.state=='500'){
             ElMessage.error(res.msg)
         }
-    }) 
+    })
 }
 
 //管理员查询对应的打印订单
@@ -1051,15 +1027,14 @@ const getIfPrintSheetsByCode=(code)=>{
     }
     //console.log(param)
     getIfPrintSheetsByCodeApi(param).then((res) => {
-        if(res.state=='200'){  
+        if(res.state=='200'){
             getPrintSheet.length=0
             getPrintSheet.push(...res.data)
-            
             dialogQuery.value=false
         }else if(res.state=='500'){
             ElMessage.error(res.msg)
         }
-    }) 
+    })
 }
 
 //重打事件
@@ -1076,7 +1051,6 @@ const handleReprint=(row:ShowPrintHistory)=>{
     printSheet.NETWEIGHT=row.netweight
     printSheet.GROSSWEIGHT=row.grossweight
     CreateOneFormPage2()
-    
 
 }
 //选中的数据
@@ -1085,14 +1059,12 @@ let selectionPrint: ShowPrintHistory[]=reactive([])
 //点击选框事件
 const handleSelectionChange=(row:ShowPrintHistory)=>{
     selectionPrint=row
-    
 }
 
 //打印托盘码
 const addPallet=()=>{
     console.log(printSheet.PRODUCEDATE)
     for(var i:number=0;i<PRINTQUANTITY.value;i++){
-                
                 addPrintHistory()
             }
             printSheet.PALLET=""
@@ -1107,11 +1079,11 @@ const handleDelete=(row:ShowPrintHistory)=>{
     }
     delPrintHistoryApi(param).then((res) => {
         if(res.state=='200'){
-            hangselPrintHistory(row.pk_ORDER_B)
+            hangselPrintHistory(row.pk_ORDER_B,row.supplotnum)
         }else if(res.state=='404'){
             ElMessage.error('物料列表为空')
         }
-    }) 
+    })
 }
 
 //获取供应商名称下拉框
@@ -1119,7 +1091,7 @@ const supp=ref()
 
     const supplier=reactive({
       SUPPSHORTNAME:"",
-      
+
       SUPPCODE:""
     })
     let SUPPCODES=['']
@@ -1146,15 +1118,14 @@ const supp=ref()
     if(menuElement!=null&&menuElement!=""){
         menuElement.style.display = 'none';
     }
-    
+
     });
 
     //打开托盘码窗口事件
     const PalletClick=()=>{
-        
-        
+
         if(selectionPrint.length>0){
-            
+
             printSheet.SUPPMATERCODE=selectionPrint[0].suppmatercode
             printSheet.SUPPLOTNUM=selectionPrint[0].supplotnum
             printSheet.MATERNAME=selectionPrint[0].matername
@@ -1171,15 +1142,12 @@ const supp=ref()
                 printSheet.PALLET+=selectionPrint[i].lotnum+","
             }
             printSheet.NETWEIGHT=NETWEIGHT
-            
-            
             printSheet.GROSSWEIGHT=GROSSWEIGHT
             getLotNum(printSheet.PK_ORDER_B)
-            
             dialogPallet.value=true;
         }else{
             ElMessage.error('没有选中的数据')
-        }   
+        }
     }
     //给托盘码添加的打印记录标识
     const tableRowClassName = ({
@@ -1187,7 +1155,7 @@ const supp=ref()
         }: {
             row: ShowPrintHistory
     }) => {
-    
+
         if(row.pallet!=null&&row.pallet!=""){
             return 'warning-row'
         }else{
@@ -1196,8 +1164,8 @@ const supp=ref()
     }
 </script>
 <style lang="scss">
-    
-    
+
+
     #indexView{
         #word{
             .el-form-item{
