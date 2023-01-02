@@ -404,22 +404,26 @@ import {GetPrintWorld,ToAbsoluteURL} from "../assets/PrintWorld.js"
 import DownSearch from "../components/DownSearch.vue"
 import { format } from 'date-fns'
 //打印信息
-let printInfo={
-      SUPPSHORTNAME:"",       //供应商简称
-      MATERNAME:"",           //物料名称
-      MATERCODE:"",           //物料编码
-      SUPPMATERCODE:"",       //供应商料号
-      PRODUCEDATE:"",           //生产日期
-      VBILLCODE:"",           //订单号
-      SUPPLOTNUM:"",          //供应商批号
-      LOTNUM:"",            //批号
-      MATERMATERIALSPEC:"",   //物料规格
-      MATERMATERIALTYPE:"",   //物料颜色
-      NETWEIGHT:"",           //净重
-      GROSSWEIGHT:"",         //毛重
-      PRINTQUANTITY:1,        //打印数量
-      BARCODE:""              //条码
-    }
+interface PrintInfo{
+    SUPPSHORTNAME?:string,       //供应商简称
+      MATERNAME?:string,           //物料名称
+      MATERCODE?:string,           //物料编码
+      SUPPMATERCODE?:string,       //供应商料号
+      PRODUCEDATE?:string,           //生产日期
+      VBILLCODE?:string,           //订单号
+      SUPPLOTNUM?:string,          //供应商批号
+      LOTNUM?:string,            //批号
+      MATERMATERIALSPEC?:string,   //物料规格
+      MATERMATERIALTYPE?:string,   //物料颜色
+      NETWEIGHT?:string,           //净重
+      GROSSWEIGHT?:string,         //毛重
+      PRINTQUANTITY?:number,        //打印数量
+      BARCODE?:string              //条码
+}
+const printInfo:PrintInfo=reactive({})
+const printInfos:PrintInfo[]=reactive([])
+
+
     //获取打天下
     const printworld = GetPrintWorld()
 
@@ -435,7 +439,7 @@ let printInfo={
         }
         var downloadUrl = "打天下1.6.zip";
         printworld.DownloadUrlForTemplatePrint(downloadUrl)
-        json.data = printInfo
+        json.data = printInfos
         printworld.Act(json)
     }
 
@@ -443,13 +447,14 @@ let printInfo={
 
 //打开打印方法
 const CreateOneFormPage = () => {
-    modprintInfo()
     setTimeout(()=>{
     outputPrint()
     },0)
 };
 const CreateOneFormPage2 = () => {
+    printInfos.length=0
     modprintInfo2()
+    printInfos.push(printInfo)
     setTimeout(()=>{
     outputPrint()
     },0)
@@ -464,12 +469,11 @@ const modprintInfo=()=>{
     printInfo.PRODUCEDATE=dateFormat(printSheet.PRODUCEDATE)
     printInfo.SUPPLOTNUM=printSheet.SUPPLOTNUM
     printInfo.VBILLCODE=printSheet.VBILLCODE
-    printInfo.LOTNUM=LOTNUM.value
     printInfo.MATERMATERIALSPEC=printSheet.MATERMATERIALSPEC
     printInfo.MATERMATERIALTYPE=printSheet.MATERMATERIALTYPE
     printInfo.NETWEIGHT=printSheet.NETWEIGHT+"KG"
     printInfo.GROSSWEIGHT=printSheet.GROSSWEIGHT+"KG"
-    printInfo.PRINTQUANTITY=printSheet.PRINTQUANTITY
+    printInfo.PRINTQUANTITY=1
     printInfo.BARCODE=barCode(printInfo.MATERCODE,printSheet.NETWEIGHT+"",printSheet.SUPPCODE,printInfo.VBILLCODE,printInfo.LOTNUM)
 }
 const modprintInfo2=()=>{
@@ -485,7 +489,7 @@ const modprintInfo2=()=>{
     printInfo.MATERMATERIALTYPE=printSheet.MATERMATERIALTYPE
     printInfo.NETWEIGHT=printSheet.NETWEIGHT+"KG"
     printInfo.GROSSWEIGHT=printSheet.GROSSWEIGHT+"KG"
-    printInfo.PRINTQUANTITY=printSheet.PRINTQUANTITY
+    printInfo.PRINTQUANTITY=1
     printInfo.BARCODE=barCode(printInfo.MATERCODE,printSheet.NETWEIGHT+"",printSheet.SUPPCODE,printInfo.VBILLCODE,printInfo.LOTNUM)
 }
 //生成条码
@@ -544,7 +548,7 @@ const dialogSupplierVisible=ref('')//管理员切换供应商窗口是否显示
 
 var visible = ref(false)    //气泡表格是否显示
 
-let LOTNUM = ref(0) //批号
+const LOTNUM = ref(0) //批号
 const PRINTQUANTITY = ref(1)//打印数量
 const PRINTDATE = ref(new Date)//打印日期
 
@@ -630,6 +634,7 @@ const handleSelect = (key: string) => {
     }
 }
 
+
 //设置新建表单验证
 const handleSubit = () => {
     if(printSheet.MATERCODE==''){
@@ -661,7 +666,7 @@ const handleSubit = () => {
 }
 
 //设置修改表单验证
-const modhandleSubit = () => {
+async function modhandleSubit() {
     if(printSheet.NETWEIGHT==0.00){
         ElMessage.error('请设置净重')
     }
@@ -672,9 +677,35 @@ const modhandleSubit = () => {
         ElMessage.error('毛重需要大于等于净重')
     }
     else {
+        printInfos.length=0
+
         for(var i:number=0;i<PRINTQUANTITY.value;i++){
-                addPrintHistory()
-            }
+                await addPrintHistory().then(val => {
+                    printInfo.LOTNUM=val+""
+            　　});
+                setTimeout(()=>{
+                    modprintInfo()
+                    
+                },0)
+                printInfos.push({
+                    SUPPSHORTNAME:printInfo.SUPPSHORTNAME,
+                    MATERNAME:printInfo.MATERNAME,
+                    MATERCODE:printInfo.MATERCODE,
+                    SUPPMATERCODE:printInfo.SUPPMATERCODE,
+                    PRODUCEDATE:printInfo.PRODUCEDATE,
+                    VBILLCODE:printInfo.VBILLCODE,
+                    SUPPLOTNUM:printInfo.SUPPLOTNUM,
+                    LOTNUM:printInfo.LOTNUM,
+                    MATERMATERIALSPEC:printInfo.MATERMATERIALSPEC,
+                    MATERMATERIALTYPE:printInfo.MATERMATERIALTYPE,
+                    NETWEIGHT:printInfo.NETWEIGHT,
+                    GROSSWEIGHT:printInfo.GROSSWEIGHT,
+                    BARCODE:printInfo.BARCODE
+                })
+        }
+        setTimeout(()=>{
+            outputPrint()
+        },0)
         dialogModify.value=false
     }
 }
@@ -704,12 +735,38 @@ const getMaterial = (row:Materiels) => {
 }
 
 //添加打印单列表
-const addPrintSheet=()=>{
-    addPrintSheetApi(printSheet).then((res) => {
+function addPrintSheet(){
+    addPrintSheetApi(printSheet).then(async (res) => {
         if(res.state=='200'){
-            for(var i:number=0;i<PRINTQUANTITY.value;i++){
-                addPrintHistory()
-            }
+            printInfos.length=0
+         for(var i:number=0;i<PRINTQUANTITY.value;i++){
+                await addPrintHistory().then(val => {
+                    printInfo.LOTNUM=val+""
+            　　});
+                setTimeout(()=>{
+                    modprintInfo()
+                    
+                },0)
+                printInfos.push({
+                    SUPPSHORTNAME:printInfo.SUPPSHORTNAME,
+                    MATERNAME:printInfo.MATERNAME,
+                    MATERCODE:printInfo.MATERCODE,
+                    SUPPMATERCODE:printInfo.SUPPMATERCODE,
+                    PRODUCEDATE:printInfo.PRODUCEDATE,
+                    VBILLCODE:printInfo.VBILLCODE,
+                    SUPPLOTNUM:printInfo.SUPPLOTNUM,
+                    LOTNUM:printInfo.LOTNUM,
+                    MATERMATERIALSPEC:printInfo.MATERMATERIALSPEC,
+                    MATERMATERIALTYPE:printInfo.MATERMATERIALTYPE,
+                    NETWEIGHT:printInfo.NETWEIGHT,
+                    GROSSWEIGHT:printInfo.GROSSWEIGHT,
+                    BARCODE:printInfo.BARCODE
+                })
+        }
+        setTimeout(()=>{
+            outputPrint()
+        },0)
+            
             if(state.value=="0"){
                 getPrintSheetsByCode(supplier.SUPPCODE)
                 getMaterielsByCode(supplier.SUPPCODE)
@@ -726,32 +783,66 @@ const addPrintSheet=()=>{
 }
 
 //添加打印单历史记录
-const addPrintHistory=()=>{
-    const param={
-      PK_ORDER: printSheet.PK_ORDER,            //采购订单主键
-      PK_ORDER_B: printSheet.PK_ORDER_B,         //采购订单明细主键
-      SUPPCODE:printSheet.SUPPCODE,
-      PRODUCEDATE: dateFormat(printSheet.PRODUCEDATE.toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'})),            //生产日期
-      NETWEIGHT: printSheet.NETWEIGHT,         //净重
-      GROSSWEIGHT: printSheet.GROSSWEIGHT,            //毛重
-      SUPPLOTNUM: printSheet.SUPPLOTNUM,         //供应商批号
-      PRINTDATE: PRINTDATE.value,           //打印日期
-      PALLET:printSheet.PALLET              //托盘码记录
-    }
-    addPrintHistoryApi(param).then((res) => {
-        getLotNum(printSheet.PK_ORDER_B)
-        initselPrintHistory(printSheet.PK_ORDER_B)
-        LOTNUM.value=res.data
-        CreateOneFormPage()
-        if(res.state=='201'){
-            ElMessage.success("订单完成")
-            getPrintSheets()
-            showPrintHistorys.length = 0
-        }
-        if(res.state=='200'){
-            showPrintHistorys.length = 0
-        }
-    }) ;
+function addPrintHistory(){
+    return new Promise((resolve, reject) => {
+        const param={
+            PK_ORDER: printSheet.PK_ORDER,            //采购订单主键
+            PK_ORDER_B: printSheet.PK_ORDER_B,         //采购订单明细主键
+            SUPPCODE:printSheet.SUPPCODE,
+            PRODUCEDATE: dateFormat(printSheet.PRODUCEDATE.toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'})),            //生产日期
+            NETWEIGHT: printSheet.NETWEIGHT,         //净重
+            GROSSWEIGHT: printSheet.GROSSWEIGHT,            //毛重
+            SUPPLOTNUM: printSheet.SUPPLOTNUM,         //供应商批号
+            PRINTDATE: PRINTDATE.value,           //打印日期
+            PALLET:printSheet.PALLET              //托盘码记录
+            }
+            addPrintHistoryApi(param).then((res) => {
+                getLotNum(printSheet.PK_ORDER_B)
+                initselPrintHistory(printSheet.PK_ORDER_B)
+                // LOTNUM.value=res.data
+                let lotnum=res.data
+                resolve(lotnum)
+                if(res.state=='201'){
+                    ElMessage.success("订单完成")
+                    getPrintSheets()
+                    showPrintHistorys.length = 0
+                }
+                if(res.state=='200'){
+                    showPrintHistorys.length = 0
+                }
+            })
+            
+　　　　　　//你的逻辑代码
+　　　　　　
+　　　　});
+        // const param={
+        //     PK_ORDER: printSheet.PK_ORDER,            //采购订单主键
+        //     PK_ORDER_B: printSheet.PK_ORDER_B,         //采购订单明细主键
+        //     SUPPCODE:printSheet.SUPPCODE,
+        //     PRODUCEDATE: dateFormat(printSheet.PRODUCEDATE.toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'})),            //生产日期
+        //     NETWEIGHT: printSheet.NETWEIGHT,         //净重
+        //     GROSSWEIGHT: printSheet.GROSSWEIGHT,            //毛重
+        //     SUPPLOTNUM: printSheet.SUPPLOTNUM,         //供应商批号
+        //     PRINTDATE: PRINTDATE.value,           //打印日期
+        //     PALLET:printSheet.PALLET              //托盘码记录
+        //     }
+        //     addPrintHistoryApi(param).then((res) => {
+        //         getLotNum(printSheet.PK_ORDER_B)
+        //         initselPrintHistory(printSheet.PK_ORDER_B)
+        //         LOTNUM.value=res.data
+                
+        //         if(res.state=='201'){
+        //             ElMessage.success("订单完成")
+        //             getPrintSheets()
+        //             showPrintHistorys.length = 0
+        //         }
+        //         if(res.state=='200'){
+        //             showPrintHistorys.length = 0
+        //         }
+        //     })
+        //     await lotnums.push(LOTNUM.value)
+            
+            
 }
 
 //获取物料列表
@@ -823,6 +914,7 @@ const getLotNum = (PK_ORDER_B:string) => {
     }) ;
 }
 
+
 //获取打印列表
 const getPrintSheets = () => {
     getPrintSheetsApi().then((res) => {
@@ -881,7 +973,6 @@ const openModify=(row:GetPrintSheet)=>{
   selPrintHistoryNum(row)
   dialogModify.value = true
   if(state.value=="0"){
-    console.log("aaa")
     getMaterielsByCode(supplier.SUPPCODE)
   }
 }
@@ -1047,7 +1138,7 @@ const handleReprint=(row:ShowPrintHistory)=>{
     printSheet.LOTNUM=row.lotnum
     printSheet.MATERMATERIALSPEC=row.matermaterialspec
     printSheet.MATERMATERIALTYPE=row.matermaterialtype
-    printSheet.PRODUCEDATE=row.producedate
+    printSheet.PRODUCEDATE=row.producedate.toString()
     printSheet.NETWEIGHT=row.netweight
     printSheet.GROSSWEIGHT=row.grossweight
     CreateOneFormPage2()
@@ -1062,11 +1153,36 @@ const handleSelectionChange=(row:ShowPrintHistory)=>{
 }
 
 //打印托盘码
-const addPallet=()=>{
+async function addPallet(){
     console.log(printSheet.PRODUCEDATE)
-    for(var i:number=0;i<PRINTQUANTITY.value;i++){
-                addPrintHistory()
-            }
+    printInfos.length=0
+         for(var i:number=0;i<PRINTQUANTITY.value;i++){
+                await addPrintHistory().then(val => {
+                    printInfo.LOTNUM=val+""
+            　　});
+                setTimeout(()=>{
+                    modprintInfo()
+                    
+                },0)
+                printInfos.push({
+                    SUPPSHORTNAME:printInfo.SUPPSHORTNAME,
+                    MATERNAME:printInfo.MATERNAME,
+                    MATERCODE:printInfo.MATERCODE,
+                    SUPPMATERCODE:printInfo.SUPPMATERCODE,
+                    PRODUCEDATE:printInfo.PRODUCEDATE,
+                    VBILLCODE:printInfo.VBILLCODE,
+                    SUPPLOTNUM:printInfo.SUPPLOTNUM,
+                    LOTNUM:printInfo.LOTNUM,
+                    MATERMATERIALSPEC:printInfo.MATERMATERIALSPEC,
+                    MATERMATERIALTYPE:printInfo.MATERMATERIALTYPE,
+                    NETWEIGHT:printInfo.NETWEIGHT,
+                    GROSSWEIGHT:printInfo.GROSSWEIGHT,
+                    BARCODE:printInfo.BARCODE
+                })
+        }
+        setTimeout(()=>{
+            outputPrint()
+        },0)
             printSheet.PALLET=""
             dialogPallet.value=false
 }
