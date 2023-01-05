@@ -775,7 +775,7 @@ function addPrintSheet(){
                 getMateriels()
             }
         }else if(res.state=='403'){
-            ElMessage.error('订单重复，请选择其他订单')
+            ElMessage.error(res.msg)
         }else if(res.state=='500'){
             ElMessage.error('添加失败')
         }
