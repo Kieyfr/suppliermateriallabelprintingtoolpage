@@ -1253,8 +1253,8 @@ const supp=ref()
             let GROSSWEIGHT=0.0
             printSheet.PALLET="";
             for(var i=0;i<selectionPrint.length;i++){
-                NETWEIGHT+= parseInt(selectionPrint[i].netweight)
-                GROSSWEIGHT+= parseInt(selectionPrint[i].grossweight)
+                NETWEIGHT+= selectionPrint[i].netweight
+                GROSSWEIGHT+= selectionPrint[i].grossweight
                 printSheet.PALLET+=selectionPrint[i].lotnum+","
             }
             printSheet.NETWEIGHT=NETWEIGHT
