@@ -137,10 +137,10 @@
                     <el-input v-model="printSheet.SUPPLOTNUM"/>
                 </el-form-item>
                 <el-form-item label="绞距" v-if="printSheet.MATERCODE.substring(0,2)==='06'">
-                    <el-input v-model="printSheet.MATERMATERIALSPEC" disabled/>
+                    <el-input v-model="printSheet.MATERMATERIALSPEC"/>
                 </el-form-item>
                 <el-form-item label="颜色" v-else>
-                    <el-input v-model="printSheet.MATERMATERIALTYPE" disabled/>
+                    <el-input v-model="printSheet.MATERMATERIALTYPE"/>
                 </el-form-item>
                 <el-form-item label="供应商代码">
                     <el-input v-model="printSheet.SUPPCODE" disabled />
@@ -461,7 +461,7 @@ const CreateOneFormPage2 = () => {
 };
 
 //更改json信息方法
-const modprintInfo=()=>{
+function modprintInfo(){
     printInfo.SUPPSHORTNAME=printSheet.SUPPSHORTNAME
     printInfo.MATERNAME=printSheet.MATERNAME
     printInfo.MATERCODE=printSheet.MATERCODE
@@ -494,7 +494,7 @@ const modprintInfo2=()=>{
 }
 //生成条码
 const barCode=(matercode,netweight,suppcode,vbillcode,lotnum)=>{
-    let barcode=""
+    let barcode="";
     let pd=netweight.indexOf(".");
     let netweight1=""
     let netweight2=""
@@ -683,11 +683,8 @@ async function modhandleSubit() {
                 await addPrintHistory().then(val => {
                     printInfo.LOTNUM=val+""
             　　});
-                setTimeout(()=>{
-                    modprintInfo()
-                    
-                },0)
-                printInfos.push({
+                await modprintInfo()
+                await printInfos.push({
                     SUPPSHORTNAME:printInfo.SUPPSHORTNAME,
                     MATERNAME:printInfo.MATERNAME,
                     MATERCODE:printInfo.MATERCODE,
@@ -703,9 +700,7 @@ async function modhandleSubit() {
                     BARCODE:printInfo.BARCODE
                 })
         }
-        setTimeout(()=>{
-            outputPrint()
-        },0)
+        await outputPrint()
         dialogModify.value=false
     }
 }
@@ -743,11 +738,8 @@ function addPrintSheet(){
                 await addPrintHistory().then(val => {
                     printInfo.LOTNUM=val+""
             　　});
-                setTimeout(()=>{
-                    modprintInfo()
-                    
-                },0)
-                printInfos.push({
+                await modprintInfo()
+                await printInfos.push({
                     SUPPSHORTNAME:printInfo.SUPPSHORTNAME,
                     MATERNAME:printInfo.MATERNAME,
                     MATERCODE:printInfo.MATERCODE,
@@ -763,10 +755,9 @@ function addPrintSheet(){
                     BARCODE:printInfo.BARCODE
                 })
         }
-        setTimeout(()=>{
-            outputPrint()
-        },0)
-            
+
+        await outputPrint()
+        printInfos.length=0
             if(state.value=="0"){
                 getPrintSheetsByCode(supplier.SUPPCODE)
                 getMaterielsByCode(supplier.SUPPCODE)
@@ -1160,10 +1151,8 @@ async function addPallet(){
                 await addPrintHistory().then(val => {
                     printInfo.LOTNUM=val+""
             　　});
-                setTimeout(()=>{
-                    modprintInfo()
-                    
-                },0)
+                
+                await modprintInfo()
                 printInfos.push({
                     SUPPSHORTNAME:printInfo.SUPPSHORTNAME,
                     MATERNAME:printInfo.MATERNAME,
@@ -1180,9 +1169,9 @@ async function addPallet(){
                     BARCODE:printInfo.BARCODE
                 })
         }
-        setTimeout(()=>{
-            outputPrint()
-        },0)
+        
+            await outputPrint()
+            printInfos.length=0
             printSheet.PALLET=""
             dialogPallet.value=false
 }
