@@ -427,6 +427,24 @@ const printInfos:PrintInfo[]=reactive([])
     //获取打天下
     const printworld = GetPrintWorld()
 
+    //获取打天下安装包
+    var downloadUrl = "打天下64位1.6.zip";
+    function getPrintWorldZip(){
+        const userAgent = navigator.userAgent;
+        if (userAgent.indexOf('Win64') > -1 || userAgent.indexOf('WOW64') > -1) {
+            downloadUrl= "打天下64位1.6.zip";
+        } else {
+            downloadUrl="打天下32位1.6.zip";
+        }
+            // if (bit.indexOf('64') !== -1) {
+            
+            //     downloadUrl= "打天下64位1.6.zip";
+            // } else {
+            //     downloadUrl="打天下32位1.6.zip";
+            // }
+            return downloadUrl
+    }
+
     //打印
     const outputPrint=()=> {
         var json = {};
@@ -437,8 +455,8 @@ const printInfos:PrintInfo[]=reactive([])
         }else{
             json.template = ToAbsoluteURL("print2.fmx");
         }
-        var downloadUrl = "打天下1.6.zip";
-        printworld.DownloadUrlForTemplatePrint(downloadUrl)
+        
+        printworld.DownloadUrlForTemplatePrint(getPrintWorldZip())
         json.data = printInfos
         printworld.Act(json)
     }
