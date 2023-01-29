@@ -1,7 +1,17 @@
 import axios from 'axios'
 // 创建一个 axios 实例
+
+function setBaseURL(){
+    let baseURL="";
+    if (process.env.NODE_ENV === 'production') {
+        baseURL='/api/'
+      } else {
+        baseURL='http://localhost:18990'
+      }
+      return baseURL
+}
 const service = axios.create({
-    baseURL: '/api/', // 所有的请求地址前缀部分，可以放域名
+    baseURL: setBaseURL(), // 所有的请求地址前缀部分，可以放域名
     timeout: 60000, // 请求超时时间毫秒
     withCredentials: false, // 异步请求携带cookie
     headers: {

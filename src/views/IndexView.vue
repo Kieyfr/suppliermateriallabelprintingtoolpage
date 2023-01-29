@@ -587,7 +587,7 @@ const getState=()=>{
 const getSuppIfPrintSheets=()=>{
     showPrintHistorys.length = 0
     getPrintSheet.length=0
-    if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE!=null){
+    if(supplier.SUPPSHORTNAME!=""||supplier.SUPPCODE!=null){
         setSupplier(supplier.SUPPCODE)
         getPrintSheetsByCode(supplier.SUPPCODE)
         getMaterielsByCode(supplier.SUPPCODE)
@@ -889,7 +889,7 @@ const searchMateriels = (code) => {
     }
     searchMaterielsApi(param).then((res) => {
         if(res.state=='200'){
-            console.log(res.data)
+            
             materiels.length=0
             materiels.push(...res.data)
         }else if(res.state=='404'){
@@ -1169,7 +1169,6 @@ async function addPallet(){
                 await addPrintHistory().then(val => {
                     printInfo.LOTNUM=val+""
             　　});
-                
                 await modprintInfo()
                 printInfos.push({
                     SUPPSHORTNAME:printInfo.SUPPSHORTNAME,
