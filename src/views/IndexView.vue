@@ -587,10 +587,13 @@ const getState=()=>{
 const getSuppIfPrintSheets=()=>{
     showPrintHistorys.length = 0
     getPrintSheet.length=0
-    if(supplier.SUPPSHORTNAME!=""||supplier.SUPPCODE!=null){
+    if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE!=null){
         setSupplier(supplier.SUPPCODE)
         getPrintSheetsByCode(supplier.SUPPCODE)
-        getMaterielsByCode(supplier.SUPPCODE)
+        if(supplier.SUPPCODE!=null){
+            getMaterielsByCode(supplier.SUPPCODE)
+        }
+        
         getIfPrintSheetsByCode(supplier.SUPPCODE)
     }
         dialogQuery.value=false
@@ -637,6 +640,7 @@ const selInfo=reactive({
 //设置菜单选中触发
 const handleSelect = (key: string) => {
     if(key=="1"){
+        getMaterielsByCode(supplier.SUPPCODE)
          printSheetClear()
          printSheet.PALLET=""
          printSheet.PRODUCEDATE=format(new Date(),'yyyy/MM/dd')
