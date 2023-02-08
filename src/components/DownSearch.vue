@@ -118,7 +118,6 @@
 		
     //输入框失去焦点后
     const valInputBlur=()=>{
-		console.log(options.length)
         valInputFocusVal = false;
 				if (optionsAll.indexOf(form.name) >= 0) {
 					setTimeout(() => {
