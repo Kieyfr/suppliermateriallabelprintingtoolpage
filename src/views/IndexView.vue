@@ -633,7 +633,8 @@ async function getSuppIfPrintSheets(){
         await getQueryPrintSheetsTotal(selInfo).then(val=>{
         total.value=val
     })
-        getIfPrintSheetsByCode(10,1)
+        currentPage1.value=1
+        getIfPrintSheetsByCode(pageSize1.value,currentPage1.value)
     }
     
     
@@ -1029,7 +1030,8 @@ onMounted(()=>{
             selInfo.SUPPMATERCODE=""
             selInfo.SUPPLOTNUM=""
             if(state.value!="0"){
-                getIfPrintSheetsByCode(10,1);
+                // getIfPrintSheetsByCode(10,1);
+                getSuppIfPrintSheets()
                 searchMateriels(selInfo.SUPPCODE);
             }
         });
