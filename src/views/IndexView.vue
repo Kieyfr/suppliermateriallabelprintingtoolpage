@@ -36,7 +36,8 @@
       max-height="250px"
       highlight-current-row
       @row-click="selPrintHistory"
-      @row-dblclick="openModify">
+      @row-dblclick="openModify"
+      v-loading="loading">
         <el-table-column type="index" width="100" />
         <el-table-column prop="suppshortname" sortable label="供应商简称" width="250"/>
         <el-table-column prop="matername" sortable label="物料名称" width="205" />
@@ -152,10 +153,10 @@
                     <el-input v-model="printSheet.SUPPLOTNUM"/>
                 </el-form-item>
                 <el-form-item label="绞距" v-if="printSheet.MATERCODE.substring(0,2)==='06'">
-                    <el-input v-model="printSheet.MATERMATERIALSPEC"/>
+                    <el-input v-model="printSheet.MATERMATERIALSPEC" disabled/>
                 </el-form-item>
-                <el-form-item label="颜色" v-else>
-                    <el-input v-model="printSheet.MATERMATERIALTYPE"/>
+                <el-form-item label="颜色" v-else >
+                    <el-input v-model="printSheet.MATERMATERIALTYPE" disabled/>
                 </el-form-item>
                 <el-form-item label="供应商代码">
                     <el-input v-model="printSheet.SUPPCODE" disabled />
@@ -395,6 +396,27 @@
         </el-dialog>
 
     </div>
+    <div id="papersize">
+        <el-dialog
+            v-model="dialogPaperSize"
+            title="选择纸张大小"
+            width="400px"
+            :close-on-click-modal="false"
+        >
+            <el-form-item label="纸张大小cm(宽×高)">
+                <el-select v-model="papersize" placeholder="请选择" >
+                    <el-option
+                        v-for="item in papersizes"
+                        :key="item"
+                        :label="item"
+                        :value="item">
+                    </el-option>
+            </el-select>
+            </el-form-item>
+            
+            <el-button @click="modpapersize" type="primary">确认</el-button>
+        </el-dialog>
+    </div>
     <ul class="custom-contextmenu" ref="customContextMenu" style="display: none;">
         <li @click="PalletClick()">打印托盘码</li>
       </ul>
@@ -428,6 +450,12 @@ import { getSupplierApi } from '@/api/getSupplier'
 import {GetPrintWorld,ToAbsoluteURL} from "../assets/PrintWorld.js"
 import DownSearch from "../components/DownSearch.vue"
 import { format } from 'date-fns'
+import { fa } from 'element-plus/es/locale';
+import { el } from 'date-fns/locale';
+
+
+
+const dialogPaperSize=ref(false)
 //打印信息
 interface PrintInfo{
     SUPPSHORTNAME?:string,       //供应商简称
@@ -473,20 +501,52 @@ const printInfos:PrintInfo[]=reactive([])
     //打印
     const outputPrint=()=> {
         var json = {};
-        json.action = "print";
-
-        if(printInfo.MATERCODE.substring(0,2)==='06'){
-            json.template = ToAbsoluteURL("print.fmx");
+        var  paperSize=localStorage.getItem('paperSize')
+        if(paperSize!=""&&paperSize!=null){
+            json.action = "print";
+            if(printInfo.MATERCODE.substring(0,2)==='06'){
+                if(paperSize=="8×6"){
+                    json.template = ToAbsoluteURL("print86jj.fmx");
+                }else if(paperSize=="10.6×4.6"){
+                    json.template = ToAbsoluteURL("print104jj.fmx");
+                }else if(paperSize=="10.5×6"){
+                    json.template = ToAbsoluteURL("print106jj.fmx");
+                }else{
+                    dialogPaperSize.value=true
+                    return
+                }
+            }else{
+                if(paperSize=="8×6"){
+                    json.template = ToAbsoluteURL("print86ys.fmx");
+                }else if(paperSize=="10.6×4.6"){
+                    json.template = ToAbsoluteURL("print104ys.fmx");
+                }else if(paperSize=="10.5×6"){
+                    json.template = ToAbsoluteURL("print106ys.fmx");
+                }else{
+                    dialogPaperSize.value=true
+                    return
+                }
+            }
+            printworld.DownloadUrlForTemplatePrint(getPrintWorldZip())
+            json.data = printInfos
+            printworld.Act(json)
         }else{
-            json.template = ToAbsoluteURL("print2.fmx");
+            dialogPaperSize.value=true
         }
         
-        printworld.DownloadUrlForTemplatePrint(getPrintWorldZip())
-        json.data = printInfos
-        printworld.Act(json)
+        
     }
 
+    const papersize=ref("")
 
+    const papersizes=["10.6×4.6","8×6","10.5×6"]
+
+    const modpapersize=()=>{
+        
+        localStorage.setItem('paperSize',papersize.value);
+        dialogPaperSize.value=false
+        outputPrint()
+    }
 
 //打开打印方法
 const CreateOneFormPage = () => {
@@ -611,6 +671,8 @@ function getState(){
     })
 }
 
+const loading = ref(false)
+
 //管理员查询
 async function getSuppIfPrintSheets(){
     showPrintHistorys.length = 0
@@ -656,8 +718,31 @@ var materiels : Materiels[]=reactive([]); //物料信息表格
 var getPrintSheet: GetPrintSheet[] = reactive([]);   //供应商打印类别
 var showPrintHistorys : ShowPrintHistory[]=reactive([]);
 
+interface PrintSheet{
+    PK_ORDER: string,            //采购订单主键
+    PK_ORDER_B:string,          //采购订单明细主键
+    SUPPCODE:string,            //供应商代码
+    SUPPNAME:string,            //供应商名称
+    SUPPSHORTNAME:string,       //供应商简称
+    SUPPMATERCODE:string,       //供应商料号
+    SUPPLOTNUM:string,          //供应商批号
+    LOTNUM:string,              //批号
+    VBILLCODE:string,           //订单号
+    MATERCODE:string,           //物料编码
+    MATERNAME:string,           //物料名称
+    MATERMATERIALSPEC:string,   //物料规格
+    MATERMATERIALTYPE:string,   //物料颜色
+    PRODUCEDATE: string,         //生产日期
+    NETWEIGHT:number,        //净重
+    GROSSWEIGHT:number,      //毛重
+    NUM: number,
+    PRINT:boolean,            //是否可以打印
+    PALLET:string ,              //托盘码信息
+    DBILLDATE:string            //采购日期
+}
+
 //对象初始化
-const printSheet = reactive({
+const printSheet:PrintSheet = reactive({
     PK_ORDER: '',            //采购订单主键
     PK_ORDER_B:'',          //采购订单明细主键
     SUPPCODE:'',            //供应商代码
@@ -700,6 +785,7 @@ const handleSelect = (key: string) => {
     }
     if(key=="3"){
         localStorage.removeItem("accessToken")
+        localStorage.removeItem("paperSize")
         router.push('/')
     }
 }
@@ -707,28 +793,24 @@ const handleSelect = (key: string) => {
 
 //设置新建表单验证
 const handleSubit = () => {
-    if(printSheet.MATERCODE==''){
+    if(printSheet.SUPPMATERCODE==null){
+        printSheet.SUPPMATERCODE=""
+    }
+    if(printSheet.MATERCODE==''||printSheet.MATERCODE==null){
         ElMessage.error('请选择新亚物料编号')
-    }
-    else if(printSheet.PRODUCEDATE==null){
+    }else if(printSheet.PRODUCEDATE==null||printSheet.PRODUCEDATE==""){
         ElMessage.error('请选择生产日期')
-    }
-    else if(printSheet.SUPPMATERCODE==''){
+    }else if((printSheet.SUPPMATERCODE==''||printSheet.SUPPMATERCODE==null)&&state.value!="0"){
         ElMessage.error('请填写供应商料号')
-    }
-    else if(printSheet.SUPPLOTNUM==''){
+    }else if(printSheet.SUPPLOTNUM==''||printSheet.SUPPLOTNUM==null){
         ElMessage.error('请填写供应商批号')
-    }
-    else if(printSheet.NETWEIGHT==0.00){
+    }else if(printSheet.NETWEIGHT==0.00){
         ElMessage.error('请设置净重')
-    }
-    else if(printSheet.GROSSWEIGHT==0.00){
+    }else if(printSheet.GROSSWEIGHT==0.00){
         ElMessage.error('请设置毛重')
-    }
-    else if(printSheet.GROSSWEIGHT<=printSheet.NETWEIGHT){
+    }else if(printSheet.GROSSWEIGHT<=printSheet.NETWEIGHT){
         ElMessage.error('毛重需要大于等于净重')
-    }
-    else {
+    }else {
         printSheet.PRODUCEDATE=dateFormat(printSheet.PRODUCEDATE)
         addPrintSheet()
         dialogWord.value=false
@@ -752,6 +834,7 @@ async function modhandleSubit() {
         for(var i:number=0;i<PRINTQUANTITY.value;i++){
                 await addPrintHistory().then(val => {
                     printInfo.LOTNUM=val+""
+                    console.log(val)
             　　});
                 await modprintInfo()
                 await printInfos.push({
@@ -796,6 +879,9 @@ const getMaterial = (row:Materiels) => {
   printSheet.MATERMATERIALSPEC=row.matermaterialspec
   printSheet.MATERMATERIALTYPE=row.matermaterialtype
   printSheet.NUM=row.num
+  if(printSheet.MATERMATERIALTYPE==null||printSheet.MATERMATERIALTYPE==""){
+    printSheet.MATERMATERIALTYPE="无"
+  }
   visible.value=false
 }
 
@@ -863,6 +949,7 @@ function addPrintHistory(){
                 initselPrintHistory(printSheet.PK_ORDER_B)
                 // LOTNUM.value=res.data
                 let lotnum=res.data
+                console.log(lotnum)
                 resolve(lotnum)
                 if(res.state=='201'){
                     ElMessage.success("订单完成")
@@ -1088,6 +1175,9 @@ async function openModify(row:GetPrintSheet){
         printSheet.MATERNAME=row.matername
         printSheet.MATERMATERIALSPEC=row.matermaterialspec
         printSheet.MATERMATERIALTYPE=row.matermaterialtype
+        if(printSheet.MATERMATERIALTYPE==null||printSheet.MATERMATERIALTYPE==""){
+            printSheet.MATERMATERIALTYPE="无"
+        }
         // console.log(row.producedate)
         printSheet.PRODUCEDATE=dateFormat(row.producedate)
         printSheet.NETWEIGHT=0
@@ -1245,6 +1335,8 @@ async function getIfPrintSheetsByCode(pageSize:number,current:number){
     if(selInfo.ENDDATE!=""&&selInfo.ENDDATE!=null){
         selInfo.ENDDATE=dateFormat(selInfo.ENDDATE)
     }
+    
+    loading.value=true
     console.log(selInfo.STARTDATE+"aaa"+selInfo.ENDDATE)
     selInfo.pageSize=pageSize
     selInfo.current=current
@@ -1252,8 +1344,10 @@ async function getIfPrintSheetsByCode(pageSize:number,current:number){
         if(res.state=='200'){
             getPrintSheet.length=0
             getPrintSheet.push(...res.data)
+            loading.value=false
         }else if(res.state=='500'){
             ElMessage.error(res.msg)
+            loading.value=false
         }
     })
     if(state.value!="0"){

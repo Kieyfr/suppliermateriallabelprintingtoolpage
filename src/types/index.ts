@@ -36,8 +36,8 @@ export interface SelInfo {
     STARTDATE?:string,//起始日期
     ENDDATE?:string,//截止日期
     Print?:string,//是否有打印记录
-    current:number,
-    pageSize:number,
+    current?:number,
+    pageSize?:number,
 }
 export interface GetPrintSheet {
     pk_ORDER: string,            //采购订单主键

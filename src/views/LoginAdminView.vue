@@ -18,35 +18,6 @@
       </div>
       
     </div>
-    <el-dialog
-        v-model="dialogVisible" 
-        title="请选择供应商"
-        width="400px"
-        height="100px"
-        :close-on-press-escape="false"
-        :show-close="false"
-        :close-on-click-modal="false"
-        :before-close="handleClose"
-    >
-    
-    <DownSearch ref="supp" :updatesupplier="updatesupplier"></DownSearch>
-    <el-form-item label="供应商代码">
-      <el-select v-model="supplier.SUPPCODE">
-        <el-option
-          v-for="item in SUPPCODES"
-          :key="item"
-          :label="item"
-          :value="item"
-        >
-        </el-option>
-      </el-select>
-    </el-form-item>
-   
-      <el-button @click="qrclick">确认</el-button>
-    
-    
-      
-    </el-dialog>
     
     
   </template>
@@ -87,26 +58,7 @@
       supplier.SUPPCODE=SUPPCODES[0]
     }
 
-    // const qrclick=()=>{
-    //   if(supplier.SUPPSHORTNAME==""||supplier.SUPPCODE==""){
-    //     ElMessage.error("供应商信息错误")
-    //   }else{
-    //     const param = {
-    //       suppCode:supplier.SUPPCODE,
-    //       state:0
-    //       }
-    //       loginAdminsupplier(param).then((res) => {
-    //           if(res.state=='200'){
-    //             dialogVisible.value=false
-    //             localStorage.setItem("accessToken", res.data)
-    //             router.push('/index')
-    //           }else if(res.state=='404'){
-    //               ElMessage.error(res.msg)
-    //           }
-    //       })
-    //   }
-    // console.log(SUPPCODES)
-    //  }
+
     
     const onSubmit = () => {
         if(admin.admin==""){
