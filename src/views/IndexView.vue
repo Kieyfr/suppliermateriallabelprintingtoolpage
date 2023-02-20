@@ -36,6 +36,8 @@
       max-height="250px"
       highlight-current-row
       @row-click="selPrintHistory"
+      @contextmenu.prevent="orderMenu"
+      @row-contextmenu="orderRightClick"
       @row-dblclick="openModify"
       v-loading="loading">
         <el-table-column type="index" width="100" />
@@ -419,7 +421,10 @@
     </div>
     <ul class="custom-contextmenu" ref="customContextMenu" style="display: none;">
         <li @click="PalletClick()">打印托盘码</li>
-      </ul>
+    </ul>
+    <ul class="custom-contextmenu" ref="orderNew" style="display: none;">
+        <li @click="rightNew">新建</li>
+    </ul>
   </div>
 </template>
 
@@ -428,7 +433,7 @@ import { reactive , ref, onMounted} from 'vue'
 import { useRouter } from 'vue-router';
 import { GetPrintSheet,Materiels ,ShowPrintHistory,SelInfo,Suppler,Supplier} from '../types/index'
 import { ElMessage ,ClickOutside as vClickOutside} from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { Right, Search } from '@element-plus/icons-vue'
 import { getSuppUserApi } from '../api/getSuppUser'
 import { addPrintSheetApi } from '../api/addPrintSheet'
 import { addPrintHistoryApi } from '../api/addPrintHistory'
@@ -497,7 +502,57 @@ const printInfos:PrintInfo[]=reactive([])
             // }
             return downloadUrl
     }
-
+    // order鼠标右击事件
+    let orderNew=ref()
+    let orderPrintSheet:GetPrintSheet=reactive({})
+    const orderRightClick=(row:GetPrintSheet)=>{
+        orderPrintSheet=row
+        console.log(orderPrintSheet)
+    }
+    const orderMenu=(e)=>{
+        let top = e.pageY;
+        let left = e.pageX;
+        let ele = orderNew.value;
+        ele.style.top = top + 'px';
+        ele.style.left = left + 'px';
+        ele.style.display = 'block';
+    }
+    //右击新建
+    const rightNew=()=>{
+        printSheet.SUPPCODE=orderPrintSheet.suppcode
+        printSheet.SUPPNAME=orderPrintSheet.suppname
+        printSheet.SUPPSHORTNAME=orderPrintSheet.suppshortname
+        getMaterielsByCode(printSheet.SUPPCODE)
+        printSheet.PALLET=""
+        printSheet.PK_ORDER=orderPrintSheet.pk_ORDER
+        printSheet.PK_ORDER_B=orderPrintSheet.pk_ORDER_B
+        printSheet.SUPPCODE=orderPrintSheet.suppcode
+        printSheet.SUPPNAME=orderPrintSheet.suppname
+        printSheet.SUPPSHORTNAME=orderPrintSheet.suppshortname
+        printSheet.SUPPMATERCODE=""
+        printSheet.SUPPLOTNUM=""
+        printSheet.VBILLCODE=orderPrintSheet.vbillcode
+        printSheet.MATERCODE=orderPrintSheet.matercode
+        printSheet.MATERNAME=orderPrintSheet.matername
+        printSheet.MATERMATERIALSPEC=orderPrintSheet.matermaterialspec
+        printSheet.MATERMATERIALTYPE=orderPrintSheet.matermaterialtype
+        if(printSheet.MATERMATERIALTYPE==null||printSheet.MATERMATERIALTYPE==""){
+            printSheet.MATERMATERIALTYPE="无"
+        }
+        // console.log(row.producedate)
+        printSheet.PRODUCEDATE=dateFormat(orderPrintSheet.producedate)
+        printSheet.NETWEIGHT=0
+        printSheet.GROSSWEIGHT=0
+        printSheet.NUM=orderPrintSheet.num
+        printSheet.PRINT=true
+        printSheet.DBILLDATE=orderPrintSheet.dbilldate
+        printSheet.PRODUCEDATE=format(new Date(),'yyyy/MM/dd')
+        getLotNum(printSheet.PK_ORDER_B) //批号
+        PRINTQUANTITY.value = 1//打印数量
+        // console.log(row)
+        
+        dialogWord.value = true
+    }
     //打印
     const outputPrint=()=> {
         var json = {};
@@ -942,11 +997,12 @@ function addPrintHistory(){
             GROSSWEIGHT: printSheet.GROSSWEIGHT,            //毛重
             SUPPLOTNUM: printSheet.SUPPLOTNUM,         //供应商批号
             PRINTDATE: PRINTDATE.value,           //打印日期
-            PALLET:printSheet.PALLET              //托盘码记录
+            PALLET:printSheet.PALLET,              //托盘码记录
+            DBILLDATE:printSheet.DBILLDATE //采购日期
             }
             addPrintHistoryApi(param).then((res) => {
                 getLotNum(printSheet.PK_ORDER_B)
-                initselPrintHistory(printSheet.PK_ORDER_B)
+                // initselPrintHistory(printSheet.PK_ORDER_B)
                 // LOTNUM.value=res.data
                 let lotnum=res.data
                 console.log(lotnum)
@@ -1150,6 +1206,7 @@ async function openModify(row:GetPrintSheet){
         printSheet.GROSSWEIGHT=row.grossweight
         printSheet.NUM=row.num
         printSheet.PRINT=row.print
+        printSheet.DBILLDATE=row.dbilldate
         getLotNum(printSheet.PK_ORDER_B) //批号
         PRINTQUANTITY.value = 1//打印数量
         selPrintHistoryNum(row)
@@ -1184,6 +1241,7 @@ async function openModify(row:GetPrintSheet){
         printSheet.GROSSWEIGHT=0
         printSheet.NUM=row.num
         printSheet.PRINT=true
+        printSheet.DBILLDATE=row.dbilldate
         printSheet.PRODUCEDATE=format(new Date(),'yyyy/MM/dd')
         getLotNum(printSheet.PK_ORDER_B) //批号
         PRINTQUANTITY.value = 1//打印数量
@@ -1461,21 +1519,26 @@ const supp=ref()
 
     //重写右键事件
     let customContextMenu = ref();
-    const openMenu = (e) => {
+    const openMenu = (e:any) => {
     let top = e.pageY;
     let left = e.pageX;
     let ele = customContextMenu.value;
     ele.style.top = top + 'px';
     ele.style.left = left + 'px';
     ele.style.display = 'block';
+    console.log(e)
     };
     window.addEventListener('click', () => {
-    let menuElement = customContextMenu.value;
-    if(menuElement!=null&&menuElement!=""){
-        menuElement.style.display = 'none';
-    }
-
-    });
+        let menuElement = customContextMenu.value;
+        if(menuElement!=null&&menuElement!=""){
+            menuElement.style.display = 'none';
+        }
+        let menuElement2 = orderNew.value;
+        if(menuElement2!=null&&menuElement2!=""){
+            menuElement2.style.display = 'none';
+        }
+        }
+    )
 
     //打开托盘码窗口事件
     const PalletClick=()=>{

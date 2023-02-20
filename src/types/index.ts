@@ -2,7 +2,7 @@
  * @Author: zcd66666 15168728806@163.com
  * @Date: 2022-11-29 11:45:07
  * @LastEditors: zcd66666 15168728806@163.com
- * @LastEditTime: 2023-02-08 09:13:35
+ * @LastEditTime: 2023-02-20 13:24:53
  * @FilePath: \suppliermateriallabelprintingtoolpage\src\types\index.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -38,25 +38,24 @@ export interface SelInfo {
     Print?:string,//是否有打印记录
     current?:number,
     pageSize?:number,
-}
-export interface GetPrintSheet {
-    pk_ORDER: string,            //采购订单主键
-    pk_ORDER_B: string,          //采购订单明细主键
-    suppcode: string,             //供应商代码
-    suppname: string,             //供应商名称
-    suppshortname: string, //供应商简称
-    suppmatercode: string,        //供应商料号
-    supplotnum: string,           //供应商批号
-    vbillcode: string,            //订单号
-    matercode: string,            //物料编码
-    matername: string,            //物料名称
-    matermaterialspec: string,    //物料规格
-    matermaterialtype: string,    //物料颜色
-    producedate: Date,          //生产日期
-    netweight: number,        //净重
-    grossweight: number,      //毛重
-    num: number,
-    print: boolean,              //是否打印
+}export interface GetPrintSheet {
+    pk_ORDER: string            //采购订单主键
+    pk_ORDER_B: string          //采购订单明细主键
+    suppcode: string             //供应商代码
+    suppname: string             //供应商名称
+    suppshortname: string //供应商简称
+    suppmatercode: string       //供应商料号
+    supplotnum: string           //供应商批号
+    vbillcode: string            //订单号
+    matercode: string            //物料编码
+    matername: string            //物料名称
+    matermaterialspec: string    //物料规格
+    matermaterialtype: string    //物料颜色
+    producedate: Date          //生产日期
+    netweight: number        //净重
+    grossweight: number      //毛重
+    num: number
+    print: boolean              //是否打印
     dbilldate:string             //采购日期
 }
 

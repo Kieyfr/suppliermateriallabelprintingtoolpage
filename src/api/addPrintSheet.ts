@@ -14,11 +14,12 @@ interface addPrintSheetParam  {
     MATERNAME: string,            //物料名称
     MATERMATERIALSPEC: string,    //物料规格
     MATERMATERIALTYPE: string,    //物料颜色
-    PRODUCEDATE: Date,          //生产日期
+    PRODUCEDATE: string,          //生产日期
     NETWEIGHT: number,        //净重
     GROSSWEIGHT: number,      //毛重
     NUM: number,
     PRINT: boolean,              //是否可以打印
+    DBILLDATE:string            //采购日期
 }
  
 // 获取批号
