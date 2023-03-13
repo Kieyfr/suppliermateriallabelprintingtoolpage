@@ -1154,7 +1154,7 @@ async function openModify(row: GetPrintSheet) {
 
 
 //根据供应商代码获取供应商信息
-function getSupplier(suppcode) {
+function getSupplier(suppcode:string) {
     return new Promise<Suppler>((resolve, reject) => {
         const param = {
             suppCode: suppcode
