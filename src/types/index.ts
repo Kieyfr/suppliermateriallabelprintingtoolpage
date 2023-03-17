@@ -93,9 +93,27 @@ export interface ShowPrintHistory {
     pallet:String               //托盘码信息
 }
 
-export interface Suppler{
-    code?: string,
-    name?:string,
-    shortname?:string,
-    pwd?:string
+export class Suppler{
+    code: string
+    name:string
+    shortname:string
+    pwd:string
+    constructor(){
+        this.code=""
+        this.name=""
+        this.shortname=""
+        this.pwd=""
+    }
+}
+export class SupplerVO{
+    suppcode: string
+    suppname:string
+    suppshortname:string
+    loginRecordSUPPCODE:string
+    constructor(){
+        this.suppcode=""
+        this.suppname=""
+        this.suppshortname=""
+        this.loginRecordSUPPCODE=""
+    }
 }

@@ -16,7 +16,13 @@
                     </el-icon>
                     <template #title>查询</template>
                 </el-menu-item>
-                <el-menu-item index="3">
+                <el-menu-item index="3" v-if="state == '0'">
+                    <el-icon>
+                        <Memo />
+                    </el-icon>
+                    <template #title>供应商管理</template>
+                </el-menu-item>
+                <el-menu-item index="4">
                     <el-icon>
                         <Close />
                         <icon-menu />
@@ -25,7 +31,7 @@
                 </el-menu-item>
             </el-menu>
         </div>
-        <div id="order">
+        <div id="order" v-show="!supplierManage">
             <el-table :data="getPrintSheet" style="width: 1235px" max-height="250px" highlight-current-row
                 @row-click="selPrintHistory" @contextmenu.prevent="orderMenu" @row-contextmenu="orderRightClick"
                 @row-dblclick="openModify" v-loading="loading">
@@ -45,11 +51,12 @@
                     @current-change="handleCurrentChange" />
             </div>
         </div>
-        <div id="record" @contextmenu.prevent="openMenu($event)">
+        <div id="record" @contextmenu.prevent="openMenu($event)" v-show="!supplierManage">
             <el-table :data="showPrintHistorys" highlight-current-row style="font-size:12px;width: 1470px;" height="400px"
                 @selection-change="handleSelectionChange" :row-class-name="tableRowClassName" selection-mode="multiple">
                 <!-- 禁用托盘码打印的复选框 -->
-                <el-table-column type="selection" width="50" :selectable="row => !(row.pallet != null && row.pallet != '')" />
+                <el-table-column type="selection" width="50"
+                    :selectable="row => !(row.pallet != null && row.pallet != '')" />
                 <el-table-column type="index" width="50" />
                 <el-table-column property="matername" sortable label="物料名称" show-overflow-tooltip width="200" />
                 <el-table-column property="suppmatercode" sortable label="供应商料号" show-overflow-tooltip width="150" />
@@ -72,6 +79,47 @@
                     </template>
                 </el-table-column>
             </el-table>
+        </div>
+        <div id="supplierManage" v-if="state == '0'" v-show="supplierManage">
+            <el-form :model="supplerVO">
+                <el-form-item label="供应商代码">
+                    <el-input v-model="supplerVO.suppcode"></el-input>
+                </el-form-item>
+                <el-form-item label="供应商全称">
+                    <el-input v-model="supplerVO.suppname"></el-input>
+                </el-form-item>
+                <el-form-item label="供应商简称">
+                    <el-input v-model="supplerVO.suppshortname"></el-input>
+                </el-form-item>
+                <el-form-item label="登录记录">
+                    <el-select v-model="loginRecordSUPPCODE" style="width:80px">
+                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-button type="" @click="onclicksSupplier">查询</el-button>
+            </el-form>
+            <el-table :data="supplerVOs" :height="520">
+                <el-table-column label="供应商代码" prop="suppcode"></el-table-column>
+                <el-table-column label="供应商全称" prop="suppname"></el-table-column>
+                <el-table-column label="供应商简称" prop="suppshortname"></el-table-column>
+                <el-table-column label="登录记录">
+                    <template #default="scope">
+                        {{ isNull(scope.row.loginRecordSUPPCODE) ? "无" : "有" }}
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作">
+                    <template #default="scope">
+                        <el-button type="" @click="resetPWD(scope.row)"
+                            v-if="!isNull(scope.row.loginRecordSUPPCODE)">重置密码</el-button>
+                        <el-button type="" @click="delSuppUser(scope.row)"
+                            v-if="!isNull(scope.row.loginRecordSUPPCODE)">清除登录</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-pagination v-model:current-page="currentPage2" v-model:page-size="pageSize2" :page-sizes="[10, 20, 30, 40]"
+                :disabled="false" :hide-on-single-page="false" layout="total, sizes, prev, pager, next, jumper"
+                :total="total2" @size-change="handleSizeChange2" @current-change="handleCurrentChange2" />
         </div>
         <div id="word">
             <el-dialog v-model="dialogWord" title="新建" width="800px" :close-on-click-modal="false">
@@ -327,10 +375,10 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router';
-import { GetPrintSheet, Materiels, ShowPrintHistory, SelInfo, Suppler, Supplier } from '../types/index'
-import { ElMessage, ClickOutside as vClickOutside } from 'element-plus'
+import { GetPrintSheet, Materiels, ShowPrintHistory, SelInfo, Suppler, Supplier, SupplerVO } from '../types/index'
+import { ElMessage, ElMessageBox, ClickOutside as vClickOutside } from 'element-plus'
 import { Right, Search } from '@element-plus/icons-vue'
 import { getSuppUserApi } from '../api/getSuppUser'
 import { addPrintSheetApi } from '../api/addPrintSheet'
@@ -350,8 +398,13 @@ import { delPrintHistoryApi } from '../api/delPrintHistory'
 import { getStateApi } from '../api/getState'
 import { loginAdminsupplier } from '@/api/loginAdmin'
 import { getSupplierApi } from '@/api/getSupplier'
+import { selSupplierVOTotalApi } from '@/api/selSupplierVOTotal'
+import { selSupplierVOApi } from '@/api/selSupplierVO'
+import { delSuppUserApi } from '@/api/delSuppUser'
+import { resetPWDApi } from '@/api/resetPWD'
 import { GetPrintWorld, ToAbsoluteURL } from "../assets/PrintWorld.js"
 import DownSearch from "../components/DownSearch.vue"
+import { isNull } from 'lodash';
 import { format } from 'date-fns'
 import { fa } from 'element-plus/es/locale';
 import { el } from 'date-fns/locale';
@@ -378,7 +431,6 @@ interface PrintInfo {
 }
 const printInfo: PrintInfo = reactive({})
 const printInfos: PrintInfo[] = reactive([])
-
 
 //获取打天下
 const printworld = GetPrintWorld()
@@ -517,6 +569,36 @@ const CreateOneFormPage2 = () => {
         outputPrint()
     }, 0)
 };
+//点击供应商查询
+const onclicksSupplier = () => {
+    currentPage2.value = 1
+    selSupplierVOTotal().then(val => {
+        selSupplierVO()
+    })
+
+}
+const gx = ref(false)
+//查询供应商数量
+function selSupplierVOTotal() {
+    return new Promise<number>((resolve, reject) => {
+        selSupplierVOTotalApi(supplerVO.suppcode, supplerVO.suppname, supplerVO.suppshortname, loginRecordSUPPCODE.value).then((res) => {
+            if (res.state == '200') {
+                total2.value = res.data
+                resolve(total.value)
+            }
+        })
+    })
+}
+//查询供应商
+const selSupplierVO = () => {
+    supplerVOs.length = 0
+    selSupplierVOApi(supplerVO.suppcode, supplerVO.suppname, supplerVO.suppshortname, loginRecordSUPPCODE.value, currentPage2.value, pageSize2.value).then((res) => {
+        if (res.state == '200') {
+            supplerVOs.push(...res.data)
+            console.log(res.data)
+        }
+    })
+}
 
 //更改json信息方法
 function modprintInfo() {
@@ -602,7 +684,7 @@ const dialogPallet = ref(false) //打印托盘码窗口是否显示
 
 const search = ref('') //修改窗口是否显示
 
-const dialogSupplierVisible = ref('')//管理员切换供应商窗口是否显示
+const supplierManage = ref(false)//供应商管理是否显示
 
 var visible = ref(false)    //气泡表格是否显示
 
@@ -611,7 +693,25 @@ const PRINTQUANTITY = ref(1)//打印数量
 const PRINTDATE = ref(new Date)//打印日期
 
 const state = ref('');
-
+const supplerVO: SupplerVO = reactive(new SupplerVO)
+const loginRecordSUPPCODE = ref(-1)
+watch(() => [supplerVO.suppcode, supplerVO.suppname, supplerVO.suppshortname, loginRecordSUPPCODE], () => {
+    gx.value = true
+})
+const options = [{
+    value: -1,
+    label: '全部'
+},
+{
+    value: 0,
+    label: '无'
+},
+{
+    value: 1,
+    label: '有'
+}
+]
+const supplerVOs: SupplerVO[] = reactive([new SupplerVO])
 //获取登录状态
 function getState() {
     return new Promise<string>((resolve, reject) => {
@@ -732,19 +832,84 @@ const handleSelect = (key: string) => {
         printSheetClear()
         printSheet.PALLET = ""
         printSheet.PRODUCEDATE = format(new Date(), 'yyyy/MM/dd')
+        supplierManage.value = false
         dialogWord.value = true
     }
     if (key == "2") {
         printSheetClear()
+        supplierManage.value = false
         dialogQuery.value = true
     }
     if (key == "3") {
+        supplierManage.value = true
+    }
+    if (key == "4") {
         localStorage.removeItem("accessToken")
         localStorage.removeItem("paperSize")
         router.push('/')
     }
 }
 
+//重置密码
+const resetPWD = (row: SupplerVO) => {
+    ElMessageBox.confirm(
+        '确认要重置吗',
+        '提示',
+        {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            resetPWDApi(row.suppcode).then(res => {
+                if (res.state == '200') {
+                    ElMessage({
+                        message: '重置成功.',
+                        type: 'success',
+                    })
+                    selSupplierVO()
+                }
+            })
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '取消重置',
+            })
+        })
+
+}
+//清除登录
+const delSuppUser = (row: SupplerVO) => {
+    ElMessageBox.confirm(
+        '确认要清除吗',
+        '提示',
+        {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            delSuppUserApi(row.suppcode).then(res => {
+                if (res.state == '200') {
+                    ElMessage({
+                        message: '清除成功.',
+                        type: 'success',
+                    })
+                    selSupplierVO()
+                }
+            })
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '取消清除',
+            })
+        })
+
+}
 
 //设置新建表单验证
 const handleSubit = () => {
@@ -1076,6 +1241,8 @@ onMounted(() => {
                 // getIfPrintSheetsByCode(10,1);
                 getSuppIfPrintSheets()
                 searchMateriels(selInfo.SUPPCODE);
+            } else {
+                onclicksSupplier()
             }
         });
 
@@ -1154,13 +1321,13 @@ async function openModify(row: GetPrintSheet) {
 
 
 //根据供应商代码获取供应商信息
-function getSupplier(suppcode:string) {
+function getSupplier(suppcode: string) {
     return new Promise<Suppler>((resolve, reject) => {
         const param = {
             suppCode: suppcode
         }
         getSupplierApi(param).then((res) => {
-            let suppler: Suppler = reactive({})
+            let suppler: Suppler = reactive(new Suppler)
             if (res.state == '200') {
                 suppler = res.data
                 resolve(suppler)
@@ -1491,6 +1658,24 @@ const handleSizeChange = (val: number) => {
 const handleCurrentChange = (val: number) => {
     getIfPrintSheetsByCode(pageSize1.value, val)
 }
+//分页2
+const currentPage2 = ref(1)
+const total2 = ref(1)
+const pageSize2 = ref(10)
+const handleSizeChange2 = (val: number) => {
+    if (gx) {
+        selSupplierVOTotal()
+        gx.value = false
+    }
+    selSupplierVO()
+}
+const handleCurrentChange2 = (val: number) => {
+    if (gx) {
+        selSupplierVOTotal()
+        gx.value = false
+    }
+    selSupplierVO()
+}
 </script>
 <style lang="scss">
 #indexView {
@@ -1568,5 +1753,28 @@ const handleCurrentChange = (val: number) => {
 .el-table .warning-row {
     color: rgb(17, 33, 255);
     font-weight: bold;
+}
+
+#supplierManage {
+    margin-top: 10px;
+
+    .el-form {
+
+        .el-form-item {
+            float: left;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .el-button {
+            float: left;
+        }
+    }
+
+    .el-table {
+        text-align: center;
+    }
+
+
 }
 </style>
