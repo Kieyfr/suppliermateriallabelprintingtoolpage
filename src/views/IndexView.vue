@@ -999,6 +999,7 @@ const getMaterial = (row: Materiels) => {
     printSheet.MATERMATERIALSPEC = row.matermaterialspec
     printSheet.MATERMATERIALTYPE = row.matermaterialtype
     printSheet.NUM = row.num
+    printSheet.DBILLDATE = row.dbilldate
     if (printSheet.MATERMATERIALTYPE == null || printSheet.MATERMATERIALTYPE == "") {
         printSheet.MATERMATERIALTYPE = "无"
     }
