@@ -1626,7 +1626,7 @@ const PalletClick = () => {
         for (var i = 0; i < selectionPrint.length; i++) {
             NETWEIGHT += selectionPrint[i].netweight
             GROSSWEIGHT += selectionPrint[i].grossweight
-            printSheet.PALLET += selectionPrint[i].lotnum + ","
+            printSheet.PALLET += selectionPrint[i].lotnum.slice(-4) + ","
         }
         printSheet.NETWEIGHT = NETWEIGHT
         printSheet.GROSSWEIGHT = GROSSWEIGHT
