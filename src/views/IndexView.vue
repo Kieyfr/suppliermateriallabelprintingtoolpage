@@ -1601,8 +1601,8 @@ const PalletClick = () => {
             GROSSWEIGHT += selectionPrint[i].grossweight
             printSheet.PALLET += selectionPrint[i].lotnum.slice(-4) + ","
         }
-        printSheet.NETWEIGHT = NETWEIGHT
-        printSheet.GROSSWEIGHT = GROSSWEIGHT
+        printSheet.NETWEIGHT = Number(NETWEIGHT.toFixed(3))
+        printSheet.GROSSWEIGHT = Number(GROSSWEIGHT.toFixed(3))
         getLotNum(printSheet.PK_ORDER_B)
         dialogPallet.value = true;
     } else {
