@@ -444,12 +444,6 @@ function getPrintWorldZip() {
     } else {
         downloadUrl = "打天下32位1.6.zip";
     }
-    // if (bit.indexOf('64') !== -1) {
-
-    //     downloadUrl= "打天下64位1.6.zip";
-    // } else {
-    //     downloadUrl="打天下32位1.6.zip";
-    // }
     return downloadUrl
 }
 // order鼠标右击事件
@@ -635,28 +629,7 @@ const modprintInfo2 = () => {
 //生成条码
 const barCode = (matercode, netweight, suppcode, vbillcode, lotnum) => {
     let barcode = "";
-    let pd = netweight.indexOf(".");
-    let netweight1 = ""
-    let netweight2 = ""
-    let netweight3 = ""
-    if (pd != -1) {
-        netweight1 = netweight.substr(0, pd);
-        netweight2 = netweight.substr(pd, netweight.length - 1)
-        while (netweight1.length < 4) {
-            netweight1 = "0" + netweight1
-        }
-        while (netweight2.length < 4) {
-            netweight2 = netweight1 + "0"
-        }
-    } else {
-        netweight1 = netweight;
-        netweight2 = ".000";
-        while (netweight1.length < 4) {
-            netweight1 = "0" + netweight1
-        }
-    }
-    netweight3 = netweight1 + netweight2 + "";
-    barcode = "W" + matercode + netweight3 + suppcode + vbillcode + lotnum;
+    barcode = "W" + matercode + Number(netweight).toFixed(3).padStart(8, '0') + suppcode + vbillcode + lotnum;
     return barcode
 }
 //日期格式化
