@@ -32,17 +32,22 @@
             </el-menu>
         </div>
         <div id="order" v-show="!supplierManage">
-            <el-table :data="getPrintSheet" style="width: 1235px" max-height="250px" highlight-current-row
+            <el-table :data="getPrintSheet" style="width: 1000px" max-height="250px" highlight-current-row
                 @row-click="selPrintHistory" @contextmenu.prevent="orderMenu" @row-contextmenu="orderRightClick"
                 @row-dblclick="openModify" v-loading="loading">
-                <el-table-column type="index" width="100" />
                 <!-- <el-table-column prop="pk_ORDER" sortable label="采购订单主键" width="250"/> -->
-                <el-table-column prop="suppshortname" sortable label="供应商简称" width="250" />
-                <el-table-column prop="matername" sortable label="物料名称" width="205" />
-                <el-table-column prop="matercode" label="物料编码" width="180" />
-                <el-table-column prop="vbillcode" sortable label="订单号" width="250" />
+                <el-table-column prop="suppshortname" sortable label="供应商简称" width="150" />
+                <el-table-column prop="matername" sortable label="物料名称" width="150" show-overflow-tooltip />
+                <el-table-column prop="matercode" label="物料编码" width="150" show-overflow-tooltip />
+                <el-table-column prop="vbillcode" sortable label="订单号" width="150" />
                 <el-table-column prop="supplotnum" sortable label="商厂批号" width="150" />
                 <el-table-column prop="dbilldate" sortable label="采购日期" width="150" />
+                <el-table-column label="操作" width="100" fixed="right">
+                    <template #default="scope">
+                        <el-button type="danger" v-if="scope.row.supplotnum != '' && scope.row.supplotnum != null"
+                            @click.native.stop="delPrintSheet(scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
             <div class="demo-pagination-block">
                 <el-pagination v-model:current-page="currentPage1" v-model:page-size="pageSize1"
@@ -57,7 +62,6 @@
                 <!-- 禁用托盘码打印的复选框 -->
                 <el-table-column type="selection" width="50"
                     :selectable="row => !(row.pallet != null && row.pallet != '')" />
-                <el-table-column type="index" width="50" />
                 <el-table-column property="matername" sortable label="物料名称" show-overflow-tooltip width="200" />
                 <el-table-column property="suppmatercode" sortable label="供应商料号" show-overflow-tooltip width="150" />
                 <el-table-column property="producedate" sortable label="生产日期" show-overflow-tooltip width="110" />
@@ -68,7 +72,7 @@
                 <el-table-column property="matermaterialspec" sortable label="物料规格" show-overflow-tooltip width="110" />
                 <el-table-column property="matermaterialtype" sortable label="物料颜色" show-overflow-tooltip width="110" />
                 <el-table-column property="printdate" sortable label="打印日期" show-overflow-tooltip width="110" />
-                <el-table-column label="操作" show-overflow-tooltip width="160">
+                <el-table-column label="操作" show-overflow-tooltip width="160" fixed="right">
                     <template #default="scope">
                         <el-button size="small" @click="handleReprint(scope.row)">
                             重打
@@ -81,7 +85,7 @@
             </el-table>
         </div>
         <div id="supplierManage" v-if="state == '0'" v-show="supplierManage">
-            <el-form :model="supplerVO">
+            <el-form :model="supplerVO" label-width="100px">
                 <el-form-item label="供应商代码">
                     <el-input v-model="supplerVO.suppcode"></el-input>
                 </el-form-item>
@@ -401,6 +405,7 @@ import { getSupplierApi } from '@/api/getSupplier'
 import { selSupplierVOTotalApi } from '@/api/selSupplierVOTotal'
 import { selSupplierVOApi } from '@/api/selSupplierVO'
 import { delSuppUserApi } from '@/api/delSuppUser'
+import { delPrintSheetApi } from '@/api/delPrintSheet'
 import { resetPWDApi } from '@/api/resetPWD'
 import { GetPrintWorld, ToAbsoluteURL } from "../assets/PrintWorld.js"
 import DownSearch from "../components/DownSearch.vue"
@@ -589,7 +594,7 @@ const selSupplierVO = () => {
     selSupplierVOApi(supplerVO.suppcode, supplerVO.suppname, supplerVO.suppshortname, loginRecordSUPPCODE.value, currentPage2.value, pageSize2.value).then((res) => {
         if (res.state == '200') {
             supplerVOs.push(...res.data)
-            console.log(res.data)
+            // console.log(res.data)
         }
     })
 }
@@ -927,7 +932,7 @@ async function modhandleSubit() {
         for (var i: number = 0; i < PRINTQUANTITY.value; i++) {
             await addPrintHistory().then(val => {
                 printInfo.LOTNUM = val + ""
-                console.log(val)
+                // console.log(val)
             });
             await modprintInfo()
             await printInfos.push({
@@ -1204,7 +1209,7 @@ onMounted(() => {
             printSheet.SUPPNAME = val.suppName
             printSheet.SUPPSHORTNAME = val.suppShortname
             selInfo.SUPPCODE = printSheet.SUPPCODE
-            selInfo.Print = "全部"
+            selInfo.Print = "有"
             selInfo.COMPLETION = "全部"
             selInfo.STARTDATE = ""
             selInfo.ENDDATE = ""
@@ -1441,9 +1446,10 @@ async function getIfPrintSheetsByCode(pageSize: number, current: number) {
     selInfo.current = current
     getIfPrintSheetsByCodeApi(selInfo).then((res) => {
         if (res.state == '200') {
+            loading.value = false
             getPrintSheet.length = 0
             getPrintSheet.push(...res.data)
-            loading.value = false
+
         } else if (res.state == '500') {
             ElMessage.error(res.msg)
             loading.value = false
@@ -1526,6 +1532,39 @@ async function addPallet() {
     dialogPallet.value = false
 }
 
+//删除打印列表事件
+const delPrintSheet = (row: GetPrintSheet) => {
+    ElMessageBox.confirm(
+        '确认要删除吗',
+        '提示',
+        {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            delPrintSheetApi(row.pk_ORDER_B, row.supplotnum).then((res) => {
+                if (res.state == '200') {
+                    ElMessage({
+                        message: res.msg,
+                        type: 'success',
+                    })
+                    showPrintHistorys.length=0
+                    getIfPrintSheetsByCode(pageSize1.value, currentPage1.value)
+                } else {
+                    ElMessage.error(res.msg)
+                }
+            })
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '取消删除',
+            })
+        })
+
+}
 //删除打印事件
 const handleDelete = (row: ShowPrintHistory) => {
     const param = {
@@ -1567,7 +1606,7 @@ const openMenu = (e: any) => {
     ele.style.top = top + 'px';
     ele.style.left = left + 'px';
     ele.style.display = 'block';
-    console.log(e)
+    // console.log(e)
 };
 window.addEventListener('click', () => {
     let menuElement = customContextMenu.value;
@@ -1653,6 +1692,9 @@ const handleCurrentChange2 = (val: number) => {
 </script>
 <style lang="scss">
 #indexView {
+    width: 1200px;
+    height: 100%;
+
     #word {
         .el-form-item {
             width: 360px;
@@ -1662,6 +1704,16 @@ const handleCurrentChange2 = (val: number) => {
             .el-form-item__label {
                 justify-content: flex-start;
             }
+        }
+    }
+
+    #order {
+        text-align: center;
+
+        .el-button {
+            background-color: transparent;
+            color: red;
+            border-color: transparent;
         }
     }
 
@@ -1749,6 +1801,10 @@ const handleCurrentChange2 = (val: number) => {
         text-align: center;
     }
 
+    #record {
+        height: auto;
+        margin-bottom: 20px;
+    }
 
 }
 </style>

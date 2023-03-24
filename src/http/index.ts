@@ -14,7 +14,7 @@ function setBaseURL(){
     if (process.env.NODE_ENV === 'production') {
         baseURL='/api/'
       } else {
-        baseURL='http://192.168.44.64:18990'
+        baseURL='http://192.168.1.106:18990'
       }
       return baseURL
 }
