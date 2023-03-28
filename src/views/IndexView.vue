@@ -35,7 +35,8 @@
             <el-table :data="getPrintSheet" style="width: 1000px" max-height="250px" highlight-current-row
                 @row-click="selPrintHistory" @contextmenu.prevent="orderMenu" @row-contextmenu="orderRightClick"
                 @row-dblclick="openModify" v-loading="loading">
-                <!-- <el-table-column prop="pk_ORDER" sortable label="采购订单主键" width="250"/> -->
+                <!-- <el-table-column prop="pk_ORDER" sortable label="采购订单主键" width="250"/>
+                <el-table-column prop="pk_ORDER_B" sortable label="采购订单主键B" width="250"/> -->
                 <el-table-column prop="suppshortname" sortable label="供应商简称" width="150" />
                 <el-table-column prop="matername" sortable label="物料名称" width="150" show-overflow-tooltip />
                 <el-table-column prop="matercode" label="物料编码" width="150" show-overflow-tooltip />
@@ -374,6 +375,7 @@
         </ul>
         <ul class="custom-contextmenu" ref="orderNew" style="display: none;">
             <li @click="rightNew">新建</li>
+            <li @click="selPrintHistoryB">查询全部打印记录</li>
         </ul>
     </div>
 </template>
@@ -392,7 +394,7 @@ import { getMaterielsByCodeApi } from '@/api/getMateriels'
 import { getLotNumApi } from '../api/getLotNum'
 import { getPrintSheetsApi } from '../api/getPrintSheets'
 import { getPrintSheetsByCodeApi } from '../api/getPrintSheets'
-import { selPrintHistoryApi } from '../api/selPrintHistory'
+import { selPrintHistoryApi,selPrintHistoryBApi } from '../api/selPrintHistory'
 import { getIfPrintSheetsApi, Page } from '../api/getIfPrintSheets'
 import { getIfPrintSheetsByCodeApi, getQueryPrintSheetsTotalApi } from '../api/getIfPrintSheets'
 import { selPrintHistoryNumApi } from '../api/selPrintHistoryNum'
@@ -1337,6 +1339,7 @@ const selPrintHistory = (row: GetPrintSheet) => {
     //console.log(row.vbillcode)
     //console.log(row.matercode)
     if (row.supplotnum != null && row.supplotnum != "") {
+        orderPrintSheet=row
         printSheet.SUPPCODE = row.suppcode
         printSheet.SUPPNAME = row.suppname
         printSheet.SUPPSHORTNAME = row.suppshortname
@@ -1377,6 +1380,20 @@ const hangselPrintHistory = (PK_ORDER_B: string, SUPPLOTNUM: string) => {
     });
 }
 
+//行查询所有的打印历史
+const selPrintHistoryB = () => {
+    const param = {
+        PK_ORDER_B: orderPrintSheet.pk_ORDER_B,         //采购订单明细主键
+        SUPPLOTNUM: orderPrintSheet.supplotnum
+    }
+    selPrintHistoryBApi(param).then((res) => {
+        if (res.state == '200') {
+            showPrintHistorys.length = 0
+            showPrintHistorys.push(...res.data)
+        }
+    });
+}
+
 //根据供应商代码更改供应商信息
 const setSupplier = (code) => {
     const param = {
@@ -1398,17 +1415,17 @@ const setSupplier = (code) => {
 }
 
 //初始化历史记录
-const initselPrintHistory = (PK_ORDER_B: string) => {
-    const param = {
-        PK_ORDER_B: PK_ORDER_B         //采购订单明细主键
-    }
-    selPrintHistoryApi(param).then((res) => {
-        if (res.state == '200') {
-            showPrintHistorys.length = 0
-            showPrintHistorys.push(...res.data)
-        }
-    });
-}
+// const initselPrintHistory = (PK_ORDER_B: string) => {
+//     const param = {
+//         PK_ORDER_B: PK_ORDER_B         //采购订单明细主键
+//     }
+//     selPrintHistoryApi(param).then((res) => {
+//         if (res.state == '200') {
+//             showPrintHistorys.length = 0
+//             showPrintHistorys.push(...res.data)
+//         }
+//     });
+// }
 
 //对象重置
 const printSheetClear = () => {
@@ -1624,10 +1641,18 @@ window.addEventListener('click', () => {
 const PalletClick = () => {
 
     if (selectionPrint.length > 0) {
-
-        printSheet.SUPPMATERCODE = selectionPrint[0].suppmatercode
-        printSheet.SUPPLOTNUM = selectionPrint[0].supplotnum
-        printSheet.MATERNAME = selectionPrint[0].matername
+        printSheet.SUPPCODE = orderPrintSheet.suppcode
+        printSheet.SUPPNAME = orderPrintSheet.suppname
+        printSheet.SUPPSHORTNAME = orderPrintSheet.suppshortname
+        //console.log(printSheet.SUPPCODE)
+        getMaterielsByCode(printSheet.SUPPCODE)
+        printSheet.VBILLCODE = orderPrintSheet.vbillcode
+        printSheet.MATERCODE = orderPrintSheet.matercode
+        printSheet.PK_ORDER_B = orderPrintSheet.pk_ORDER_B
+        printSheet.PK_ORDER = orderPrintSheet.pk_ORDER
+        printSheet.SUPPMATERCODE = orderPrintSheet.suppmatercode
+        printSheet.SUPPLOTNUM = orderPrintSheet.supplotnum
+        printSheet.MATERNAME = orderPrintSheet.matername
         printSheet.PRODUCEDATE = format(new Date(), 'yyyy/MM/dd')
         printSheet.MATERMATERIALSPEC = selectionPrint[0].matermaterialspec
         printSheet.MATERMATERIALTYPE = selectionPrint[0].matermaterialtype
@@ -1754,7 +1779,7 @@ const handleCurrentChange2 = (val: number) => {
 .custom-contextmenu {
     z-index: 10000;
     border: 1px solid #ccc;
-    width: 100px;
+    width: 150px;
     padding: 0;
     list-style: none;
     border-bottom: none;
@@ -1763,7 +1788,7 @@ const handleCurrentChange2 = (val: number) => {
     background-color: #fff;
 
     li {
-        width: 100px;
+        width: 150px;
         height: 35px;
         line-height: 35px;
         text-align: center;
