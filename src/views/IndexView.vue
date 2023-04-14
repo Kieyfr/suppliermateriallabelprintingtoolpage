@@ -576,7 +576,22 @@ const CreateOneFormPage = () => {
 const CreateOneFormPage2 = () => {
     printInfos.length = 0
     modprintInfo2()
-    printInfos.push(printInfo)
+    printInfos.push({
+            SUPPSHORTNAME: printInfo.SUPPSHORTNAME,
+            MATERNAME: printInfo.MATERNAME,
+            MATERCODE: printInfo.MATERCODE,
+            SUPPMATERCODE: printInfo.SUPPMATERCODE,
+            PRODUCEDATE: printInfo.PRODUCEDATE,
+            VBILLCODE: printInfo.VBILLCODE,
+            SUPPLOTNUM: printInfo.SUPPLOTNUM,
+            LOTNUM: printInfo.LOTNUM,
+            MATERMATERIALSPEC: printInfo.MATERMATERIALSPEC,
+            MATERMATERIALTYPE: printInfo.MATERMATERIALTYPE,
+            NETWEIGHT: printInfo.NETWEIGHT,
+            GROSSWEIGHT: printInfo.GROSSWEIGHT,
+            BARCODE: printInfo.BARCODE,
+            HF: printInfo.HF
+        })
     setTimeout(() => {
         outputPrint()
     }, 0)
