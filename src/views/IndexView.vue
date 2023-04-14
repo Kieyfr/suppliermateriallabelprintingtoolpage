@@ -128,6 +128,9 @@
         </div>
         <div id="word">
             <el-dialog v-model="dialogWord" title="新建" width="800px" :close-on-click-modal="false">
+                <div class="checkbox">
+                    <el-checkbox v-model="printSheet.HF" label="HF" size="large" :style="['font-size: 50px;']" />
+                </div>
                 <el-form :model="printSheet" label-width="100px" :inline="true">
                     <el-form-item label="供应商名称">
                         <el-input v-model="printSheet.SUPPSHORTNAME" disabled />
@@ -202,6 +205,9 @@
         </div>
         <div id="modify">
             <el-dialog v-model="dialogModify" title="打印" width="800px" :close-on-click-modal="false">
+                <div class="checkbox">
+                    <el-checkbox v-model="printSheet.HF" label="HF" size="large" :style="['font-size: 50px;']" />
+                </div>
                 <el-form :model="printSheet" label-width="100px" :inline="true">
                     <el-form-item label="供应商名称">
                         <el-input v-model="printSheet.SUPPSHORTNAME" disabled />
@@ -304,6 +310,9 @@
         </div>
         <div id="pallet">
             <el-dialog v-model="dialogPallet" title="打印托盘码" width="800px" :close-on-click-modal="false">
+                <div class="checkbox">
+                    <el-checkbox v-model="printSheet.HF" label="HF" size="large" :style="['font-size: 50px;']" />
+                </div>
                 <el-form :model="printSheet" label-width="100px" :inline="true">
                     <el-form-item label="供应商名称">
                         <el-input v-model="printSheet.SUPPSHORTNAME" disabled />
@@ -394,7 +403,7 @@ import { getMaterielsByCodeApi } from '@/api/getMateriels'
 import { getLotNumApi } from '../api/getLotNum'
 import { getPrintSheetsApi } from '../api/getPrintSheets'
 import { getPrintSheetsByCodeApi } from '../api/getPrintSheets'
-import { selPrintHistoryApi,selPrintHistoryBApi } from '../api/selPrintHistory'
+import { selPrintHistoryApi, selPrintHistoryBApi } from '../api/selPrintHistory'
 import { getIfPrintSheetsApi, Page } from '../api/getIfPrintSheets'
 import { getIfPrintSheetsByCodeApi, getQueryPrintSheetsTotalApi } from '../api/getIfPrintSheets'
 import { selPrintHistoryNumApi } from '../api/selPrintHistoryNum'
@@ -435,6 +444,7 @@ interface PrintInfo {
     GROSSWEIGHT?: string,         //毛重
     PRINTQUANTITY?: number,        //打印数量
     BARCODE?: string              //条码
+    HF?: string
 }
 const printInfo: PrintInfo = reactive({})
 const printInfos: PrintInfo[] = reactive([])
@@ -484,6 +494,7 @@ const rightNew = () => {
     printSheet.VBILLCODE = orderPrintSheet.vbillcode
     printSheet.MATERCODE = orderPrintSheet.matercode
     printSheet.MATERNAME = orderPrintSheet.matername
+    printSheet.HF = false
     printSheet.MATERMATERIALSPEC = orderPrintSheet.matermaterialspec
     printSheet.MATERMATERIALTYPE = orderPrintSheet.matermaterialtype
     if (printSheet.MATERMATERIALTYPE == null || printSheet.MATERMATERIALTYPE == "") {
@@ -614,6 +625,11 @@ function modprintInfo() {
     printInfo.MATERMATERIALTYPE = printSheet.MATERMATERIALTYPE
     printInfo.NETWEIGHT = printSheet.NETWEIGHT + "KG"
     printInfo.GROSSWEIGHT = printSheet.GROSSWEIGHT + "KG"
+    if (printSheet.HF) {
+        printInfo.HF = "HF"
+    } else {
+        printInfo.HF = ""
+    }
     printInfo.PRINTQUANTITY = 1
     printInfo.BARCODE = barCode(printInfo.MATERCODE, printSheet.NETWEIGHT + "", printSheet.SUPPCODE, printInfo.VBILLCODE, printInfo.LOTNUM)
 }
@@ -631,6 +647,11 @@ const modprintInfo2 = () => {
     printInfo.NETWEIGHT = printSheet.NETWEIGHT + "KG"
     printInfo.GROSSWEIGHT = printSheet.GROSSWEIGHT + "KG"
     printInfo.PRINTQUANTITY = 1
+    if (printSheet.HF) {
+        printInfo.HF = "HF"
+    } else {
+        printInfo.HF = ""
+    }
     printInfo.BARCODE = barCode(printInfo.MATERCODE, printSheet.NETWEIGHT + "", printSheet.SUPPCODE, printInfo.VBILLCODE, printInfo.LOTNUM)
 }
 //生成条码
@@ -774,6 +795,7 @@ interface PrintSheet {
     PRINT: boolean,            //是否可以打印
     PALLET: string,              //托盘码信息
     DBILLDATE: string            //采购日期
+    HF: boolean      //HF
 }
 
 //对象初始化
@@ -797,7 +819,8 @@ const printSheet: PrintSheet = reactive({
     NUM: 1,
     PRINT: true,            //是否可以打印
     PALLET: "",              //托盘码信息
-    DBILLDATE: ""            //采购日期
+    DBILLDATE: "",            //采购日期
+    HF: false
 })
 
 
@@ -937,7 +960,7 @@ async function modhandleSubit() {
                 // console.log(val)
             });
             await modprintInfo()
-            await printInfos.push({
+            printInfos.push({
                 SUPPSHORTNAME: printInfo.SUPPSHORTNAME,
                 MATERNAME: printInfo.MATERNAME,
                 MATERCODE: printInfo.MATERCODE,
@@ -950,7 +973,8 @@ async function modhandleSubit() {
                 MATERMATERIALTYPE: printInfo.MATERMATERIALTYPE,
                 NETWEIGHT: printInfo.NETWEIGHT,
                 GROSSWEIGHT: printInfo.GROSSWEIGHT,
-                BARCODE: printInfo.BARCODE
+                BARCODE: printInfo.BARCODE,
+                HF: printInfo.HF
             })
         }
         await outputPrint()
@@ -1009,7 +1033,8 @@ function addPrintSheet() {
                     MATERMATERIALTYPE: printInfo.MATERMATERIALTYPE,
                     NETWEIGHT: printInfo.NETWEIGHT,
                     GROSSWEIGHT: printInfo.GROSSWEIGHT,
-                    BARCODE: printInfo.BARCODE
+                    BARCODE: printInfo.BARCODE,
+                    HF: printInfo.HF
                 })
             }
 
@@ -1044,7 +1069,8 @@ function addPrintHistory() {
             SUPPLOTNUM: printSheet.SUPPLOTNUM,         //供应商批号
             PRINTDATE: PRINTDATE.value,           //打印日期
             PALLET: printSheet.PALLET,              //托盘码记录
-            DBILLDATE: printSheet.DBILLDATE //采购日期
+            DBILLDATE: printSheet.DBILLDATE, //采购日期
+            HF: printSheet.HF
         }
         addPrintHistoryApi(param).then((res) => {
             getLotNum(printSheet.PK_ORDER_B)
@@ -1255,6 +1281,7 @@ async function openModify(row: GetPrintSheet) {
         printSheet.NUM = row.num
         printSheet.PRINT = row.print
         printSheet.DBILLDATE = row.dbilldate
+        printSheet.HF = row.hf
         getLotNum(printSheet.PK_ORDER_B) //批号
         PRINTQUANTITY.value = 1//打印数量
         selPrintHistoryNum(row)
@@ -1339,7 +1366,7 @@ const selPrintHistory = (row: GetPrintSheet) => {
     //console.log(row.vbillcode)
     //console.log(row.matercode)
     if (row.supplotnum != null && row.supplotnum != "") {
-        orderPrintSheet=row
+        orderPrintSheet = row
         printSheet.SUPPCODE = row.suppcode
         printSheet.SUPPNAME = row.suppname
         printSheet.SUPPSHORTNAME = row.suppshortname
@@ -1443,6 +1470,7 @@ const printSheetClear = () => {
     printSheet.GROSSWEIGHT = 0.000
     printSheet.NUM = 1
     printSheet.PRINT = true
+    printSheet.HF = false
     LOTNUM.value = 0
     PRINTQUANTITY.value = 0
 }
@@ -1507,6 +1535,7 @@ const handleReprint = (row: ShowPrintHistory) => {
     printSheet.PRODUCEDATE = row.producedate.toString()
     printSheet.NETWEIGHT = row.netweight
     printSheet.GROSSWEIGHT = row.grossweight
+    printSheet.HF = row.hf
     CreateOneFormPage2()
 
 }
@@ -1539,7 +1568,8 @@ async function addPallet() {
             MATERMATERIALTYPE: printInfo.MATERMATERIALTYPE,
             NETWEIGHT: printInfo.NETWEIGHT,
             GROSSWEIGHT: printInfo.GROSSWEIGHT,
-            BARCODE: printInfo.BARCODE
+            BARCODE: printInfo.BARCODE,
+            HF: printInfo.HF
         })
     }
 
@@ -1567,7 +1597,7 @@ const delPrintSheet = (row: GetPrintSheet) => {
                         message: res.msg,
                         type: 'success',
                     })
-                    showPrintHistorys.length=0
+                    showPrintHistorys.length = 0
                     getIfPrintSheetsByCode(pageSize1.value, currentPage1.value)
                 } else {
                     ElMessage.error(res.msg)
@@ -1804,6 +1834,25 @@ const handleCurrentChange2 = (val: number) => {
 .el-table .warning-row {
     color: rgb(17, 33, 255);
     font-weight: bold;
+}
+
+.checkbox {
+    display: inline;
+    position: absolute;
+    top: 20px;
+    right: 100px;
+
+
+
+    .el-checkbox--large {
+
+
+        .el-checkbox__label {
+            font-size: 20px;
+
+        }
+    }
+
 }
 
 #supplierManage {

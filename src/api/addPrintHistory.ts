@@ -11,6 +11,7 @@ interface addPrintHistoryParam  {
     SUPPLOTNUM:string,
     PRINTDATE:Date,
     PALLET:String               //托盘码信息
+    HF:boolean
 }
 
 // 添加打印历史记录
