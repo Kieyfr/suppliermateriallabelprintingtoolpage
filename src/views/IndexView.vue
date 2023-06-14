@@ -130,6 +130,7 @@
             <el-dialog v-model="dialogWord" title="新建" width="800px" :close-on-click-modal="false">
                 <div class="checkbox">
                     <el-checkbox v-model="printSheet.HF" label="HF" size="large" :style="['font-size: 50px;']" />
+                    <el-checkbox v-model="printSheet.BITTERN" label="含卤" size="large" :style="['font-size: 50px;']" />
                 </div>
                 <el-form :model="printSheet" label-width="100px" :inline="true">
                     <el-form-item label="供应商名称">
@@ -164,7 +165,7 @@
                         <el-input v-model="printSheet.MATERNAME" disabled />
                     </el-form-item>
                     <el-form-item label="订单号">
-                        <el-input v-model="printSheet.VBILLCODE" disabled />
+                        <el-input v-model="printSheet.VBILLCODE" />
                     </el-form-item>
                     <el-form-item label="批号">
                         <el-input v-model="LOTNUM" disabled />
@@ -207,6 +208,7 @@
             <el-dialog v-model="dialogModify" title="打印" width="800px" :close-on-click-modal="false">
                 <div class="checkbox">
                     <el-checkbox v-model="printSheet.HF" label="HF" size="large" :style="['font-size: 50px;']" />
+                    <el-checkbox v-model="printSheet.BITTERN" label="含卤" size="large" :style="['font-size: 50px;']" />
                 </div>
                 <el-form :model="printSheet" label-width="100px" :inline="true">
                     <el-form-item label="供应商名称">
@@ -312,6 +314,7 @@
             <el-dialog v-model="dialogPallet" title="打印托盘码" width="800px" :close-on-click-modal="false">
                 <div class="checkbox">
                     <el-checkbox v-model="printSheet.HF" label="HF" size="large" :style="['font-size: 50px;']" />
+                    <el-checkbox v-model="printSheet.BITTERN" label="含卤" size="large" :style="['font-size: 50px;']" />
                 </div>
                 <el-form :model="printSheet" label-width="100px" :inline="true">
                     <el-form-item label="供应商名称">
@@ -438,13 +441,14 @@ interface PrintInfo {
     VBILLCODE?: string,           //订单号
     SUPPLOTNUM?: string,          //供应商批号
     LOTNUM?: string,            //批号
-    MATERMATERIALSPEC?: string,   //物料规格
-    MATERMATERIALTYPE?: string,   //物料颜色
+    MATERMATERIALSPECORTYPE?: string,   //物料规格或颜色
+    PRINTTYPE?: string //显示打印颜色还是规格
     NETWEIGHT?: string,           //净重
     GROSSWEIGHT?: string,         //毛重
     PRINTQUANTITY?: number,        //打印数量
     BARCODE?: string              //条码
     HF?: string
+    BITTERN?: string
 }
 const printInfo: PrintInfo = reactive({})
 const printInfos: PrintInfo[] = reactive([])
@@ -495,6 +499,7 @@ const rightNew = () => {
     printSheet.MATERCODE = orderPrintSheet.matercode
     printSheet.MATERNAME = orderPrintSheet.matername
     printSheet.HF = false
+    printSheet.BITTERN = false
     printSheet.MATERMATERIALSPEC = orderPrintSheet.matermaterialspec
     printSheet.MATERMATERIALTYPE = orderPrintSheet.matermaterialtype
     if (printSheet.MATERMATERIALTYPE == null || printSheet.MATERMATERIALTYPE == "") {
@@ -521,30 +526,16 @@ const outputPrint = () => {
     if (paperSize != "" && paperSize != null) {
         json.action = "print";
 
-        if (printInfo.MATERCODE.substring(0, 2) === '06') {
-            if (paperSize == "8×6") {
-                json.template = ToAbsoluteURL("print86jj.fmx");
-            } else if (paperSize == "10.6×4.6") {
-                json.template = ToAbsoluteURL("print104jj.fmx");
-            } else if (paperSize == "10.5×6") {
-                json.template = ToAbsoluteURL("print106jj.fmx");
-            } else {
-                dialogPaperSize.value = true
-                return
-            }
+        if (paperSize == "8×6") {
+            json.template = ToAbsoluteURL("print86.fmx");
+        } else if (paperSize == "10.6×4.6") {
+            json.template = ToAbsoluteURL("print104.fmx");
+        } else if (paperSize == "10.5×6") {
+            json.template = ToAbsoluteURL("print106.fmx");
         } else {
-            if (paperSize == "8×6") {
-                json.template = ToAbsoluteURL("print86ys.fmx");
-            } else if (paperSize == "10.6×4.6") {
-                json.template = ToAbsoluteURL("print104ys.fmx");
-            } else if (paperSize == "10.5×6") {
-                json.template = ToAbsoluteURL("print106ys.fmx");
-            } else {
-                dialogPaperSize.value = true
-                return
-            }
+            dialogPaperSize.value = true
+            return
         }
-
         printworld.DownloadUrlForTemplatePrint(getPrintWorldZip())
         json.data = printInfos
         if (!printworld.Act(json)) {                    //数据发送失败
@@ -577,21 +568,22 @@ const CreateOneFormPage2 = () => {
     printInfos.length = 0
     modprintInfo2()
     printInfos.push({
-            SUPPSHORTNAME: printInfo.SUPPSHORTNAME,
-            MATERNAME: printInfo.MATERNAME,
-            MATERCODE: printInfo.MATERCODE,
-            SUPPMATERCODE: printInfo.SUPPMATERCODE,
-            PRODUCEDATE: printInfo.PRODUCEDATE,
-            VBILLCODE: printInfo.VBILLCODE,
-            SUPPLOTNUM: printInfo.SUPPLOTNUM,
-            LOTNUM: printInfo.LOTNUM,
-            MATERMATERIALSPEC: printInfo.MATERMATERIALSPEC,
-            MATERMATERIALTYPE: printInfo.MATERMATERIALTYPE,
-            NETWEIGHT: printInfo.NETWEIGHT,
-            GROSSWEIGHT: printInfo.GROSSWEIGHT,
-            BARCODE: printInfo.BARCODE,
-            HF: printInfo.HF
-        })
+        SUPPSHORTNAME: printInfo.SUPPSHORTNAME,
+        MATERNAME: printInfo.MATERNAME,
+        MATERCODE: printInfo.MATERCODE,
+        SUPPMATERCODE: printInfo.SUPPMATERCODE,
+        PRODUCEDATE: printInfo.PRODUCEDATE,
+        VBILLCODE: printInfo.VBILLCODE,
+        SUPPLOTNUM: printInfo.SUPPLOTNUM,
+        LOTNUM: printInfo.LOTNUM,
+        MATERMATERIALSPECORTYPE: printInfo.MATERMATERIALSPECORTYPE,
+        PRINTTYPE:printInfo.PRINTTYPE,
+        NETWEIGHT: printInfo.NETWEIGHT,
+        GROSSWEIGHT: printInfo.GROSSWEIGHT,
+        BARCODE: printInfo.BARCODE,
+        HF: printInfo.HF,
+        BITTERN: printInfo.BITTERN
+    })
     setTimeout(() => {
         outputPrint()
     }, 0)
@@ -636,14 +628,24 @@ function modprintInfo() {
     printInfo.PRODUCEDATE = dateFormat(printSheet.PRODUCEDATE)
     printInfo.SUPPLOTNUM = printSheet.SUPPLOTNUM
     printInfo.VBILLCODE = printSheet.VBILLCODE
-    printInfo.MATERMATERIALSPEC = printSheet.MATERMATERIALSPEC
-    printInfo.MATERMATERIALTYPE = printSheet.MATERMATERIALTYPE
+    if (printInfo.MATERCODE.substring(0, 2) === '06') {
+        printInfo.PRINTTYPE = "绞距"
+        printInfo.MATERMATERIALSPECORTYPE = printSheet.MATERMATERIALSPEC
+    } else {
+        printInfo.PRINTTYPE = "颜色"
+        printInfo.MATERMATERIALSPECORTYPE = printSheet.MATERMATERIALTYPE
+    }
     printInfo.NETWEIGHT = printSheet.NETWEIGHT + "KG"
     printInfo.GROSSWEIGHT = printSheet.GROSSWEIGHT + "KG"
     if (printSheet.HF) {
         printInfo.HF = "HF"
     } else {
         printInfo.HF = ""
+    }
+    if (printSheet.BITTERN) {
+        printInfo.BITTERN = "含卤"
+    } else {
+        printInfo.BITTERN = "无卤"
     }
     printInfo.PRINTQUANTITY = 1
     printInfo.BARCODE = barCode(printInfo.MATERCODE, printSheet.NETWEIGHT + "", printSheet.SUPPCODE, printInfo.VBILLCODE, printInfo.LOTNUM)
@@ -657,8 +659,13 @@ const modprintInfo2 = () => {
     printInfo.SUPPLOTNUM = printSheet.SUPPLOTNUM
     printInfo.VBILLCODE = printSheet.VBILLCODE
     printInfo.LOTNUM = printSheet.LOTNUM
-    printInfo.MATERMATERIALSPEC = printSheet.MATERMATERIALSPEC
-    printInfo.MATERMATERIALTYPE = printSheet.MATERMATERIALTYPE
+    if (printInfo.MATERCODE.substring(0, 2) === '06') {
+        printInfo.PRINTTYPE = "绞距"
+        printInfo.MATERMATERIALSPECORTYPE = printSheet.MATERMATERIALSPEC
+    } else {
+        printInfo.PRINTTYPE = "颜色"
+        printInfo.MATERMATERIALSPECORTYPE = printSheet.MATERMATERIALTYPE
+    }
     printInfo.NETWEIGHT = printSheet.NETWEIGHT + "KG"
     printInfo.GROSSWEIGHT = printSheet.GROSSWEIGHT + "KG"
     printInfo.PRINTQUANTITY = 1
@@ -666,6 +673,11 @@ const modprintInfo2 = () => {
         printInfo.HF = "HF"
     } else {
         printInfo.HF = ""
+    }
+    if (printSheet.BITTERN) {
+        printInfo.BITTERN = "含卤"
+    } else {
+        printInfo.BITTERN = "无卤"
     }
     printInfo.BARCODE = barCode(printInfo.MATERCODE, printSheet.NETWEIGHT + "", printSheet.SUPPCODE, printInfo.VBILLCODE, printInfo.LOTNUM)
 }
@@ -811,6 +823,7 @@ interface PrintSheet {
     PALLET: string,              //托盘码信息
     DBILLDATE: string            //采购日期
     HF: boolean      //HF
+    BITTERN: boolean
 }
 
 //对象初始化
@@ -835,7 +848,8 @@ const printSheet: PrintSheet = reactive({
     PRINT: true,            //是否可以打印
     PALLET: "",              //托盘码信息
     DBILLDATE: "",            //采购日期
-    HF: false
+    HF: false,
+    BITTERN: false
 })
 
 
@@ -1049,7 +1063,8 @@ function addPrintSheet() {
                     NETWEIGHT: printInfo.NETWEIGHT,
                     GROSSWEIGHT: printInfo.GROSSWEIGHT,
                     BARCODE: printInfo.BARCODE,
-                    HF: printInfo.HF
+                    HF: printInfo.HF,
+                    BITTERN: printInfo.BITTERN
                 })
             }
 
@@ -1085,7 +1100,8 @@ function addPrintHistory() {
             PRINTDATE: PRINTDATE.value,           //打印日期
             PALLET: printSheet.PALLET,              //托盘码记录
             DBILLDATE: printSheet.DBILLDATE, //采购日期
-            HF: printSheet.HF
+            HF: printSheet.HF,
+            BITTERN: printSheet.BITTERN
         }
         addPrintHistoryApi(param).then((res) => {
             getLotNum(printSheet.PK_ORDER_B)
@@ -1297,6 +1313,7 @@ async function openModify(row: GetPrintSheet) {
         printSheet.PRINT = row.print
         printSheet.DBILLDATE = row.dbilldate
         printSheet.HF = row.hf
+        printSheet.BITTERN = row.bittern
         getLotNum(printSheet.PK_ORDER_B) //批号
         PRINTQUANTITY.value = 1//打印数量
         selPrintHistoryNum(row)
@@ -1486,6 +1503,7 @@ const printSheetClear = () => {
     printSheet.NUM = 1
     printSheet.PRINT = true
     printSheet.HF = false
+    printSheet.BITTERN = false
     LOTNUM.value = 0
     PRINTQUANTITY.value = 0
 }
@@ -1551,6 +1569,7 @@ const handleReprint = (row: ShowPrintHistory) => {
     printSheet.NETWEIGHT = row.netweight
     printSheet.GROSSWEIGHT = row.grossweight
     printSheet.HF = row.hf
+    printSheet.BITTERN = row.bittern
     CreateOneFormPage2()
 
 }
@@ -1584,7 +1603,8 @@ async function addPallet() {
             NETWEIGHT: printInfo.NETWEIGHT,
             GROSSWEIGHT: printInfo.GROSSWEIGHT,
             BARCODE: printInfo.BARCODE,
-            HF: printInfo.HF
+            HF: printInfo.HF,
+            BITTERN: printInfo.BITTERN
         })
     }
 
@@ -1710,6 +1730,8 @@ const PalletClick = () => {
             GROSSWEIGHT += selectionPrint[i].grossweight
             printSheet.PALLET += selectionPrint[i].lotnum.slice(-4) + ","
         }
+        printSheet.HF=orderPrintSheet.hf
+        printSheet.BITTERN=orderPrintSheet.bittern
         printSheet.NETWEIGHT = Number(NETWEIGHT.toFixed(3))
         printSheet.GROSSWEIGHT = Number(GROSSWEIGHT.toFixed(3))
         getLotNum(printSheet.PK_ORDER_B)
