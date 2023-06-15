@@ -998,12 +998,13 @@ async function modhandleSubit() {
                 VBILLCODE: printInfo.VBILLCODE,
                 SUPPLOTNUM: printInfo.SUPPLOTNUM,
                 LOTNUM: printInfo.LOTNUM,
-                MATERMATERIALSPEC: printInfo.MATERMATERIALSPEC,
-                MATERMATERIALTYPE: printInfo.MATERMATERIALTYPE,
+                MATERMATERIALSPECORTYPE:printInfo.MATERMATERIALSPECORTYPE,
+                PRINTTYPE:printInfo.PRINTTYPE,
                 NETWEIGHT: printInfo.NETWEIGHT,
                 GROSSWEIGHT: printInfo.GROSSWEIGHT,
                 BARCODE: printInfo.BARCODE,
-                HF: printInfo.HF
+                HF: printInfo.HF,
+                BITTERN: printInfo.BITTERN
             })
         }
         await outputPrint()
@@ -1058,8 +1059,8 @@ function addPrintSheet() {
                     VBILLCODE: printInfo.VBILLCODE,
                     SUPPLOTNUM: printInfo.SUPPLOTNUM,
                     LOTNUM: printInfo.LOTNUM,
-                    MATERMATERIALSPEC: printInfo.MATERMATERIALSPEC,
-                    MATERMATERIALTYPE: printInfo.MATERMATERIALTYPE,
+                    MATERMATERIALSPECORTYPE:printInfo.MATERMATERIALSPECORTYPE,
+                    PRINTTYPE:printInfo.PRINTTYPE,
                     NETWEIGHT: printInfo.NETWEIGHT,
                     GROSSWEIGHT: printInfo.GROSSWEIGHT,
                     BARCODE: printInfo.BARCODE,
@@ -1598,8 +1599,8 @@ async function addPallet() {
             VBILLCODE: printInfo.VBILLCODE,
             SUPPLOTNUM: printInfo.SUPPLOTNUM,
             LOTNUM: printInfo.LOTNUM,
-            MATERMATERIALSPEC: printInfo.MATERMATERIALSPEC,
-            MATERMATERIALTYPE: printInfo.MATERMATERIALTYPE,
+            MATERMATERIALSPECORTYPE:printInfo.MATERMATERIALSPECORTYPE,
+            PRINTTYPE:printInfo.PRINTTYPE,
             NETWEIGHT: printInfo.NETWEIGHT,
             GROSSWEIGHT: printInfo.GROSSWEIGHT,
             BARCODE: printInfo.BARCODE,
